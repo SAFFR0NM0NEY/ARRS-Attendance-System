@@ -1,0 +1,28 @@
+UUID / Device Fingerprint Logic:
+Recommendation 1:
+•	A UUID issued once when a device visits a webpage. (Generated using Javas Script)
+•	UUID stored permanently on client device (on browser cookies)
+•	UUID stored on database (automated after UUID has been created use Java Script)
+•	Entirely software-based (no hardware dependencies).
+
+
+
+Simplified Daily UUID Flow:
+1. Generate UUID (Server and Client):
+•	On page load, generate a UUID. (One per mobile device).
+2. Send UUID to Client:
+•	Include it in the page response (e.g., via JSON API or embedded script or recommended ways).
+3. Store UUID:
+•	Store in cookies
+•	UUID stored on database (automated after UUID has been created use Java Script).
+
+How to check UUID:
+•	Server-side check: Implement logic on your backend to read the cookie and verify if the UUID 	exists, this includes looking in database to see if user exists.
+•	Validation: Confirm the UUID matches expected format and hasn’t expired or been tampered 	with.(Check in database)
+•	Fallback: If no UUID is found, decide whether to issue a new one or block the request.
+•	Security: Consider signing/encrypting the UUID or pairing it with student ID to	prevent 	spoofing.(recommend to connect it to Student ID)
+Example (simplified):
+•	Client: Stores uuid=1234abcd in cookies.
+•	Server: On request, checks req.cookies.uuid.
+•	If present → validate and continue.
+•	If missing → Investigate(if existing user) / Create UUID(if new user)

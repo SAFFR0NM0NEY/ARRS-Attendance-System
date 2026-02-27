@@ -1,0 +1,34 @@
+IP Subnet Logic:
+Logic System for MAC:
+•	PC: get MAC using code (Code created by Richard, stored on USB).
+•	Phone: Old fashioned way, ask for device MAC.
+•	Store MAC on allowed list
+Logic System for Restricting Access by Public IP:
+Step 1: Incoming Request:
+•	A client sends an HTTP(S) request to your website domain.
+Step 2: Web Server Evaluation:
+•	The web server (IIS, Apache, Nginx, etc.) checks the source IP address of the request.
+Step 3: Access Control Rules:
+•	If the source IP matches the allowed public IP → request is processed normally.
+•	If the source IP does not match → request is denied (403 Forbidden or dropped).
+Step 4: Response:
+•	Allowed IP → user sees the website.
+•	Denied IP → user receives an error or no response.
+With this setup:
+•	No firewall setup is needed.
+•	No DNS setup is needed.
+
+✅ Pros:
+•	Simplicity: No need to configure DNS servers or firewall rules. Everything is handled at the web server level.
+•	Direct Control: The web server itself enforces the rule, so you know exactly where the restriction is applied.
+•	Quick Setup: IIS (or Apache/Nginx) can be installed and configured in minutes on Windows 11 Pro.
+•	Clear Logic: Easy to explain — “server checks IP, allows or denies.”
+•	No Extra Infrastructure: You don’t need to maintain DNS servers or firewall policies, which reduces overhead.
+ 
+❌ Cons:
+•	Bypass Risk: Without firewall rules, unwanted traffic still reaches the server before being denied. This wastes resources and could expose the server to probing attempts.
+•	No DNS Layer Control: Users outside your network can still resolve the domain name. They’ll just get blocked at the server, but DNS won’t hide it.
+•	Limited Scalability: If you later need to enforce rules across multiple services or servers, managing IP restrictions individually becomes cumbersome.
+•	Performance Overhead: The server itself must evaluate and deny requests, which could add slight overhead compared to blocking earlier at the firewall.
+•	Dynamic IP Issues: If the “allowed” public IP changes (common with consumer ISPs), access will break until you update the rule.
+•	No Defense in Depth: Relying only on the web server means you don’t have layered security. Firewalls and DNS policies normally add extra protection.
