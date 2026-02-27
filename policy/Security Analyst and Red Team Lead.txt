@@ -5,7 +5,61 @@ Red Team Test Plan:
 * Goal: Ensure the system prevents fraud, unauthorized access, and misuse, while logging all suspicious activity.
 2. Threat Scenarios and Test Cases:
 
-#Threat / Attack ScenarioTest StepsExpected System ResponseStatus / Notes1Duplicate QR ScanAttempt to scan the same QR multiple times using the same device or multiple devicesOnly the first scan accepted; duplicates rejected and flagged2Device SpoofingTry to mark attendance using a device not registered to the studentSystem rejects the check-in and logs the attempt3Unauthorized Network AccessAttempt check-in from Wi-Fi or IP outside the approved campus subnetAttendance rejected; suspicious activity flagged4Attendance After CutoffSubmit attendance after the allowed time windowSystem auto-marks absent and logs late attempt5Manual Override AbuseTeacher/admin manually changes records without reasonSystem logs all changes with user, timestamp, and reason; missing reasons flagged6QR Replay AttackCapture QR and try to reuse it on a different device/sessionRejected if duplicate or invalid session; flagged7Shared Account / Credential AbuseStudent tries to log in using another studentís credentialsLogin denied if multi-factor / device binding active; attempt logged8Multiple Accounts on One DeviceAttempt to check in multiple students using one deviceSystem flags suspicious device usage and rejects duplicate check-ins9Tampering with API or Backend CallsTry to submit attendance via modified API requestsServer-side validation rejects invalid data; logged for review10Logging / Audit Evasion AttemptAttempt to bypass logging or hide actionsAll actions recorded server-side; tampering prevented
+#
+Threat / Attack Scenario
+Test Steps
+Expected System Response
+Status / Notes
+1
+Duplicate QR Scan
+Attempt to scan the same QR multiple times using the same device or multiple devices
+Only the first scan accepted; duplicates rejected and flagged
+
+2
+Device Spoofing
+Try to mark attendance using a device not registered to the student
+System rejects the check-in and logs the attempt
+
+3
+Unauthorized Network Access
+Attempt check-in from Wi-Fi or IP outside the approved campus subnet
+Attendance rejected; suspicious activity flagged
+
+4
+Attendance After Cutoff
+Submit attendance after the allowed time window
+System auto-marks absent and logs late attempt
+
+5
+Manual Override Abuse
+Teacher/admin manually changes records without reason
+System logs all changes with user, timestamp, and reason; missing reasons flagged
+
+6
+QR Replay Attack
+Capture QR and try to reuse it on a different device/session
+Rejected if duplicate or invalid session; flagged
+
+7
+Shared Account / Credential Abuse
+Student tries to log in using another student s credentials
+Login denied if multi-factor / device binding active; attempt logged
+
+8
+Multiple Accounts on One Device
+Attempt to check in multiple students using one device
+System flags suspicious device usage and rejects duplicate check-ins
+
+9
+Tampering with API or Backend Calls
+Try to submit attendance via modified API requests
+Server-side validation rejects invalid data; logged for review
+
+10
+Logging / Audit Evasion Attempt
+Attempt to bypass logging or hide actions
+All actions recorded server-side; tampering prevented
+
 
 
 3. Testing Methodology
@@ -49,10 +103,10 @@ How it Helps:
 3. Device & Network Policy
 Policy:
 * Each student account must be linked to one registered device only.
-* Attendance submissions are allowed only when connected to the schoolís approved Wi-Fi network.
+* Attendance submissions are allowed only when connected to the school s approved Wi-Fi network.
 * Device sharing between students is strictly prohibited.
 How it Helps:
-* Prevents students from marking attendance using another studentís device.
+* Prevents students from marking attendance using another student s device.
 * Ensures attendance reflects actual physical presence on campus.
 * Reduces risk of spoofing or remote check-ins.
 * Helps the system accurately detect and flag suspicious activity if multiple accounts attempt to use the same device or network.
@@ -68,7 +122,7 @@ How it Helps:
 * Simplifies attendance tracking while maintaining security.
 5. Audit & Logging Policy
 Policy:
-* All actionsómanual overrides, failed attempts, and suspicious activityóare logged.
+* All actions manual overrides, failed attempts, and suspicious activity are logged.
 * Logs are tamper-proof and regularly reviewed by authorized personnel.
 
 How it Helps:
@@ -114,13 +168,151 @@ How it Helps:
 * Keeps the system resilient against new attack techniques.
 * Detects and prevents emerging fraudulent behaviours.
 * Supports ongoing improvement of security and reliability.
-Summary:
-These policies collectively ensure the attendance system is:
-* Accurate ñ only valid students can mark attendance
-* Secure ñ prevents unauthorized access and fraudulent activity
-* Auditable ñ all actions are traceable and transparent
-* Reliable ñ system functions automatically without daily intervention
-* Maintainable ñ security is proactive, not reactive
+10. Access Control Policy
+    Policy:
+
+* Role-based access for Students, Teachers, and Admins.
+* Principle of least privilege: users can only access features necessary for their role.
+* Secure authentication mechanisms for all users.
+
+How it Helps:
+
+* Prevents students from accessing admin or teacher functionality.
+* Limits potential damage from compromised accounts.
+* Ensures only authorized users can mark attendance or perform overrides, reducing fraud.
+
+11. Attendance Data Policy
+    Policy:
+
+* Attendance records are stored in a secure database (source of truth), not directly in Excel.
+* All changes are logged, including timestamps, user, and reason.
+* Access to attendance data is restricted to authorized roles.
+
+How it Helps:
+
+* Protects the integrity of attendance records from tampering.
+* Ensures transparency and accountability for all changes.
+* Maintains privacy by limiting access to sensitive data.
+
+12. Device & Network Policy
+    Policy:
+
+* Each student account must be linked to one registered device.
+* Attendance submissions are allowed only when connected to the school‚Äôs approved Wi-Fi network.
+* Device sharing between students is strictly prohibited.
+* Device binding is implemented via server-generated UUIDs, stored securely in cookies and the database.
+
+How it Helps:
+
+* Prevents students from marking attendance using another student‚Äôs device.
+* Ensures attendance reflects actual physical presence on campus.
+* Reduces risk of spoofing or remote check-ins.
+* Helps the system accurately detect and flag suspicious activity if multiple accounts attempt to use the same device or network.
+
+13. Device UUID Policy (New)
+    Policy:
+
+* Server generates a unique UUID for each student device/browser instance.
+* UUID is stored in secure cookies (HttpOnly, SameSite=Strict) and the database.
+* UUID is linked to the student account; multiple UUIDs per student or shared UUIDs are flagged.
+* UUIDs are validated on every attendance request; missing or invalid UUIDs trigger fallback actions.
+* Optional: UUIDs can be signed or HMAC‚Äôd to prevent tampering; pairing with IP/User-Agent can strengthen anti-spoofing.
+
+How it Helps:
+
+* Prevents device spoofing and fraudulent check-ins.
+* Enforces ‚Äúone device per student‚Äù rule.
+* Supports Red Team test cases like Device Spoofing and Multiple Accounts on One Device.
+* Ensures attendance integrity and reliability.
+
+14. QR Code Policy
+    Policy:
+
+* Static QR codes are assigned per venue.
+* QR codes cannot be copied, shared, or reused outside the allowed session.
+* QR codes are valid only during the allowed attendance window.
+
+How it Helps:
+
+* Prevents students from using QR codes to mark attendance fraudulently.
+* Enforces session-specific timing so only valid check-ins are accepted.
+* Simplifies attendance tracking while maintaining security.
+
+15. Audit & Logging Policy
+    Policy:
+
+* All actions, manual overrides, failed attempts, and suspicious activity are logged.
+* Logs are tamper-proof and regularly reviewed by authorized personnel.
+
+How it Helps:
+
+* Creates accountability for teachers, admins, and students.
+* Detects and investigates suspicious behavior or attempted fraud.
+* Supports compliance with institutional and legal auditing requirements.
+
+16. Fraud Prevention Policy
+    Policy:
+
+* Duplicate submissions are blocked.
+* Attendance submissions from unregistered devices or off-campus networks are rejected and flagged.
+* Only one device per student is allowed.
+* Rule-based enforcement for timing, network, device constraints, and UUID validation.
+
+How it Helps:
+
+* Stops students from marking attendance multiple times or from unauthorized devices.
+* Alerts teachers to unusual activity before it becomes an issue.
+* Maintains system integrity without requiring manual monitoring.
+
+17. Manual Override Policy
+    Policy:
+
+* Only authorized teachers or admins can perform overrides.
+* A reason must be provided for all manual changes.
+* All overrides are logged in the audit system.
+
+How it Helps:
+
+* Ensures overrides are justified and accountable.
+* Prevents unauthorized manipulation of attendance records.
+* Maintains a clear audit trail for compliance and review.
+
+18. Red Team Testing Policy
+    Policy:
+
+* Simulated attacks are conducted in a controlled environment.
+* Real student data cannot be corrupted.
+* All findings, including vulnerabilities and attempted exploits, are documented and shared with developers.
+
+How it Helps:
+
+* Identifies weaknesses before students or attackers can exploit them.
+* Ensures security controls are working as intended.
+* Provides actionable insights for system improvements.
+* Includes testing UUID enforcement, device spoofing, and multiple device scenarios.
+
+19. Security Review Policy
+    Policy:
+
+* Logs, flagged activity, and Red Team findings are reviewed regularly.
+* Security rules and controls are updated as needed.
+* Continuous monitoring ensures the system adapts to evolving threats.
+
+How it Helps:
+
+* Keeps the system resilient against new attack techniques.
+* Detects and prevents emerging fraudulent behaviours.
+* Supports ongoing improvement of security and reliability.
+
+20. Summary:
+    These policies collectively ensure the attendance system is:
+
+* Accurate: Only valid students can mark attendance
+* Secure: Prevents unauthorized access and fraudulent activity
+* Auditable: All actions are traceable and transparent
+* Reliable: System functions automatically without daily intervention
+* Maintainable: Security is proactive, not reactive
+
 
 
 
@@ -151,7 +343,7 @@ The following Terms and Conditions govern the use of the Digital Attendance Syst
 2. Device Usage
 * Each student is permitted to register and use one device only for attendance purposes.
 * The registered device must not be shared with other users.
-* Any attempt to use multiple devices or another userís device will be flagged as suspicious activity.
+* Any attempt to use multiple devices or another user s device will be flagged as suspicious activity.
 3. Network Access
 * Attendance may only be marked when connected to the official school WiFi network. (No mobile data usage may be permitted!)
 * Attempts to mark attendance from off-campus or unauthorized networks will be rejected and logged.
