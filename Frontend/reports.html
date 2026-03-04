@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lecturer Report</title>
+
+<style>
+body { 
+  margin:0; 
+  font-family: Arial; 
+  background:#f4f6f9; 
+}
+
+.navbar { 
+  background:#1e293b; 
+  color:white; 
+  padding:15px 20px; 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+}
+
+.wrapper { display:flex; }
+
+.sidebar { 
+  width:220px; 
+  background:#111827; 
+  height:100vh; 
+  padding-top:20px; 
+}
+
+.sidebar a { 
+  display:block; 
+  color:white; 
+  padding:12px 20px; 
+  text-decoration:none; 
+}
+
+.sidebar a:hover { 
+  background:#2563eb; 
+}
+
+.main { 
+  flex:1; 
+  padding:30px; 
+}
+
+.form-card {
+  background:white;
+  padding:25px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  max-width:700px;
+}
+
+input, select, textarea {
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+
+button {
+  padding:10px 20px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+button:hover {
+  background:#1d4ed8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Lecturer Report</h2>
+  <a href="index.html" 
+   style="background:#2563eb; color:white; padding:8px 15px; border-radius:5px; text-decoration:none;">
+   Back
+  </a>
+</div>
+
+<div class="wrapper">
+
+<div class="sidebar">
+  <a href="Index.html">Dashboard</a>
+  <a href="Software.html">Software</a>
+  <a href="Cybersecurity.html">Cybersecurity</a>
+  <a href="Specialists.html">Specialists</a>
+  <a href="SessionAttendance.html">Session Attendance</a>
+</div>
+
+<div class="main">
+
+<div class="form-card">
+<h3>Create Report</h3>
+
+<form>
+
+<label>Date</label>
+<input type="date">
+
+<label>Course</label>
+<select id="course" onchange="updateYearOptions()">
+  <option value="">Select Course</option>
+  <option value="software">Software Development</option>
+  <option value="cyber">Cybersecurity</option>
+  <option value="specialists">Specialists</option>
+</select>
+
+<label>Group</label>
+<select id="year">
+  <option>Select Course First</option>
+</select>
+
+<label>Report Title</label>
+<input type="text" placeholder="Enter report title">
+
+<label>Report Description</label>
+<textarea rows="6" placeholder="Write your report here..."></textarea>
+
+<button type="submit">Submit Report</button>
+
+</form>
+</div>
+
+</div>
+</div>
+
+<script>
+function updateYearOptions() {
+
+  const course = document.getElementById("course").value;
+  const year = document.getElementById("year");
+
+  year.innerHTML = "";
+
+  if (course === "software") {
+
+    year.innerHTML = `
+      <option>Software Developer Year 1</option>
+      <option>Software Developer Analyst Returning</option>
+    `;
+
+  } 
+  else if (course === "cyber") {
+
+    year.innerHTML = `
+      <option>Cybersecurity Analyst Year 1</option>
+      <option>Cybersecurity Analyst Returning</option>
+    `;
+
+  } 
+  else if (course === "specialists") {
+
+    year.innerHTML = `
+      <option>Specialists </option>
+    `;
+
+  } 
+  else {
+
+    year.innerHTML = `<option>Select Course First</option>`;
+
+  }
+
+}
+</script>
+
+</body>
+</html>

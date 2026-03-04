@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Software Development</title>
+
+<style>
+body { 
+  margin:0; 
+  font-family: Arial; 
+  background:#f4f6f9; 
+}
+
+.navbar {
+  background:#1e293b;
+  color:white;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.wrapper {
+  display:flex;
+}
+
+.sidebar {
+  width:220px;
+  background:#111827;
+  height:100vh;
+  padding-top:20px;
+}
+
+.sidebar a {
+  display:block;
+  color:white;
+  padding:12px 20px;
+  text-decoration:none;
+}
+
+.sidebar a:hover {
+  background:#2563eb;
+}
+
+.main {
+  flex:1;
+  padding:30px;
+}
+
+.card {
+  background:white;
+  padding:25px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom:20px;
+}
+
+.btn {
+  display:inline-block;
+  padding:10px 20px;
+  background:#2563eb;
+  color:white;
+  text-decoration:none;
+  border-radius:5px;
+  font-weight:bold;
+}
+
+.btn:hover {
+  background:#1d4ed8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Software Development</h2>
+    <a href="index.html" 
+   style="background:#2563eb; color:white; padding:8px 15px; border-radius:5px; text-decoration:none;">
+   Back
+</a>
+</div>
+
+<div class="wrapper">
+
+  <div class="sidebar">
+    <a href="Index.html">Dashboard</a>
+    <a href="Cybersecurity.html">Cybersecurity</a>
+    <a href="Specialists.html">Specialists</a>
+  </div>
+
+  <div class="main">
+
+    <div class="card">
+      <h3>Select Year</h3>
+      <br>
+      <a href="Software1st.html" class="btn">Software Developer Year 1</a>
+      <br><br>
+      <a href="Software2nd.html" class="btn">Software Developer Analyst Returning</a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

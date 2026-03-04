@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Dashboard</title>
+
+<style>
+body {
+   margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+.navbar { 
+    background-color: #1e293b;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navbar button:hover {
+    background-color: #1d4ed8;
+}
+
+.container {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+}
+
+/* Buttons */
+.btn {
+    display: block;
+    margin: 15px 0;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #1d4ed8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Student Dashboard</h2>
+  <button>Logout</button>
+</div>
+
+<div class="container">
+  <div class="card">
+    <h3>Welcome</h3>
+    <p>Select an option below:</p>
+    <a href="software.html" class="btn">Software Development</a>
+    <a href="cybersecurity.html" class="btn">Cybersecurity</a>
+    <a href="specialists.html" class="btn">Specialists</a>
+
+  </div>
+</div>
+
+</body>
+</html>
