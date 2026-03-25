@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Session Attendance</title>
+
+<style>
+body { margin:0; font-family: Arial; background:#f4f6f9; }
+
+.navbar {
+  background:#1e293b;
+  color:white;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.wrapper { display:flex; }
+
+.sidebar {
+  width:220px;
+  background:#111827;
+  height:100vh;
+  padding-top:20px;
+}
+
+.sidebar a {
+  display:block;
+  color:white;
+  padding:12px 20px;
+  text-decoration:none;
+}
+
+.sidebar a:hover {
+  background:#2563eb;
+}
+
+.main {
+  flex:1;
+  padding:25px;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom:20px;
+}
+
+select, input {
+  padding:8px;
+  margin:8px 0;
+  width:100%;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th, td {
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
+}
+
+th {
+  background:#2563eb;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>View Session Attendance</h2>
+  <a href="index.html" 
+   style="background:#2563eb; color:white; padding:8px 15px; border-radius:5px; text-decoration:none;">
+   Back
+  </a>
+</div>
+
+<div class="wrapper">
+
+<div class="sidebar">
+  <a href="Index.html">Dashboard</a>
+  <a href="Software.html">Software</a>
+  <a href="Cybersecurity.html">Cybersecurity</a>
+  <a href="Specialists.html">Specialists</a>
+</div>
+
+<div class="main">
+
+<div class="card">
+<h3>Select Session</h3>
+
+<label>Course</label>
+<select id="course" onchange="updateYearOptions()">
+  <option value="">Select Course</option>
+  <option value="software">Software Development</option>
+  <option value="cyber">Cybersecurity</option>
+  <option value="specialists">Specialists</option>
+</select>
+
+<label>Group</label>
+<select id="year">
+  <option>Select Course First</option>
+</select>
+
+<label>Date</label>
+<input type="date">
+</div>
+
+<div class="card">
+<h3>Attendance List</h3>
+
+<table>
+<tr>
+  <th>Student Name</th>
+  <th>Status</th>
+</tr>
+
+<tr>
+  <td>--</td>
+  <td>Present</td>
+</tr>
+
+<tr>
+  <td>--</td>
+  <td>Absent</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+</div>
+
+<script>
+function updateYearOptions() {
+
+  const course = document.getElementById("course").value;
+  const year = document.getElementById("year");
+
+  year.innerHTML = "";
+
+  if (course === "software") {
+
+    year.innerHTML = `
+      <option>Software Developer Year 1</option>
+      <option>Software Developer Returning</option>
+    `;
+
+  } 
+  else if (course === "cyber") {
+
+    year.innerHTML = `
+      <option>Cybersecurity Analyst Year 1</option>
+      <option>Cybersecurity Analyst Returning</option>
+    `;
+
+  } 
+  else if (course === "specialists") {
+
+    year.innerHTML = `
+      <option>Specialists (Final Year)</option>
+    `;
+
+  } 
+  else {
+
+    year.innerHTML = `<option>Select Course First</option>`;
+
+  }
+
+}
+</script>
+
+</body>
+</html>

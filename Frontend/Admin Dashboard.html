@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="admin styles.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Attendance Admin</h2>
+
+    <div class="icon-item" onclick="showSection('overview')">
+      <i class="fa-solid fa-chart-line" style="color:#38bdf8;"></i> Overview
+    </div>
+
+    <div class="icon-item" onclick="showSection('staff')">
+      <i class="fa-solid fa-user-tie" style="color:#22c55e;"></i> Staff
+    </div>
+
+    <div class="icon-item" onclick="showSection('students')">
+      <i class="fa-solid fa-user-graduate" style="color:#a855f7;"></i> Students
+    </div>
+
+    <div class="icon-item" onclick="showSection('flagging')">
+      <i class="fa-solid fa-flag" style="color:#ef4444;"></i> Flagging
+    </div>
+
+    <div class="icon-item" onclick="showSection('attendance')">
+      <i class="fa-solid fa-calendar-check" style="color:#facc15;"></i> Attendance
+    </div>
+
+    <div class="icon-item" onclick="showSection('schedules')">
+      <i class="fa-solid fa-clock" style="color:#8b5cf6;"></i> Schedules
+    </div>
+
+    <div class="icon-item" onclick="showSection('calendar')">
+      <i class="fa-solid fa-calendar-days" style="color:#fb7185;"></i> Calendar
+    </div>
+
+    <div class="icon-item" onclick="showSection('reports')">
+      <i class="fa-solid fa-file-lines" style="color:#f97316;"></i> Reports
+    </div>
+
+    
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Overview -->
+    <section id="overview" class="active">
+      <h2>Overview</h2>
+      <div class="stats">
+        <div class="card">Total Students<br><strong>—</strong></div>
+        <div class="card">Total Staff<br><strong>—</strong></div>
+        <div class="card">Flagged Today<br><strong>—</strong></div>
+      </div>
+    </section>
+
+    <!-- Staff -->
+    <section id="staff">
+      <h2>Staff Management</h2>
+      <form>
+        <input placeholder="Name">
+        <input placeholder="Role">
+        <input placeholder="Email">
+        <button>Add Staff</button>
+      </form>
+    </section>
+
+    <!-- Students -->
+    <section id="students">
+      <h2>Students</h2>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="cyber">Cybersecurity</button>
+        <button class="tab-button" data-tab="software">Software Dev</button>
+        <button class="tab-button" data-tab="spec">Specialists</button>
+      </div>
+
+      <!-- Cybersecurity -->
+      <div id="cyber" class="tab-content">
+        <div class="mini-tabs">
+          <button class="mini-tab active" data-mini="cyber1">1st Year</button>
+          <button class="mini-tab" data-mini="cyberR">Returning</button>
+        </div>
+        <div id="cyber1" class="mini-content">
+          <form>
+            <input placeholder="Student Name">
+            <input placeholder="Student ID">
+            <button>Add Student</button>
+          </form>
+        </div>
+        <div id="cyberR" class="mini-content" style="display:none;">
+          <form>
+            <input placeholder="Student Name">
+            <input placeholder="Student ID">
+            <button>Add Student</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Software Dev -->
+      <div id="software" class="tab-content">
+        <div class="mini-tabs">
+          <button class="mini-tab active" data-mini="soft1">1st Year</button>
+          <button class="mini-tab" data-mini="softR">Returning</button>
+        </div>
+        <div id="soft1" class="mini-content">
+          <form>
+            <input placeholder="Student Name">
+            <input placeholder="Student ID">
+            <button>Add Student</button>
+          </form>
+        </div>
+        <div id="softR" class="mini-content" style="display:none;">
+          <form>
+            <input placeholder="Student Name">
+            <input placeholder="Student ID">
+            <button>Add Student</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Specialists -->
+      <div id="spec" class="tab-content">
+        <form>
+          <input placeholder="Specialist Name">
+          <input placeholder="Specialist ID">
+          <button>Add Specialist</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Flagging -->
+    <section id="flagging">
+      <h2>Flag Student</h2>
+      <form>
+        <input placeholder="Student ID">
+        <select>
+          <option>Late</option>
+          <option>Absent</option>
+          <option>Misbehavior</option>
+        </select>
+        <button>Flag</button>
+      </form>
+    </section>
+
+    <!-- Attendance -->
+    <section id="attendance">
+      <h2>Attendance Records</h2>
+      <p>QR Scan Attendance Records Will Appear Here.</p>
+    </section>
+
+    <!-- Calendar -->
+    <section id="calendar">
+      <h2>Academic Calendar</h2>
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button id="prevMonth">◀</button>
+          <h3 id="monthYear"></h3>
+          <button id="nextMonth">▶</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="day-name">Sun</div>
+          <div class="day-name">Mon</div>
+          <div class="day-name">Tue</div>
+          <div class="day-name">Wed</div>
+          <div class="day-name">Thu</div>
+          <div class="day-name">Fri</div>
+          <div class="day-name">Sat</div>
+        </div>
+        <div class="calendar-days" id="calendarDays"></div>
+      </div>
+    </section>
+
+    <!-- Reports -->
+    <section id="reports">
+      <h2>Reports</h2>
+      <p>Reports content goes here.</p>
+    </section>
+
+    <!-- Schedules -->
+    <section id="schedules">
+      <h2>Schedules</h2>
+      <p>Schedules content goes here.</p>
+    </section>
+
+    <footer>© 2026 Attendance System</footer>
+  </main>
+
+  <!-- Event Popup -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <h3 id="selectedDate"></h3>
+      <textarea id="eventInput" placeholder="Write event..."></textarea>
+      <div class="modal-buttons">
+        <button id="saveEvent">Save</button>
+        <button id="closeModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="admin dashboard.js"></script>
+</body>
+</html>
