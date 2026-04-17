@@ -1,0 +1,68 @@
+🔐 Scenario A: Website Hosted with Firebase (TLS Integrated)
+✅ If Client Meets Requirements
+Student opens the attendance page on their phone.
+
+Connection automatically uses HTTPS (TLS) — Firebase enforces encryption by default.
+
+TLS handshake occurs:
+
+Server presents its public certificate (Google-managed).
+
+Client verifies certificate against trusted authorities.
+
+Secure session key is negotiated.
+
+Backend logic checks:
+
+Student ID is valid.
+
+Request originates from allowed IP (if Google Cloud firewall rules are configured).
+
+If all checks pass → Attendance is recorded in Firebase DB.
+
+Student sees confirmation (“Attendance marked”).
+
+❌ If Client Does Not Meet Requirements
+TLS fails: Connection rejected (browser shows certificate error).
+
+Invalid student ID: Firebase Function denies request.
+
+Wrong IP (outside campus): Firewall blocks request before reaching Firebase.
+
+Student sees error (“Attendance not valid”).
+
+
+🔐 Scenario B: Website Hosted with SQL Server (TLS Configured)
+✅ If Client Meets Requirements
+Student opens attendance page on their phone.
+
+Connection established over HTTPS (TLS) — enforced by web server + SQL Server encryption.
+
+TLS handshake occurs:
+
+Server presents CA-issued certificate.
+
+Client verifies certificate against trusted authorities.
+
+Secure session key is negotiated.
+
+Backend API checks:
+
+Student ID is valid.
+
+Request originates from allowed IP (SQL Server firewall rules).
+
+If all checks pass → Attendance entry written to SQL Server.
+
+Student sees confirmation (“Attendance marked”).
+
+
+
+❌ If Client Does Not Meet Requirements
+TLS fails: Connection rejected (browser shows certificate error).
+
+Invalid student ID: Backend query fails validation, attendance not recorded.
+
+Wrong IP (outside campus): SQL Server firewall blocks request.
+
+Student sees error (“Attendance not valid”).

@@ -1,0 +1,77 @@
+🔧 Step‑by‑Step Free Setup
+1. Create Your Own CA
+Use OpenSSL (free, open‑source) or Microsoft Active Directory Certificate Services (AD CS) if you’re on Windows Server.
+
+Generate a root certificate (this is your campus CA).
+
+This root certificate will sign all student certificates.
+
+2. Issue Student Certificates
+For each student:
+
+Generate a client certificate + private key.
+
+Sign it with your campus CA.
+
+Embed the student’s ID in the certificate metadata (e.g., Common Name = StudentID123).
+
+Store the public certificate info in your database, linked to the student ID.
+
+3. Distribute Certificates
+Provide each student with their certificate + private key:
+
+Via secure portal download.
+
+Or pre‑install in a mobile app.
+
+Students must install/import the certificate into their browser or app.
+
+You also distribute your CA root certificate so their device trusts your CA.
+
+4. Configure Server for mTLS
+Firebase hosting path:
+
+Firebase itself doesn’t natively enforce mTLS.
+
+You’d put an API Gateway / Cloud Run / NGINX reverse proxy in front of Firebase that requires client certificates.
+
+SQL Server path:
+
+Configure IIS/NGINX/Apache (whichever web server fronts SQL) to require client certificates.
+
+Only accept connections where the certificate is signed by your CA.
+
+5. Attendance Validation Flow
+Student connects → TLS handshake begins.
+
+Server presents its certificate (normal TLS).
+
+Student presents their client certificate (mTLS).
+
+Server verifies:
+
+Certificate signed by your CA.
+
+Certificate metadata matches student ID in DB.
+
+If valid → attendance recorded.
+
+If invalid → request denied.
+
+⚖️ Costs
+Software: Free (OpenSSL, AD CS).
+
+Certificates: Free (since you issue them yourself).
+
+Hosting: No extra cost if you already run Firebase or SQL Server; just add a reverse proxy for mTLS enforcement.
+
+Overhead: The “cost” is administrative — generating, distributing, and revoking certificates.
+
+🚫 Limitations
+Students must install their certificate properly — some friction.
+
+If a student shares their certificate file with a buddy, the buddy could still log in.
+
+To mitigate: protect private keys with a password, or embed certificates in a controlled mobile app.
+
+Revocation lists (CRLs) or OCSP must be managed if certificates are compromised.

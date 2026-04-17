@@ -1,0 +1,45 @@
+You can set up mTLS for free on both Firebase (via Google Cloud) and SQL Server, but the approach differs: Firebase requires a proxy or API Gateway with client certificate validation, while SQL Server requires configuring IIS/NGINX/Apache to enforce client certificates. Both rely on TLS first, then add client certificate checks.
+
+🔐 Setting up mTLS on Firebase (Google Cloud Path)
+Firebase Hosting itself doesn’t natively support mTLS, but you can enforce it using Google Cloud components:
+
+Create a Private CA
+
+Use Google Cloud Certificate Authority Service (or OpenSSL if you want free self‑managed).
+
+Issue client certificates for each student.
+
+Configure API Gateway or HTTPS Load Balancer
+
+Place a Google Cloud HTTPS Load Balancer or API Gateway in front of Firebase Hosting.
+
+Enable client certificate validation (mTLS mode).
+
+Only requests with valid student certificates are forwarded to Firebase.
+
+Bind Certificate to Student ID
+
+Store each certificate’s public key or unique ID in your database.
+
+When Firebase Functions receive a request, they check that the certificate maps to the student ID.
+
+🔐 Setting up mTLS on SQL Server
+SQL Server supports TLS natively, but you must configure client certificate validation at the web server/API layer:
+
+Install a Valid Server Certificate
+
+Use AD CS (Active Directory Certificate Services) or OpenSSL to issue a server certificate.
+
+Configure SQL Server to use this certificate for TLS connections.
+
+Enable Client Certificate Requirement
+
+If SQL Server is accessed via IIS/NGINX/Apache, configure the web server to require client certificates.
+
+Only connections presenting a certificate signed by your CA are allowed.
+
+Bind Certificate to Student ID
+
+Store the certificate’s public key or thumbprint in SQL tables linked to student IDs.
+
+Attendance API checks that the certificate matches the student ID before recording presence.
