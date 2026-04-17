@@ -1,0 +1,55 @@
+Preston's Report
+
+Report: Creation of an entity relationship diagram
+ 
+Introduction
+The purpose of this report is to describe the process and outcomes of designing an entity relationship diagram(ERD). The ERD was created to visually represent the structure of a database system, showing how different data components relate to one another. This step is essential in planning and organizing data before implementation.
+
+Objective
+The main objective of the task was to design an ERD that clearly defines entities, their attributes, and the relationships between them. This ensures that the database structure is logical, efficient, and free from redundancy.
+
+Process Followed 
+The individual began by identifying the key entities involved in the system. For example, in a school-based system, entities such as STUDENTS and COURSE were selected. Each entity represents a real-world object relevant to the system.
+
+Next, attributes for each entity were defined. For instance, the STUDENT entity included attributes such as Student ID, Name, and Age, while the Course entity included Course ID, and Course Name. A primary key was assigned to each entity to ensure that every record can be uniquely identified.
+
+After defining entities and attributes, relationships between the entities were established. In this case, a relationship was created to show that a student enrolls in a course. This relationship helps illustrate how data is connected across the system.
+
+Finally, the ERD was drawn using standard diagram conventions. Entities were represented using rectangles, attributes using ovals, and relationships using connecting lines or diamonds 
+
+Results
+The completed ERD provided a clear visual structure of the database. It showed how students and courses are linked, and how data flows within the system. The diagram made it easier to understand the overall design and ensured that all necessary data elements were included.
+
+Importance of the ERD 
+The ERD plays a crucial role in database design. It helps prevent design errors, reduces data duplication, and improves system organization. Additionally, it serves as a communication tool between developers and stakeholders, ensuring that everyone has a shared understanding of the system.
+
+Report: Suggesting Database Normalization to Avoid Duplicate Data 
+
+Introduction
+This report outlines the importance of database normalization and provides recommendations on how it can be applied to reduce or eliminate duplicate data within a system. Normalization is a structured approach used in database design to organize data efficiently and ensure consistency.
+
+Objective
+The objective of this task was to suggest method of organizing data in a way that avoids redundancy, improves data integrity, and enhances overall database performance. The focus was on applying normalization principles to ensure that each piece of data is stored only once.
+
+Understanding the problem 
+in poorly designed database, duplicate data often occurs when the same information is stored in multiple places. For example, storing a students details repeatedly for every course they enroll in can lead to unnecessary repetition. This not only wastes storage but also increases the risk of inconsistencies when updates are made.
+
+Normalization Approach
+To address this issue, normalization techniques were suggested. The process involves dividing data into smaller, well-structured tables and establishing relationships between them.
+
+First Normal Form(1NF)
+The first step ensures that all data fields contains atomic (indivisible) values and that there are no repeating groups. Each column should store only one value, and each record should be unique.
+
+Second Normal Form(2NF)
+The second step removes partial dependencies. This means that all non-key attributes must depend on the entire primary key. Data that does not fully depend on the primary key is moved to a separated table.
+
+Third Normal Form(3NF)
+The third step eliminates transitive dependencies. Non-key attributes should depend only on the primary key and not on other non-key attributes. This further reduces redundancy and ensures logical data organization.
+
+Benefits of Normalization
+1.Reduces data duplication
+2.Improves data consistency and accuracy
+3.Simplifies updates and maintenance
+4.Enhances database efficiency
+5.Ensures better data integrity
+

@@ -1,0 +1,17 @@
+Project report
+
+1.Bokamoso khumalo contributions:
+
+Tasks:
+
+One of my main responsibilities in the project was identifying all the required entities needed for the system. These included entities such as Users, Roles, and Attendance. I analyzed the system requirements and determined which data needed to be stored in the database. This step was important to ensure that all necessary information would be captured and organized correctly.
+
+In addition, I was responsible for defining the relationships between these entities. I established relationships such as one-to-many and many-to-many, depending on how the data interacted within the system. For example, I ensured that one user could have multiple attendance records, while certain entities required many-to-many relationships.
+
+This process helped in designing a well-structured and normalized database, which improves data integrity and reduces redundancy.
+
+group contributions:
+Discussing ideas with group
+Reviewing the database design
+Helping fix mistakes
+Understanding relationships

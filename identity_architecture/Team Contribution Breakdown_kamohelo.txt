@@ -1,0 +1,37 @@
+### Team Contribution Breakdown
+
+**Project Lead:** Kamohelo Moreki
+
+---
+
+### Tasks Assigned to Team Members
+
+The following tasks were delegated to team members (BK and Preston):
+
+* Identify required entities (e.g., Users, Roles, Attendance)
+* Define relationships (1-to-many, many-to-many)
+* Draw ERD (Entity Relationship Diagram)
+* Suggest normalization strategies
+
+---
+
+### Tasks Completed by Kamohelo Moreki
+
+All tasks not listed above were completed independently, including:
+
+* Full database schema design and architecture
+* Writing the complete SQL executable script (ClockingSystem_DB_SCHEMA_v1.sql)
+* Creating and structuring all database tables
+* Defining primary keys, foreign keys, and constraints
+* Database initialization logic (CREATE DATABASE, USE, etc.)
+* Testing and validating the SQL script in Microsoft SQL Server
+* Creating and organizing project documentation
+* Writing README and schema explanation files
+* Preparing files for GitHub upload
+* Managing version control (branching, commits, and push to repository)
+
+---
+
+### Summary
+
+While initial responsibilities were distributed among team members, the final database schema and implementation were completed and consolidated by Kamohelo Moreki to ensure correctness, consistency, and project completion.
