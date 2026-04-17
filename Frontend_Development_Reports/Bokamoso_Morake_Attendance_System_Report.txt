@@ -1,0 +1,92 @@
+Bokamoso's Attendance Frontend Report
+
+1. Project Overview 
+This project is web-based attendance system designed to allow students to mark attendance using QR code and enable lectures to monitor and manage attendance records efficiently.
+The system is divided into two parts:
+- Student Dashboard 
+- Lecturer (Faculty) Dashboard 
+The focus of this phase was on frontend development only. Backend functionality such as database integration will be done by the other group. 
+2. Objectives 
+The main objectives of this project were: 
+- To design a clean and user-friendly interface 
+- To allow lecturers to view attendance records
+- To structure the system in preparation for backend integration
+3. File Structure 
+The following files were created: 
+Student Side: 
+- index.html
+- software.html
+- cybersecurity.html
+- specialists.html
+Lecturer Side:
+- Software 1st Year.html
+- Software 2nd Year.html
+- Cyber 1st Year.html
+- Cyber 2nd Year.html
+- Specialists.html
+
+Additional Pages: 
+- Report.html
+- Session Attendance.html
+4. Lecturer Dashboard 
+The lecturer dashboard includes: 
+Sidebar navigation
+Top navigation bar 
+Multiple pages for managing attendance 
+Features include: 
+4.1 Course Navigation 
+Lecturers can access: 
+Software Development 
+Cybersecurity 
+Specialists
+4.2 Year Based Separation 
+Each course is divided into: 
+1st Year 
+2nd Year 
+This ensures proper separation of timetables and attendance records 
+5. Attendance Overview 
+Each year page displays a table with: 
+Student Name
+Total classes
+Classes Attended 
+Classes Missed
+Attendance Percentage 
+6. Sessions Attendance Page
+This page allows lecturers to: 
+Select course
+Select year 
+Select date 
+It displays:
+A list of students 
+Their attendance status(Present/Absent)
+7. Report Page
+The report page allows lecturers to: 
+Select date 
+Select course 
+Select year 
+Enter report title 
+Write detailed report 
+This will later connect to the database to store reports 
+9. UI/UX Design Consistency 
+All pages follow a consistent design:
+Dark navigation bar 
+Sidebar menu
+Blue buttons(#256eb)
+This ensures:
+Professional look
+Easy navigation
+Good user experience 
+10. Team Contributions 
+The project was developed as part of a group with each member focusing on a specific component of the system 
+Mathapelo was responsible for the Admin Dashboard. This includes functionality that allows office staff to view overall system data, monitor attendance records and success lecturer information.
+Richard was responsible for the Login System. This includes designing the interface where students will enter their details to log into the system before accessing the attendance features. 
+My role focused on the Frontend Development of the Student and Lecturer Dashboards. This included designing the layout, navigation structure, attendance views, report pages and ensuring consistency across all pages 
+Each component is designed to integrate together in future phases when backend functionality is implemented. 
+11. Conclusion
+The frontend of the attendance system has been successfully completed
+The system:
+Is fully navigable 
+Has a consistent UI design 
+Is structured for backend integration 
+This provides a solid foundation for future development phases 
+
