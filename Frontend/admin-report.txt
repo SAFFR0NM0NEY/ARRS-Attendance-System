@@ -1,0 +1,28 @@
+This project was about an attendance system that uses a QR code to scan if whether or not you came to school or not, making it much simpler that a manual attendance.
+My Role:
+My role in the group was to design and develop the admin dashboard, mainly the admin dashboard interface using HTML, CSS and Javascript.
+I was responsible for:
+	Creating the layout of the admin dashboard
+	Designing the layout of the admin dashboard
+	Creating sections like Overview, Students, Staff, Attendance, Calendar, Reports, and Schedules
+	Adding icons and styling the dashboard
+	Creating tabs for student categories
+	 Designing the calendar with clickable dates and popup events
+	Adding flagging functionality for students (late, absent, misbehaviour).
+Features I Used:
+•	Sidebar navigation
+•	Overview dashboard
+•	Staff management
+•	Student management
+•	Nested tabs for 1st and returning students
+•	Flagging system
+•	Calendar system 
+•	Reports section
+•	Schedules section
+
+Group Contribution:
+My group worked together mainly on the frontend part of the project. We are 3 members in total whereas I worked on the admin dashboard, the other the lecturer dashboard, and lastly the other on the log in page.
+We still yet to connect all parts together, that’s what we accomplished so far.
+
+
+
