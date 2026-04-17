@@ -1,0 +1,21 @@
+Team Member: Ofentse 
+Role : Background Jobs, Automation, Logging
+System: Campus Attendance System 
+
+During the development of the Campus Attendance System I was responsible for implementing the backend processes that allow the system to run automatically without constant manual intervention.
+
+Background Jobs
+I used a hosted service in ASP.NET Core and I had to make sure that the attendance sessions are created automatically every day for each class.
+
+Automation
+I implemented a logic that automatically closes attendance sessions after a specified time, it checks all active sessions, if the current time is past the session end time the session is marked as closed 
+
+Continuous System Monitoring 
+The background service runs continuously using a loop which keeps the system active at all times and supports scalability for future features.
+
+Logging System 
+I used a logging system that records every attendance action via SQL which tracks all activity and helps detect duplicate attemps 
+
+Conclusion 
+I implemented the background jobs, automation, and logging for the Attendance System.
+My work allows the system to run without constant user input.
