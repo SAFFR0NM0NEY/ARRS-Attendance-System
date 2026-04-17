@@ -1,0 +1,91 @@
+ATTENDANCE REGISTER PROJECT REPORT
+
+1. INTRODUCTION
+This project involved assisting in the development of a QR code-based attendance register system. The system is designed to improve the efficiency, accuracy, and security of recording attendance.
+
+2. OBJECTIVES
+- To assist in developing a digital attendance system
+- To support secure QR code-based attendance tracking
+- To implement and test security features to prevent misuse
+
+3. PROJECT OVERVIEW
+The system allows learners to mark attendance by scanning a QR code during class. The system validates each scan and records attendance securely. Second-year students contributed by assisting in specific areas of the system.
+
+4. TOOLS AND TECHNOLOGIES USED
+- Programming Language: (fill in yours, e.g. Python / Java)
+- Tools: GitHub, VS Code
+- Technologies: QR Code system, authentication mechanisms
+
+5. MY CONTRIBUTION
+I contributed mainly to the security aspects of the system. My responsibilities included login systems, defining security policies, and assisting with security testing.
+
+Login System:
+- Assisted in implementing a login system to ensure that only authorized users can access the system
+- Helped ensure user authentication before attendance can be marked
+
+Security Policies:
+- Defined and applied security rules to control how the system is used
+- Ensured that QR codes can only be scanned during a valid class session
+- Prevented unauthorized access and misuse of the system
+
+QR Code Security:
+- Implemented time-based restrictions so the QR code expires after a certain period
+- Ensured that learners must be present during the session to successfully scan the QR code
+- Helped prevent sharing of QR codes outside the classroom
+
+Security Testing:
+- Participated in testing the system to identify security weaknesses
+- Tested scenarios such as unauthorized access and invalid QR scans
+- Helped improve the system by identifying and fixing security issues
+
+6. GROUP CONTRIBUTION
+As second-year students, we assisted in the project by:
+- Supporting the development of different system components
+- Helping with testing and debugging
+- Contributing to specific features such as security and validation
+
+7. SYSTEM DESIGN
+The system works as follows:
+- A QR code is generated for a specific class session
+- Users log into the system
+- Learners scan the QR code to mark attendance
+- The system validates the scan using security rules
+- Attendance is recorded and stored
+
+8. CHALLENGES FACED
+- Preventing unauthorized access to the system
+- Ensuring QR codes could not be reused or shared
+- Testing different security scenarios effectively
+
+9. SOLUTIONS TO CHALLENGES
+- Implemented login authentication
+- Applied strict security policies and validation rules
+- Conducted thorough testing to identify and fix issues
+
+10. CONCLUSION
+The project successfully demonstrated a secure attendance register system. My contributions to login systems, security policies, and testing helped improve the overall security and reliability of the system.
+
+11. FUTURE IMPROVEMENTS
+- Add multi-factor authentication
+- Implement GPS-based verification
+- Improve real-time security monitoring
+
+12. PULL REQUEST REVIEW AND IMPROVEMENTS
+
+During development, a pull request review was conducted to evaluate the security features of the system. The feedback focused on improving the clarity, structure, and effectiveness of the implemented security policies.
+
+Key areas identified for improvement included:
+- Removing duplicated security policies to improve consistency and maintainability
+- Clarifying how device identification (UUID) is generated and managed within the system
+- Defining clear rules for handling multiple devices per user
+- Ensuring consistency in QR code validation and system behaviour
+- Improving overall structure and formatting of the security documentation
+
+Actions taken:
+- Consolidated duplicated policies into single, clear definitions
+- Improved the design of device identification by refining how and when it is applied
+- Strengthened validation rules for login and attendance processes
+- Ensured alignment between QR code functionality and system security requirements
+- Cleaned up formatting and improved documentation clarity
+
+This process helped improve the overall security design and ensured that the system is more consistent, reliable, and easier to maintain.
