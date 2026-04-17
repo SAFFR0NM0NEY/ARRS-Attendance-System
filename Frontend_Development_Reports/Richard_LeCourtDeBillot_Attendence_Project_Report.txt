@@ -1,0 +1,35 @@
+ITCA Attendance Project Report
+
+Richard Le Court De Billot work 
+
+Create a html login page for the website for the project. 
+This included writing and creating the html file including styling.
+I was also in charge of delegating other parts of the website with two fellow students Mathapelo Zweni and Bokamoso Morake.
+My work also included me supervising and assisting them with any problems they come across and ensure the work aligned with the project. 
+
+Another part of work I did would be either assisting or advising any of the other groups where I could.  
+
+Bokamoso Morake work
+
+I delegated creating the faculty dashboard for the project. 
+This includes creating the main dashboard page, and any additional pages that linked with the dashboard with styling included.
+ 
+
+Mathapelo Zweni work 
+
+I delegated creating the admin dashboard for the project. 
+This including creating the main dashboard page, and any additional pages that linked with the dashboard with styling included.
+With any additional pages it included creating javascript files to make everything functional.  
+
+Work Completed
+
+The completed by me, Mathapelo Zweni, and Bokamoso Morake included:
+-login page
+-faculty dashboard html file (with additional files for students summaries, and reports)
+-admin dashboard html file (with additional files for student summaries, faculty summaries, and reports)
+-admin dashboard javascript file (for functionality) 
+
+
+ 
+
+
