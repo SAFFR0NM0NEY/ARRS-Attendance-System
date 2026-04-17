@@ -1,0 +1,21 @@
+Sandile Manyathi [Report]
+
+Name: Sandile
+Surname: Manyathi
+
+This report outlines the work completed for the project. My role in this project was focused on researching purposes. I was responsible for gathering a variety of information on relevant topics, exploring different concepts, and supporting the team with accurate and useful findings.
+
+. RESEARCH CONDUCTED
+
+I researched the following topics:
+- JWT authentication and how tokens work
+- Role-Based Access Control (RBAC)
+- Route protection using middleware
+- SSH (Secure Shell)
+- SSH tunneling for secure connections
+- Database security in Firebase and SQL
+- Authentication vs Authorization
+- API security basics
+- Secure session management
+
+END OF REPORT
