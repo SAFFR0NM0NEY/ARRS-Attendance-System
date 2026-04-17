@@ -1,0 +1,16 @@
+🌍 1. IP Filtering
+Setup Requirements:
+
+Firebase: Use Firebase Security Rules + Cloud Functions to check request origin. For stricter enforcement, configure Google Cloud firewall rules to only allow traffic from the campus public IP.
+
+SQL Server (cloud-hosted): Configure firewall rules at the hosting provider (Azure SQL, AWS RDS, etc.) to whitelist the campus public IP.
+
+Alternatives:
+
+Web Application Firewall (WAF): Adds IP filtering + extra protections (rate limiting, DDoS mitigation).
+
+Reverse Proxy / API Gateway: Place a gateway in front of your backend that enforces IP restrictions.
+
+VPN Requirement: Force students to connect via a campus VPN, so all traffic originates from a known IP range.
+
+👉 Answer: The simplest solution is cloud firewall IP filtering. Alternatives like WAF or VPN can be layered later if needed.
