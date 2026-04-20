@@ -1,0 +1,242 @@
+SMARTATTEND SYSTEM REPORT
+
+Project Title:
+QR-Based Smart Attendance System
+
+--------------------------------------------------
+1. INTRODUCTION
+--------------------------------------------------
+
+This project was about building a QR-based attendance system that schools can actually use in real life. The main goal was to make attendance tracking more accurate and reduce cheating, while also making sure the system follows data protection laws like the Protection of Personal Information Act (POPIA).
+
+We focused not only on making it work, but also making it secure and reliable, especially because attendance data is sensitive.
+
+--------------------------------------------------
+2. SYSTEM OVERVIEW
+--------------------------------------------------
+
+The system is a web-based application where students and staff can log in and use QR codes to mark attendance.
+
+The basic flow is:
+
+- Student logs into the system
+- A QR code is generated or scanned
+- The system verifies the request
+- Attendance is recorded in the database
+- Admins can view everything on a dashboard
+
+We also included features like schedule checking and flagging suspicious activity.
+
+--------------------------------------------------
+3. HOW THE QR SYSTEM WORKS
+--------------------------------------------------
+
+Instead of using a static QR code, we used dynamic QR tokens.
+
+This means:
+
+- Each QR is unique
+- It expires after a short time
+- It can only be used once or within a limited window
+
+We did this because static QR codes are easy to abuse (students can just share screenshots).
+
+With dynamic tokens, even if someone shares it, it will most likely expire or fail validation.
+
+--------------------------------------------------
+4. SECURITY DESIGN (MAIN FOCUS)
+--------------------------------------------------
+
+Security was a big part of this project, especially from my side.
+
+We implemented:
+
+- Login system with authentication
+- Role-based access control (students, lecturers, admins)
+- Secure QR token generation
+- Validation checks before marking attendance
+- Logging of important actions
+
+We also made sure students cannot access admin features.
+
+--------------------------------------------------
+5. MY ROLE – SECURITY ANALYST & RED TEAM LEAD
+--------------------------------------------------
+
+My role in the group was focused on security.
+
+I was responsible for:
+
+- Threat modeling (figuring out what could go wrong)
+- Creating a risk matrix
+- Writing abuse cases (how attackers could misuse the system)
+- Planning attack simulations
+- Designing security testing strategies
+- Making sure we align with POPIA
+
+One thing I realized is that most systems fail not because of coding, but because of bad assumptions about how users behave.
+
+So I had to think like a “bad actor” and try to break the system in theory.
+
+--------------------------------------------------
+6. THREAT MODELING
+--------------------------------------------------
+
+We used the STRIDE model to identify threats.
+
+Some examples:
+
+- Spoofing: pretending to be another student
+- Tampering: changing attendance records
+- Repudiation: denying actions
+- Information disclosure: accessing other students’ data
+- Denial of Service: flooding the system
+- Elevation of privilege: student becoming admin
+
+The biggest risks we identified were:
+
+- QR code sharing (replay attacks)
+- IDOR (changing IDs in requests)
+- Race conditions during scanning
+- Admin misuse
+
+--------------------------------------------------
+7. RISK ANALYSIS
+--------------------------------------------------
+
+We created a risk matrix using likelihood and impact.
+
+High risks included:
+
+- QR replay attacks
+- Unauthorized data access
+- Admin account compromise
+
+To reduce these risks, we used:
+
+- Short-lived tokens
+- Role-based access control
+- Backend validation
+- Proper database handling
+
+--------------------------------------------------
+8. ABUSE CASES
+--------------------------------------------------
+
+We wrote multiple abuse cases to simulate real attacks.
+
+Example:
+
+QR Sharing:
+A student screenshots their QR code and sends it to a friend.
+
+Impact:
+Attendance fraud.
+
+Mitigation:
+- Token expiry
+- Schedule validation
+- Time limits
+
+Another example:
+
+Race Condition:
+Two scan requests happen at the same time.
+
+Impact:
+Duplicate attendance entries.
+
+Mitigation:
+- Atomic database operations
+
+This part helped a lot in understanding how systems can be abused in real life.
+
+--------------------------------------------------
+9. SECURITY TESTING
+--------------------------------------------------
+
+We planned testing in different areas:
+
+Authentication:
+- Checking login security
+- Testing for weak passwords
+
+QR System:
+- Testing replay attacks
+- Testing expired tokens
+- Testing multiple scans
+
+Authorization:
+- Trying to access admin routes as a student
+- Testing IDOR vulnerabilities
+
+Input Testing:
+- SQL injection
+- XSS
+- API manipulation
+
+--------------------------------------------------
+10. POPIA COMPLIANCE
+--------------------------------------------------
+
+We made sure the system aligns with the Protection of Personal Information Act.
+
+This includes:
+
+- Only collecting necessary data
+- Using data only for attendance
+- Securing the data
+- Not storing data longer than needed
+
+Users also have rights like:
+
+- Accessing their data
+- Requesting corrections
+
+--------------------------------------------------
+11. TERMS AND CONDITIONS
+--------------------------------------------------
+
+We created a terms and conditions system where users must agree to:
+
+- Not sharing QR codes
+- Not attempting to cheat the system
+- Using the system responsibly
+
+Admins also have stricter rules because they can access more sensitive data.
+
+--------------------------------------------------
+12. CHALLENGES WE FACED
+--------------------------------------------------
+
+Some of the challenges were:
+
+- Making the system secure but still easy to use
+- Understanding how to prevent QR sharing properly
+- Balancing security with privacy (like device tracking)
+- Learning how real attacks actually work
+
+From my side, understanding the difference between things like replay attacks and race conditions took some time, but it became clearer with practice.
+
+--------------------------------------------------
+13. FUTURE IMPROVEMENTS
+--------------------------------------------------
+
+If we had more time, we would add:
+
+- Mobile app version
+- Better analytics
+- AI-based fraud detection
+- Notifications for students and parents
+
+--------------------------------------------------
+14. CONCLUSION
+--------------------------------------------------
+
+Overall, this project helped us understand how to build a real system, not just something that works but something that is secure and usable.
+
+From a security point of view, I learned that thinking like an attacker is very important, because it helps you design better defenses.
+
+The system can definitely be improved, but it is a strong foundation for a real-world attendance solution.
+
+END OF REPORT
