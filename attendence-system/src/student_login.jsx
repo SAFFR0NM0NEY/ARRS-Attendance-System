@@ -1,46 +1,32 @@
-import React,{useState} from 'react';
-
-import Student_Dashboard from './pages/student_dashboard'
-import Faculty_Dashboard from './pages/faculty_dashboard'
-import Admin_Dashboard from './pages/admin_dashboard'
+import React,{useState, useEffect} from 'react';
 
 import itca_logo from './assets/itca_logo.png'
 
+import {supabase} from './supabase'
 
-export default function App() {
-  const [showStudent, setStudent] = useState(false);
-  const [showFaculty, setFaculty] = useState(false);
-  const [showAdmin, setAdmin] = useState(false);
+
+export default function Student_Login() {
+  const [student_nr, setStudent_nr] = useState('')
   const [passcode, setPasscode] = useState('')
+  
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if(passcode !== ''){
-      if(passcode === 'student'){
-        setStudent(true)
-      }
-      else if(passcode === 'faculty'){
-        setFaculty(true)
-      }
-      else if(passcode === 'admin'){
-        setAdmin(true)
-      }
+    if(student_nr === db_student && passcode === db_pass){
+      alert('student number matched')
     }
+    else {
+      alert('Something went wrong')
+    }
+
   };
 
-
-  if(showStudent){
-    return <Student_Dashboard />
-  }
-
-  if(showFaculty){
-    return <Faculty_Dashboard />
-  }
-
-  if(showAdmin){
-    return <Admin_Dashboard />
-  }
 
   return (
     <div className='page_style'>
@@ -58,7 +44,7 @@ export default function App() {
               <input 
                 type='text'
                 placeholder='Enter ID'
-                
+                onChange={(e) => setStudent_nr(e.target.value)}
               />
             </div>
             <div className='input_field'>
