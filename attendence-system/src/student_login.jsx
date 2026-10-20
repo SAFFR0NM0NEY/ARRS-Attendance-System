@@ -36,24 +36,24 @@ export default function Student_Login() {
         </div>
         <div className='sign_in_body'>
           <form className='sign_in_form' onSubmit={handleSubmit}>
-            <h1>Login</h1>
+            <h1>Student Log In</h1>
             <div className='input_field'>
               <label className='input_label'>
-                ITCA ID
+                ITCA Student Number:
               </label>
               <input 
                 type='text'
-                placeholder='Enter ID'
+                placeholder='Enter ITCA Student Number'
                 onChange={(e) => setStudent_nr(e.target.value)}
               />
             </div>
             <div className='input_field'>
               <label className='input_label'>
-                Passcode
+                Passcode:
               </label>
               <input 
                 type='text'
-                placeholder='Enter Passcode (temp)'
+                placeholder='Enter Passcode'
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 required

@@ -1,18 +1,17 @@
-import {useState} from 'react'
+import React,{useState} from 'react'
 import itca_logo from './assets/itca_logo.png'
-
 import Student_Login from'./student_login'
 import Faculty_Login from './faculty_login'
 
 export default function App(){
-  const [student_log, setStudent_log] = useState(false)
-  const [faculty_dashboard, setFaculty_dashboard] = useState(false)
+  const [studentLog, setStudentLog] = useState(false)
+  const [facultyLog, setFacultyLog] = useState(false)
 
-  if(student_log){
+  if(studentLog){
     return <Student_Login />
   }
 
-  if(faculty_dashboard){
+  if(facultyLog){
     return <Faculty_Login />
   }
 
@@ -26,13 +25,13 @@ export default function App(){
           type='button'
           value='Student Log Attendence'
           className='student_button'
-          onClick={() => setStudent_log(true)}
+          onClick={() => setStudentLog(true)}
         />
         <input
           type='button'
-          value='Faculty Dashboard'
+          value='Faculty Log In'
           className='faculty_button'
-          onClick={() => setFaculty_dashboard(true)}
+          onClick={() => setFacultyLog(true)}
         />
       </div>
     </div>
