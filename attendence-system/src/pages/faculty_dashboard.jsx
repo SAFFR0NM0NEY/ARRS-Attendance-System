@@ -6,6 +6,13 @@ export default function Faculty_Dashboard() {
   const [year_cols, setYear_cols] = useState('');
   const [y_t_status, setY_t_status] = useState('')
 
+  const [insert_table, setInsert_table] = useState('')
+  const [formData, setFormData] = useState({
+    title: '',
+    description: ''
+  });
+  const [insert_status, setInsert_status] = useState('');
+
   const CreateYearTable = async (e) => {
     e.preventDefault();
     setY_t_status('Creating table...')
@@ -32,6 +39,35 @@ export default function Faculty_Dashboard() {
       setY_t_status(`Error: ${err.message}`);
     }
   }
+
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const InsertYearTable = async (e) => {
+    e.preventDefault();
+    setInsert_status('Inserting data...')
+
+    try {
+      const {error} = await supabase.rpc('insert_year_group', {
+        year_table: insert_table,
+        group_data: formData,
+      });
+
+      if(error) throw error
+
+      setInsert_status(`Success! Data inserted into ${insert_table}`);
+      setFormData({title: '', description: ''});
+    }
+    catch(err){
+      console.error('Error inserting data:',err.message);
+      setInsert_status(`Error: ${err.message}`);
+    }
+  };
 
   
   return (
@@ -62,6 +98,40 @@ export default function Faculty_Dashboard() {
         </form>
         
         {y_t_status && <p style={{marginTop: '15px'}}>{y_t_status}</p>}
+      </div>
+
+      <div>
+        <h3>Insert into year table</h3>
+        <form onSubmit={InsertYearTable}>
+          <div>
+            <label>Target table:</label>
+            <input
+              type='text'
+              value={insert_table}
+              onChange={(i) => setInsert_table(i.target.value)}
+            />
+          </div>
+          <div>
+            <label>Title: </label>
+            <input
+              type='text'
+              name='title'
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label>Description: </label>
+            <input
+              type='text'
+              name='description'
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </div>
+          <button type='submit'>Insert Data</button>
+        </form>
+        {insert_status && <p style={{marginTop: '15px'}}>{insert_status}</p>}
       </div>
     </div>
   )
