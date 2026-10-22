@@ -1,0 +1,83 @@
+⚙️ Setup Workflow
+1. Initialize Firebase Project
+
+bash
+firebase login
+firebase init hosting functions
+Choose Hosting (for your React build) and Functions (for IP filtering).
+
+When asked, set Hosting to serve from your React build folder (usually build).
+
+
+2. Build Your React App
+bash
+npm run build
+This generates static files in /build.
+
+
+3. Add IP Filtering Logic in Functions
+Inside functions/index.js (or functions/src/index.ts if using TypeScript):
+
+js
+const functions = require("firebase-functions");
+const express = require("express");
+const path = require("path");
+
+const app = express();
+
+app.use((req, res, next) => {
+  const allowedIPs = ["203.0.113.5", "198.51.100.7"]; // replace with your IPs
+  const clientIP = req.headers["x-forwarded-for"]?.split(",")[0].trim();
+
+  if (!allowedIPs.includes(clientIP)) {
+    return res.status(403).send("Access denied");
+  }
+  next();
+});
+
+// Serve React build files
+app.use(express.static(path.join(__dirname, "../build")));
+
+exports.ipFilter = functions.https.onRequest(app);
+
+
+4. Configure Hosting Rewrite
+In your firebase.json:
+
+json
+{
+  "hosting": {
+    "public": "build",
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "ipFilter"
+      }
+    ]
+  }
+}
+This ensures all site traffic goes through the IP filter function.
+
+
+5. Deploy
+bash
+firebase deploy
+Hosting deploys your React app.
+
+Functions deploys your IP filter.
+
+Now every request (login page, dashboard, static assets) is checked against your IP allowlist.
+
+
+✅ Result
+Visitors from allowed IPs → see the full site and can log in.
+
+Visitors from blocked IPs → get 403 Access Denied immediately, even before the login page loads.
+
+You stay inside the Firebase free tier (2M function calls/month, 10GB hosting bandwidth).
+
+
+🔒 Security Notes
+Always check x-forwarded-for because Firebase Hosting sits behind Google’s CDN.
+
+Keep your IP list updated — you can store it in Firebase Config or Firestore if you want dynamic control.
