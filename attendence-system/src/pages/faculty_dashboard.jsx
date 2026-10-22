@@ -8,7 +8,7 @@ export default function Faculty_Dashboard() {
 
   const [insert_table, setInsert_table] = useState('')
   const [formData, setFormData] = useState({
-    title: '',
+    group: '',
     description: ''
   });
   const [insert_status, setInsert_status] = useState('');
@@ -112,11 +112,11 @@ export default function Faculty_Dashboard() {
             />
           </div>
           <div>
-            <label>Title: </label>
+            <label>Group: </label>
             <input
               type='text'
-              name='title'
-              value={formData.title}
+              name='group'
+              value={formData.group}
               onChange={handleChange}
             />
           </div>
