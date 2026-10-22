@@ -1,0 +1,124 @@
+📑 Attendance Register Project – Research & Design Report
+1. Project Goal
+Build a digital attendance register system for campus deployment.
+
+Ensure anti-cheat enforcement (prevent buddy punching, credential sharing, and multi-login on the same device).
+
+Deliver sponsor-ready compliance messaging with clear architectural blueprints.
+
+2. Constraints & Challenges
+❌ No router access → Security must be enforced at the application/cloud level.
+
+❌ No device fingerprinting / UUID-based authentication → Removed from technical approach.
+
+❌ Packet Tracer lab simulation → Dropped from scope.
+
+❓ Backend hosting details unclear → Must adapt recommendations for both Firebase and SQL hosting.
+
+3. Authentication & Access Control
+Daily Token Issuance
+
+Students receive a unique token each day for attendance validation.
+
+Tokens expire after 24 hours to prevent reuse.
+
+Email Login + Campus Wi-Fi Restriction
+
+Students authenticate via institutional email.
+
+Attendance submission restricted to campus Wi-Fi IP ranges.
+
+Admin Override & Dashboard Reporting
+
+Admins can override attendance in special cases.
+
+Dashboard provides real-time reporting and audit logs.
+
+4. Anti-Cheat Strategies
+Per-Student Uniqueness
+
+Each student can only log attendance once per session.
+
+Block multiple logins from the same device.
+
+Session Key Lifecycle
+
+TLS session keys used for secure communication.
+
+Session keys rotated frequently to reduce replay attack risk.
+
+Federated Login Options (Research Ongoing)
+
+Exploring integration with Microsoft/Google identity providers for stronger authentication.
+
+5. Hosting Scenarios
+Firebase Hosting
+Pros: Built-in authentication, scalable, mobile-first support.
+
+Cons: Limited SQL-style relational queries.
+
+SQL Hosting
+Pros: Strong relational data handling, flexible reporting.
+
+Cons: Requires custom authentication and token lifecycle management.
+
+6. Security Architecture
+Layered Access Control
+
+Application-level checks (token + email).
+
+Cloud-level restrictions (Wi-Fi IP ranges).
+
+Admin-level overrides with audit trails.
+
+Compliance Messaging
+
+Sponsor-ready documentation emphasizes fairness, transparency, and anti-cheat enforcement.
+
+Clear separation of student, admin, and backend responsibilities.
+
+7. Next Steps
+Finalize backend hosting choice (Firebase vs SQL).
+
+Implement token lifecycle and session key rotation.
+
+Build sponsor-ready compliance documentation with layered security diagrams.
+
+Test anti-cheat enforcement under real-world scenarios.
+
+
+Franco Van der Merwe:
+I did research on everything that was needed to be able to create the steps above.
+The research was divided between me, Cobus, Sandile and Simphiwe (Full name and surname at their respective reports).
+I also talked with the other groups to understand how they feel about my approach to make sure it can fit in with their work.
+I did assigned the people in my group to do the basic research and to explain concepts, I asked Cobus to go through their work to see if they missed something, after that I did the more extensive research.
+For instance, Sandile researched basics on SSH, Cobus check that Sandile did all the research I assigned Sandile, I go and research how to implement SSH, how to set it up, what alternatives can be used.
+A simple rundown on everything that was researched: UUID, IP Restrictions, Encryption between client and server, Prevent client from finding ways to sign in as someone else.
+I also research on what solutions can work for what scenario. TLS vs SSH vs UUID.
+
+Sandile Manyathi:
+1. Started with what programming languages can be used to create UUID.
+The research had to include UUID for personal and non - personal information.
+Research was very effectibve and helpful, I did recommend improvements next time he researched something
+
+2. Researched Route protection middleware, what is it and how to implement it. Sandile did not fully research everything, Cobus added more info that ruled out a bit of information Sandile researched.
+
+3. Asked Sandile to research SSH and include how it can work on a website, Sandile did not do this correctly, He only researched what SSH is with a bit of extra information on how to make it more secure.
+
+4. Asked Sandile to research how to use SSH on Firebase and SQL server. Results look promising, but it's only fundamental knowledge, no extra tips.
+
+Overall, Sandile does most of the work correct.
+
+Simphiwe Mkhontwana
+1. Researched how to create UUID, did only research what languages to use, which was useful up to a point, Gave the Job to Sandile.
+
+2. Simphiwe was absent almost every time we worked on the project so I researched the stuff my self that I would have gave him.
+
+3. Asked Simphiwe to research TLS, how to implement it, how to create certificates.
+His research is very helpful and has a lot of information, so far I didn't need to research anything more or give his research to Sandile or Cobus.
+
+Overall, I struggle with Simphiwe because he does not go out of his way to do extensive research. His last research was a big surprise with the detail and extra research. I need to tell him exactly what I want him to research otherwise he only researches the bare minimum.
+
+Cobus Venter
+4. Cobus helped me quite a bit by going over the research that Sandile and Simphiwe send to me. I mostly asked Cobus to verify their research, not much I can say since Cobus always helps where needed.
+
