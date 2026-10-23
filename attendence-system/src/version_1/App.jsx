@@ -1,12 +1,12 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Welcome from "./pages/Welcome";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Welcome from './Welcome';
+import Login from "./Login";
+import Register from "./Register";
+import Dashboard from "./Dashboard";
+import NotFound from "./NotFound";
+import ProtectedRoute from "./ProtectedRoute";
 
 // Main application routing.
 export default function App() {

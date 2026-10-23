@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const demoRoles = ["student", "trainer", "faculty", "admin"];
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -22,18 +19,6 @@ export default function Login() {
       return;
     }
 
-    // DEVELOPMENT ONLY: simulate a successful login.
-    // Never use a role selected by the user as real authorisation.
-    const demoSession = {
-      email,
-      role,
-      name: email.split("@")[0] || "ITCA User"
-    };
-
-    localStorage.setItem(
-      "itca-demo-session",
-      JSON.stringify(demoSession)
-    );
 
     // Return to the requested page only if it belongs to this role.
     const requestedPath = location.state?.from?.pathname;
@@ -93,7 +78,7 @@ export default function Login() {
             required
           />
 
-          {/* Demo-only selector. Remove it when real authentication is connected. */}
+          {/* Demo-only selector. Remove it when real authentication is connected. 
           <label htmlFor="demo-role">Preview dashboard role (demo only)</label>
           <select
             id="demo-role"
@@ -108,6 +93,7 @@ export default function Login() {
             <option value="faculty">Faculty</option>
             <option value="admin">Admin</option>
           </select>
+          */}
 
           {error && <p className="form-error" role="alert">{error}</p>}
 

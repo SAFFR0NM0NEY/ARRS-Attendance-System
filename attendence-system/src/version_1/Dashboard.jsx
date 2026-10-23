@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import Layout from "../components/Layout";
+import Layout from './Layout';
 
 // Dashboard content for each user role.
 // These values are sample data for the front-end prototype.
