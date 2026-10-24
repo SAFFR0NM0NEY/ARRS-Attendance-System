@@ -1,6 +1,7 @@
 import {supabase} from '../supabase'
 import React,{useState, useEffect, useCallback} from 'react'
 
+
 export default function Faculty_Dashboard() {
   const [year_table, setYear_table] = useState('');
   const [year_cols, setYear_cols] = useState('');
@@ -29,6 +30,76 @@ export default function Faculty_Dashboard() {
   const [student_tables, setStudent_tables] = useState([])
   const [student_status, setStudent_status] = useState(null)
   const [student_refresh, setStudent_refresh] = useState(false)
+
+  const [studentData, setStudentData] = useState({
+    dbID: '',
+    name: '',
+    surname: '',
+    studentNr: '',
+    idNr: '',
+    email: '',
+    contactNr: '',
+    sponsorName: '',
+    sponsorSurname: '',
+    sponsorEmail: '',
+    sponsorContact: '',
+  })
+
+  const [student_loading, setStudent_Loading] = useState(false)
+  const [student_mess, setStudent_mess] = useState({type: '', text: ''})
+
+  const handleStudentData = (e) => {
+    setStudentData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
+  const handleStudentSubmit = async (e) => {
+    e.preventDefault();
+    setStudent_Loading(true)
+    setStudent_mess({type: '', text: ''})
+
+    try {
+      const {data, error} = await supabase.rpc('insert_student_profile',{
+        student_id: studentData.dbID,
+        p_name: studentData.name,
+        p_surname: studentData.surname,
+        p_student_nr: studentData.studentNr,
+        p_id_nr: studentData.idNr,
+        p_email: studentData.email,
+        p_contact: studentData.contactNr,
+        p_spon_name: studentData.sponsorName,
+        p_spon_surname: studentData.sponsorSurname,
+        p_spon_email: studentData.sponsorEmail,
+        p_spon_contact: studentData.sponsorContact,
+      })
+
+      if(error) throw error
+
+      setStudent_mess({type: 'success', text:'Student Added Successfully'})
+
+      setStudentData({
+        dbID: '',
+        name: '',
+        surname: '',
+        studentNr: '',
+        idNr: '',
+        email: '',
+        contactNr: '',
+        sponsorName: '',
+        sponsorSurname: '',
+        sponsorEmail: '',
+        sponsorContact: '',
+      })
+    }
+    catch(error){
+      setStudent_mess({type: 'error', text: error.message || 'Error Inserting Student'})
+    }
+    finally{
+      setStudent_Loading(false)
+    }
+  }
 
   const fetchTables = useCallback(async (refreshing = false) => {
     try {
@@ -316,7 +387,132 @@ export default function Faculty_Dashboard() {
       </div>
 
       <div>
-        <h3>Insert Student Data</h3>
+        <h3>Insert Student</h3>
+        {student_mess && (
+          <div style={{marginBottom:'1rem', color: student_mess.type === 'success' ? '#155724' : '#721c24', backgroundColor: student_mess.type === 'success' ? '#d4edda' : '#f8d7da'}}>
+            {student_mess.text}
+          </div>
+        )}
+        <form onSubmit={handleStudentSubmit}>
+          
+          <div>
+            <label>Enter uuid: </label>
+            <input
+              type='text'
+              name='dbID'
+              vlaue={studentData.dbID}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Name:</label>
+            <input
+              type='text'
+              name='name'
+              value={studentData.name}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Surname:</label>
+            <input
+              type='text'
+              name='surname'
+              value={studentData.surname}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter student Nr:</label>
+            <input
+              type='text'
+              name='studentNr'
+              value={studentData.studentNr}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter ID Nr:</label>
+            <input
+              type='text'
+              name='idNr'
+              value={studentData.idNr}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Email:</label>
+            <input
+              type='text'
+              name='email'
+              value={studentData.email}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Contact:</label>
+            <input
+              type='text'
+              name='contactNr'
+              value={studentData.contactNr}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Sponsor Name:</label>
+            <input
+              type='text'
+              name='sponsorName'
+              value={studentData.sponsorName}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Sponsor Surname:</label>
+            <input
+              type='text'
+              name='sponsorSurname'
+              value={studentData.sponsorSurname}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Sponsor Email:</label>
+            <input
+              type='text'
+              name='sponsorEmail'
+              value={studentData.sponsorEmail}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Sponsor Contact:</label>
+            <input
+              type='text'
+              name='sponsorContact'
+              value={studentData.sponsorContact}
+              onChange={handleStudentData}
+            />
+          </div>
+
+          <button type='submit' disabled={student_loading}>
+            {student_loading ? 'Submitting...' : 'Save Student'}
+          </button>
+        </form>
+      </div>
+
+      <div>
+        <h3>Enroll Student</h3>
         <form onSubmit={studentInsert}>
           <div>
             <label>Select table:</label>
@@ -333,7 +529,7 @@ export default function Faculty_Dashboard() {
                 </option>
               ))}
             </select>
-            <button onClick={() => fetchStudentTables(true)} disabled={refreshing}>{refreshing ? 'Refreshing...' : '🔄 Refresh Tables'}</button>
+            <button onClick={() => fetchStudentTables(true)} disabled={student_refresh}>{student_refresh ? 'Refreshing...' : '🔄 Refresh Tables'}</button>
           </div>
           
           <div>
