@@ -25,6 +25,11 @@ export default function Faculty_Dashboard() {
   const [category, setCategory] = useState('')
   const [schedule_status, setSchedule_status] = useState('')
 
+  const [student_nr, setStudent_nr] = useState('')
+  const [student_tables, setStudent_tables] = useState([])
+  const [student_status, setStudent_status] = useState(null)
+  const [student_refresh, setStudent_refresh] = useState(false)
+
   const fetchTables = useCallback(async (refreshing = false) => {
     try {
       if (refreshing) setRefreshing(true);
@@ -44,15 +49,40 @@ export default function Faculty_Dashboard() {
       setRefreshing(false)
     }
   }, []);
+
+  const fetchStudentTables = useCallback(async (refresh = false) => {
+    try {
+      if (refresh) setStudent_refresh(true);
+      else setStudent_status('Fetching Tables...')
+
+      const {data, error} = await supabase.rpc('get_student_tables');
+
+      if(error) throw error
+
+      setStudent_tables(data.map((row) => row.table_name))
+      setStudent_status('Tables Fetched')
+    }
+    catch(err){
+      console.error('Error fetching tables:', err.message)
+    }
+    finally{
+      setStudent_refresh(false)
+    }
+  }, []);
   
 
   useEffect(() => {
     fetchTables();
-  },[fetchTables]);
+    fetchStudentTables();
+  },[fetchTables, fetchStudentTables]);
 
   const handleDropdown = (e) => {
     setSelectedTable(e.target.value)
     console.log('Selected Table:', e.target.value)
+  }
+
+  const handleStudentDropdown = (e) => {
+    setStudent_tables(e.target.value)
   }
 
   const CreateYearTable = async (e) => {
@@ -134,10 +164,31 @@ export default function Faculty_Dashboard() {
     }
   }
 
+  const studentInsert = async (e) => {
+    e.preventDefault();
+    setStudent_status('Inserting Student...')
+
+    try {
+      const {err} = await supabase.rpc('insert_student', {
+        target_table: student_tables,
+        search_student_nr: student_nr
+      });
+
+      if(err) throw err;
+
+      setStudent_status(`Success! Student ${student_nr} inserted into student table`)
+      setStudent_nr('')
+    }
+    catch(err){
+      console.error('Error inserting student into table:', err.message);
+      setStudent_status(`Error: ${err.message}`);
+    }
+  };
+
   
   return (
     <div className='page_style'>
-      <h3>Faculty dashboard</h3>
+      <h3>Temp Table Creation Page</h3>
 
       <div className='body_1'>
         <form onSubmit={CreateYearTable}>
@@ -263,6 +314,45 @@ export default function Faculty_Dashboard() {
         </form>
         {schedule_status && <p style={{marginTop: '15px'}}>{schedule_status}</p>}
       </div>
+
+      <div>
+        <h3>Insert Student Data</h3>
+        <form onSubmit={studentInsert}>
+          <div>
+            <label>Select table:</label>
+            <select
+              value={student_tables}
+              onChange={handleStudentDropdown}
+            >
+              <option value='' disabled>
+                -- Choose Table --
+              </option>
+              {student_tables.map((table) => (
+                <option key={table} value={table}>
+                  {table}
+                </option>
+              ))}
+            </select>
+            <button onClick={() => fetchStudentTables(true)} disabled={refreshing}>{refreshing ? 'Refreshing...' : '🔄 Refresh Tables'}</button>
+          </div>
+          
+          <div>
+            <label>Student Number: </label>
+            <input
+              type='text'
+              value={student_nr}
+              onChange={(e) => setStudent_nr(e.target.value)}
+            />
+          </div>
+
+          <button type='submit'>
+            Enroll Student
+          </button>
+        </form>
+        {student_status && <p style={{marginTop: '15px'}}>{student_status}</p>}
+      </div>
+
+      
     </div>
   )
 }

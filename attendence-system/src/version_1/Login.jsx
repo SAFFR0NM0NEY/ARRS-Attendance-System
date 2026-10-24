@@ -1,39 +1,59 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import {supabase} from '../supabase';
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setError("");
+    setLoading(true)
+    setError(null);
 
-    // Basic front-end checks. These do not verify a real account.
-    if (!email.trim() || !password.trim()) {
-      setError("Please enter your email address and password.");
-      return;
+    const {data: authData, error:authError} = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if(authError) {
+      setError(authError.message)
+      setLoading(false)
+      return
     }
 
+    const userId = authData.user.id
 
-    // Return to the requested page only if it belongs to this role.
+    const {data: account, error:accountError} = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single()
+
+    if(accountError || !account){
+      setError('Login successful, but could not load account role.')
+      setLoading(false)
+      return
+    }
+
     const requestedPath = location.state?.from?.pathname;
-    const safeDefault = `/${role}/dashboard`;
+    const safeDefault = `/${account.role}/dashboard`;
 
-    const safeDestination =
-      requestedPath?.startsWith(`/${role}/`) &&
-      !requestedPath.includes("..")
+    const safeDestination = 
+      requestedPath?.startsWith(`/${account.role}/`) &&
+      !requestedPath.includes('..')
         ? requestedPath
         : safeDefault;
 
     // A check-in request can continue to the check-in interface.
     const queryNext = new URLSearchParams(location.search).get("next");
     const destination =
-      queryNext === "/check-in" ? `/${role}/check-in` : safeDestination;
+      queryNext === "/check-in" ? `/${account.role}/check-in` : safeDestination;
 
     navigate(destination, { replace: true });
   }
@@ -60,7 +80,6 @@ export default function Login() {
           <input
             id="email"
             type="email"
-            autoComplete="username"
             placeholder="you@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -96,6 +115,7 @@ export default function Login() {
           */}
 
           {error && <p className="form-error" role="alert">{error}</p>}
+          {loading && <p className='form-success'>Logging In...</p>}
 
           <button type="submit" className="button button-primary button-full">
             Sign in <span aria-hidden="true">→</span>

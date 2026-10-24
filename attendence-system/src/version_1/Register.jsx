@@ -18,7 +18,7 @@ export default function Register() {
     const {error} = await supabase.auth.signUp({
       email,
       password,
-      options: {data:{role: 'admin'}}
+      options: {data:{role: 'student'}}
     })
     
     if(error){
@@ -26,6 +26,9 @@ export default function Register() {
     }
     else{
       setMessage('Account Created')
+      setEmail('')
+      setPassword('')
+      setLoading(false)
     }
   }
 

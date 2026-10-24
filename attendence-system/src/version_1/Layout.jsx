@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import {supabase} from '../supabase'
 
 // Each role receives its own navigation menu.
 const navigation = {
@@ -53,9 +54,8 @@ export default function Layout({ role, children }) {
   const navigate = useNavigate();
   const menu = navigation[role] || [];
 
-  // Clear the demo session and return to the welcome page.
-  function logout() {
-    localStorage.removeItem("itca-demo-session");
+  const logout = async() => {
+    await supabase.auth.signOut();
     navigate("/", { replace: true });
   }
 

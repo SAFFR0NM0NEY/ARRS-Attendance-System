@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import Layout from './Layout';
+import {useState, useEffect} from 'react'
+import {supabase} from '../supabase'
+import Faculty_Dashboard from '../pages/faculty_dashboard'
 
-// Dashboard content for each user role.
-// These values are sample data for the front-end prototype.
+
 const dashboardData = {
   student: {
     title: "My Dashboard",
@@ -92,6 +94,27 @@ const pageTitles = {
 export default function Dashboard({ role }) {
   const location = useLocation();
   const data = dashboardData[role];
+
+  const [DB_Data, setDB_Data] = useState(null)
+  const [DB_Loading, setDB_Loading] = useState(true)
+  const [DB_Error, setDB_Error] = useState(null)
+
+  useEffect(() => {
+    async function loadDashboard() {
+      setDB_Loading(true);
+      setDB_Error(null);
+
+      const {data: {user}, error: userError} =
+        await supabase.auth.getUser();
+
+      if (userError || !user){
+        setDB_Error(userError?.message ?? 'Please sign in to view your dashboard.')
+        setDB_Loading(false)
+        return;
+      }
+      
+    }
+  })
 
   // Determine which page the user opened from the URL.
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
@@ -203,10 +226,7 @@ export default function Dashboard({ role }) {
         <section className="content-card placeholder-page">
           <span className="eyebrow">{role.toUpperCase()} PORTAL</span>
           <h1>{pageTitle || "Page preview"}</h1>
-          <p>
-            This page is part of the ITCA front-end prototype.
-            Its full interface will be implemented in a later stage.
-          </p>
+          <Faculty_Dashboard />
           <Link to={`/${role}/dashboard`} className="button button-primary">
             Return to dashboard
           </Link>
