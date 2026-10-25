@@ -10,16 +10,14 @@ const dashboardData = {
     title: "My Dashboard",
     subtitle: "Your academic progress at a glance.",
     stats: [
-      { label: "Attendance rate", value: "92%", note: "Sample figure" },
-      { label: "Registered modules", value: "6", note: "Sample figure" },
-      { label: "Upcoming classes", value: "3", note: "This week" },
-      { label: "Notifications", value: "2", note: "Unread demo alerts" }
+      { label: "Attendance rate", value: "--", note: "" },
+      { label: "Registered modules", value: "0", note: "" },
+      { label: "Upcoming classes", value: "--", note: "This week" },
+      { label: "Notifications", value: "0", note: "" }
     ],
     heading: "Your upcoming classes",
     rows: [
-      ["Cybersecurity Fundamentals", "09:00", "Computer Lab", "Scheduled"],
-      ["Software Development", "11:00", "Room 204", "Scheduled"],
-      ["Network Security Practical", "13:00", "Computer Lab", "Scheduled"]
+      
     ],
     columns: ["Module", "Start time", "Venue", "Status"]
   },
@@ -93,11 +91,20 @@ const pageTitles = {
 
 export default function Dashboard({ role }) {
   const location = useLocation();
-  const data = dashboardData[role];
+  const Basedata = dashboardData[role];
 
   const [DB_Data, setDB_Data] = useState(null)
   const [DB_Loading, setDB_Loading] = useState(true)
   const [DB_Error, setDB_Error] = useState(null)
+
+
+  const data = Basedata && DB_Data
+    ? {
+      ...Basedata,
+      title: `${DB_Data.name}'s Dashboard`,
+      subtitle: `${DB_Data.student_nr} -- ${DB_Data.email}`
+    }
+    : Basedata;
 
   useEffect(() => {
     async function loadDashboard() {
@@ -112,9 +119,24 @@ export default function Dashboard({ role }) {
         setDB_Loading(false)
         return;
       }
-      
+
+      const {data: attendence, error: attendenceError} = await supabase
+        .from('student_profiles')
+        .select('name, student_nr, email')
+        .eq('id', user.id)
+        .single();
+
+      if(attendenceError){
+        setDB_Error(attendenceError.message);
+        setDB_Loading(false)
+        return;
+      }
+
+      setDB_Data(attendence)
+      setDB_Loading(false)
     }
-  })
+    loadDashboard();
+  }, []);
 
   // Determine which page the user opened from the URL.
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
