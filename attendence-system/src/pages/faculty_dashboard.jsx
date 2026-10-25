@@ -28,11 +28,11 @@ export default function Faculty_Dashboard() {
 
   const [student_nr, setStudent_nr] = useState('')
   const [student_tables, setStudent_tables] = useState([])
+  const [select_student_tab, setSelect_student_tab] = useState('')
   const [student_status, setStudent_status] = useState(null)
   const [student_refresh, setStudent_refresh] = useState(false)
 
   const [studentData, setStudentData] = useState({
-    dbID: '',
     name: '',
     surname: '',
     studentNr: '',
@@ -55,6 +55,61 @@ export default function Faculty_Dashboard() {
     }))
   }
 
+  const [facultyData, setFacultyData] = useState({
+    email: '',
+    name: '',
+    surname: '',
+    contact: '',
+    title: '',
+    status: '',
+  })
+
+  const [facultyloading, setFacultyloading] = useState(false)
+  const [facultyMess, setFacultyMess] = useState({type: '', text: ''})
+
+  const handleFacultyData = (e) => {
+    setFacultyData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
+  const handleFacultySubmit = async (e) => {
+    e.preventDefault();
+    setFacultyloading(true)
+    setFacultyMess({type: '', text: ''})
+
+    try {
+      const {data, error} = await supabase.rpc('insert_faculty_profile',{
+        f_email: facultyData.email,
+        f_name: facultyData.name,
+        f_surname: facultyData.surname,
+        f_contact: facultyData.contact,
+        f_title: facultyData.title,
+        f_status: facultyData.status,
+      })
+
+      if(error) throw error
+
+      setFacultyMess({type: 'success',text:'Faculty Added Successfully'})
+
+      setFacultyData({
+        email: '',
+        name: '',
+        surname: '',
+        contact: '',
+        title: '',
+        status: '',
+      })
+    }
+    catch(err){
+      setFacultyMess({type:'error',text: err.message || 'Something went wrong adding faculty'})
+    }
+    finally{
+      setFacultyloading(false)
+    }
+  }
+
   const handleStudentSubmit = async (e) => {
     e.preventDefault();
     setStudent_Loading(true)
@@ -62,7 +117,6 @@ export default function Faculty_Dashboard() {
 
     try {
       const {data, error} = await supabase.rpc('insert_student_profile',{
-        student_id: studentData.dbID,
         p_name: studentData.name,
         p_surname: studentData.surname,
         p_student_nr: studentData.studentNr,
@@ -80,7 +134,6 @@ export default function Faculty_Dashboard() {
       setStudent_mess({type: 'success', text:'Student Added Successfully'})
 
       setStudentData({
-        dbID: '',
         name: '',
         surname: '',
         studentNr: '',
@@ -153,7 +206,8 @@ export default function Faculty_Dashboard() {
   }
 
   const handleStudentDropdown = (e) => {
-    setStudent_tables(e.target.value)
+    setSelect_student_tab(e.target.value)
+    console.log('Selected Table:', e.target.value)
   }
 
   const CreateYearTable = async (e) => {
@@ -240,8 +294,19 @@ export default function Faculty_Dashboard() {
     setStudent_status('Inserting Student...')
 
     try {
+      const {error} = await supabase
+        .from('student_profiles')
+        .select('student_nr')
+        .eq('student_nr', student_nr)
+        .single()
+
+      if(error){
+        setStudent_status(`Couldn\'t Find student ${student_nr}`)
+        return;
+      }
+
       const {err} = await supabase.rpc('insert_student', {
-        target_table: student_tables,
+        target_table: select_student_tab,
         search_student_nr: student_nr
       });
 
@@ -394,17 +459,6 @@ export default function Faculty_Dashboard() {
           </div>
         )}
         <form onSubmit={handleStudentSubmit}>
-          
-          <div>
-            <label>Enter uuid: </label>
-            <input
-              type='text'
-              name='dbID'
-              vlaue={studentData.dbID}
-              onChange={handleStudentData}
-            />
-          </div>
-
           <div>
             <label>Enter Name:</label>
             <input
@@ -506,9 +560,82 @@ export default function Faculty_Dashboard() {
           </div>
 
           <button type='submit' disabled={student_loading}>
-            {student_loading ? 'Submitting...' : 'Save Student'}
+            {student_loading ? 'Submitting...' : 'Update Student'}
           </button>
         </form>
+      </div>
+
+      <div>
+        <h3>Added Faculty Data:</h3>
+        {facultyMess && (
+          <div style={{marginBottom:'1rem', color: facultyMess.type === 'success' ? '#155724' : '#721c24', backgroundColor: facultyMess.type === 'success' ? '#d4edda' : '#f8d7da'}}>
+            {facultyMess.text}
+          </div>
+        )}
+        <form onSubmit={handleFacultySubmit}>
+          <div>
+            <label>Enter Email:</label>
+            <input
+              type='text'
+              name='email'
+              value={facultyData.email}
+              onChange={handleFacultyData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Name:</label>
+            <input
+              type='text'
+              name='name'
+              value={facultyData.name}
+              onChange={handleFacultyData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Surname:</label>
+            <input
+              type='text'
+              name='surname'
+              value={facultyData.surname}
+              onChange={handleFacultyData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Contact:</label>
+            <input
+              type='text'
+              name='contact'
+              value={facultyData.contact}
+              onChange={handleFacultyData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Title:</label>
+            <input
+              type='text'
+              name='title'
+              value={facultyData.title}
+              onChange={handleFacultyData}
+            />
+          </div>
+
+          <div>
+            <label>Enter Status:</label>
+            <input
+              type='text'
+              name='status'
+              value={facultyData.status}
+              onChange={handleFacultyData}
+            />
+          </div>
+          
+          <button type='submit'>{facultyloading ? 'Adding Faculty...' : 'Add faculty'}</button>
+        </form>
+        {}
       </div>
 
       <div>
@@ -517,7 +644,7 @@ export default function Faculty_Dashboard() {
           <div>
             <label>Select table:</label>
             <select
-              value={student_tables}
+              value={select_student_tab}
               onChange={handleStudentDropdown}
             >
               <option value='' disabled>

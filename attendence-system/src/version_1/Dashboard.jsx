@@ -106,12 +106,11 @@ export default function Dashboard({ role }) {
     }
     : Basedata;
 
-  useEffect(() => {
-    async function loadDashboard() {
-      setDB_Loading(true);
-      setDB_Error(null);
+  const loadStudentData = async () => {
+    setDB_Loading(true);
+    setDB_Error(null)
 
-      const {data: {user}, error: userError} =
+    const {data: {user}, error: userError} =
         await supabase.auth.getUser();
 
       if (userError || !user){
@@ -134,8 +133,43 @@ export default function Dashboard({ role }) {
 
       setDB_Data(attendence)
       setDB_Loading(false)
+  }
+
+  const loadFacultyData = async () => {
+    setDB_Loading(true)
+    setDB_Error(null)
+
+    const {data: {user}, error: userError} =
+      await supabase.auth.getUser();
+
+    if(userError || !user){
+      setDB_Error(userError?.message ?? 'Please sign in to view dashboard')
+      setDB_Loading(false)
+      return;
     }
-    loadDashboard();
+
+    const {data: facultyData, error: facultyError} = await supabase
+      .from('faculty_profiles')
+      .select('name, email, title')
+      .eq('id', user.id)
+      .single()
+
+    if(facultyError){
+      setDB_Error(facultyError.message)
+      setDB_Loading(false)
+    }
+
+    setDB_Data(facultyData)
+    setDB_Loading(false)
+  }
+
+  useEffect(() => {
+    if(role === 'student'){
+      loadStudentData();
+    }
+    else {
+      loadFacultyData();
+    }
   }, []);
 
   // Determine which page the user opened from the URL.
