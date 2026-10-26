@@ -24,6 +24,7 @@ export default function Faculty_Dashboard() {
   const [endDate, setEndDate] = useState('')
   const [summary, setSummary] = useState('')
   const [category, setCategory] = useState('')
+  const [sessionTime, setSessionTime] = useState('')
   const [schedule_status, setSchedule_status] = useState('')
 
   const [student_nr, setStudent_nr] = useState('')
@@ -276,7 +277,8 @@ export default function Faculty_Dashboard() {
         start_date: startDate,
         end_date: endDate,
         custom_summary: summary,
-        custom_category: category
+        custom_category: category,
+        custom_time: sessionTime
       });
 
       if(error) throw error;
@@ -435,6 +437,15 @@ export default function Faculty_Dashboard() {
               type='text'
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label>Session Time:</label>
+            <input 
+              type='text'
+              value={sessionTime}
+              onChange={(e) => setSessionTime(e.target.value)}
             />
           </div>
 

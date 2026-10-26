@@ -102,7 +102,8 @@ export default function Dashboard({ role }) {
     ? {
       ...Basedata,
       title: `${DB_Data.name}'s Dashboard`,
-      subtitle: `${DB_Data.student_nr} -- ${DB_Data.email}`
+      subtitle: `${DB_Data.student_nr} -- ${DB_Data.email}`,
+      
     }
     : Basedata;
 
