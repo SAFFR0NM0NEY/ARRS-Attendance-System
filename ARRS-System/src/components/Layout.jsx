@@ -1,6 +1,7 @@
 
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import itcaLogo from "../assets/itca-logo.png";
+import itcaLogo from '../assets/itca-logo.png';
+import {supabase} from '../supabase'
 
 const navigation = {
   student: [
@@ -54,9 +55,9 @@ export default function Layout({ role = "student", children, title }) {
   const user = JSON.parse(localStorage.getItem("itcaUser") || "null");
   const links = navigation[role] || navigation.student;
 
-  function logout() {
-    localStorage.removeItem("itcaUser");
-    navigate("/login", { replace: true });
+  const logout = async() => {
+    await supabase.auth.signOut();
+    navigate('/', {replace: true});
   }
 
   return (

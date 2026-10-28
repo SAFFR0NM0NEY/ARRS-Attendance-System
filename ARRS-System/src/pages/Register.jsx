@@ -114,12 +114,6 @@ export default function Register() {
         {message && (
           <p className="form-success" role="status">{message}</p>
         )}
-
-        <p className="auth-switch">
-          Already registered? <Link to="/login">Sign in</Link>
-        </p>
-
-        
       </div>
     </div>
   );
