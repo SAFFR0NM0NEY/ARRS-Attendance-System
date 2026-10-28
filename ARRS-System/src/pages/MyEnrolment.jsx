@@ -3,6 +3,7 @@ import { useState } from "react";
 import Layout from "../components/Layout.jsx";
 
 export default function MyEnrolment() {
+  {/*
   const [enrolment] = useState(() => {
     try {
       return JSON.parse(
@@ -22,9 +23,10 @@ export default function MyEnrolment() {
       .toLowerCase()
       .includes(search.toLowerCase())
   );
+  */}
 
   return (
-    <Layout role="student" title="My Enrolment">
+    <Layout role="student" title="Enrolment">
       <section className="page-heading">
         <div>
           <span className="eyebrow">ACADEMIC RECORDS</span>
@@ -36,12 +38,16 @@ export default function MyEnrolment() {
       <section className="content-card">
         <h3>Enrolment Summary</h3>
         <div className="stats-grid">
+          <article className='stat-card'>
+            <strong>--</strong>
+          </article>
+
           <article className="stat-card">
-            <p>Registered Modules</p>
-            <strong>{enrolment.length}</strong>
+            <strong>--</strong>
           </article>
         </div>
 
+        {/*
         <label>
           Search modules
           <input
@@ -80,6 +86,9 @@ export default function MyEnrolment() {
             modules will appear here when records are loaded.
           </p>
         )}
+        */}
+
+
       </section>
     </Layout>
   );

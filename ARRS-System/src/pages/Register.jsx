@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Layout from '../components/Layout'
+import {supabase} from '../supabase'
 
 export default function Register() {
   const [form, setForm] = useState({
-    fullName: "",
     email: "",
-    studentNumber: "",
-    programme: "Cybersecurity",
+    role: '',
     password: ""
   });
 
+
+  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null)
 
   // Update only the field that the user changes.
   function handleChange(event) {
@@ -21,100 +23,216 @@ export default function Register() {
     setMessage("");
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true)
+    setErrorMessage(null)
 
-    // Demonstration only: no account is actually created.
-    setMessage(
-      "Demo complete. Real registration will be connected when the authentication service is available."
-    );
+    const {error} = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {data: form.role}
+    })
+
+    if(error){
+      setErrorMessage('Something went wrong:',error.message)
+    }
+    else {
+      setMessage('Account Registered')
+      setForm({
+        email: '',
+        role: '',
+        password: ''
+      })
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="auth-page">
-      <Link to="/" className="brand auth-brand">
-        <span className="brand-mark">I</span>
-        <span>
-          <strong>Information Technology Certification Academy</strong>
-          <small>Digital Attendance Register</small>
-        </span>
-      </Link>
-
-      <div className="auth-card">
-        <div className="auth-heading">
-          <span className="eyebrow">JOIN ITCA</span>
-          <h1>Create an account</h1>
-          <p>Enter your details to begin the registration process.</p>
+    <Layout role='admin' title='Register Account'>
+      <section className='page-heading'>
+        <div>
+          <span className='eyebrow'>Register ITCA Account</span>
+          <h2>Account Details</h2>
+          <p>Register an Account for a ITCA student or faculty</p>
         </div>
+      </section>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="fullName">Full name</label>
-          <input
-            id="fullName"
-            name="fullName"
-            value={form.fullName}
-            onChange={handleChange}
-            placeholder="Enter your full name"
-            autoComplete="name"
-            required
-          />
+      <section className='content-card'>
+        <h3>Register User Form</h3>
 
-          <label htmlFor="registerEmail">Email address</label>
-          <input
-            id="registerEmail"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            autoComplete="email"
-            required
-          />
+        <form className='input-grid' onSubmit={handleSubmit}>
+          <label className='full-field' htmlFor="registerEmail">
+            Email address:
+            <input
+              id="registerEmail"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+            />
+          </label>
 
-          <label htmlFor="studentNumber">Student number</label>
-          <input
-            id="studentNumber"
-            name="studentNumber"
-            value={form.studentNumber}
-            onChange={handleChange}
-            placeholder="Enter your student number"
-            required
-          />
+          <label className='full-field' htmlFor='registerRole'>
+            User Role:
+            <select
+              id='userRole'
+              name='role'
+              value={form.role}
+              onChange={handleChange}
+            >
+              <option>Student</option>
+              <option>Faculty</option>
+              <option>Trainer</option>
+              <option>Admin</option>
+            </select>
+          </label>
 
-          <label htmlFor="programme">Programme</label>
-          <select
-            id="programme"
-            name="programme"
-            value={form.programme}
-            onChange={handleChange}
-          >
-            <option>Cybersecurity</option>
-            <option>Software Development</option>
-            <option>Specialist Programme</option>
-          </select>
+          <label className='full-field' htmlFor="registerPassword">
+            Create password:
+            <input
+              id="registerPassword"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
 
-          <label htmlFor="registerPassword">Create password</label>
-          <input
-            id="registerPassword"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            placeholder="Create a password"
-            autoComplete="new-password"
-            minLength={8}
-            required
-          />
-
-          <button type="submit" className="button button-primary button-full">
-            Submit registration
+          <button type="submit" className="button button-primary button-full" disabled={loading}>
+            {loading ? 'Registering...' : 'Register Account'}
           </button>
         </form>
 
         {message && (
           <p className="form-success" role="status">{message}</p>
         )}
-      </div>
-    </div>
+        {errorMessage && (
+          <p style={{color:'red',marginTop:'1rem'}} role='status'>{errorMessage}</p>
+        )}
+      </section>
+    </Layout>
   );
+}
+
+export function TrainerRegister(){
+  const [formData, setFormData] = useState({
+    email: '',
+    role: '',
+    password: ''
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [errorMess, setErrorMess] = useState(null)
+  const [message, setMessage] = useState('')
+
+  function handleChange(e) {
+    setFormData({
+      ...FormData,
+      [e.target.name]:[e.target.value]
+    })
+    setMessage('')
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    setErrorMess(null)
+
+    const {error} = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {data: formData.role}
+    })
+
+    if(error){
+      setErrorMessage('Something went wrong:',error.message)
+    }
+    else {
+      setMessage('Account Registered')
+      setForm({
+        email: '',
+        role: '',
+        password: ''
+      })
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Layout role='faculty' title='Register Account'>
+      <section className='page-heading'>
+        <div>
+          <span className='eyebrow'>Register ITCA Account</span>
+          <h2>Account Details</h2>
+          <p>Register an Account for a ITCA student or faculty</p>
+        </div>
+      </section>
+
+      <section className='content-card'>
+        <h3>Register User Form</h3>
+
+        <form className='input-grid' onSubmit={handleSubmit}>
+          <label className='full-field' htmlFor="registerEmail">
+            Email address:
+            <input
+              id="registerEmail"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+            />
+          </label>
+
+          <label className='full-field' htmlFor='registerRole'>
+            User Role:
+            <select
+              id='userRole'
+              name='role'
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option>Student</option>
+            </select>
+          </label>
+
+          <label className='full-field' htmlFor="registerPassword">
+            Create password:
+            <input
+              id="registerPassword"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+
+          <button type="submit" className="button button-primary button-full" disabled={loading}>
+            {loading ? 'Registering...' : 'Register Account'}
+          </button>
+        </form>
+
+        {message && (
+          <p className="form-success" role="status">{message}</p>
+        )}
+        {errorMess && (
+          <p style={{color:'red',marginTop:'1rem'}} role='status'>{errorMess}</p>
+        )}
+      </section>
+    </Layout>
+  )
 }

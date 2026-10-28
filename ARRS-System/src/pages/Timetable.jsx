@@ -3,6 +3,7 @@ import { useState } from "react";
 import Layout from "../components/Layout.jsx";
 
 export default function Timetable() {
+  {/*
   const [classes] = useState(() => {
     try {
       return JSON.parse(
@@ -32,6 +33,7 @@ export default function Timetable() {
       (!dateFilter || item.date === dateFilter)
     );
   });
+  */}
 
   return (
     <Layout role="student" title="Timetable">
@@ -39,17 +41,35 @@ export default function Timetable() {
         <div>
           <span className="eyebrow">ACADEMIC SCHEDULE</span>
           <h2>My Timetable</h2>
+          <h2>Current Date</h2>
           <p>View your scheduled classes and practical sessions.</p>
+          
         </div>
       </section>
 
       <section className="stats-grid">
         <article className="stat-card">
-          <p>Scheduled Classes</p>
-          <strong>{classes.length}</strong>
+          <p>Scheduled Classes for current month</p>
+          <strong>--</strong>
+        </article>
+
+        <article className='stat-card'>
+          <p>Trainer</p>
+          <strong>--</strong>
+        </article>
+
+        <article className='stat-card'>
+          <p>Class Time</p>
+          <strong>--</strong>
+        </article>
+
+        <article className='stat-card'>
+          <p>Description</p>
+          <strong>--</strong>
         </article>
       </section>
 
+      {/*
       <section className="content-card">
         <h3>Class Schedule</h3>
         <p>Use the filters to find a scheduled session.</p>
@@ -109,6 +129,7 @@ export default function Timetable() {
           </p>
         )}
       </section>
+      */}
     </Layout>
   );
 }

@@ -51,6 +51,7 @@ export default function MyProfile() {
     setMessage("Profile changes saved in this browser.");
   }
 
+  {/*
   function cancelEditing() {
     try {
       setProfile({
@@ -66,6 +67,7 @@ export default function MyProfile() {
     setEditing(false);
     setMessage("");
   }
+  */}
 
   const fields = [
     ["name", "Full Name", "text"],
@@ -77,7 +79,7 @@ export default function MyProfile() {
   ];
 
   return (
-    <Layout role="student" title="My Profile">
+    <Layout role="student" title="Profile">
       <section className="page-heading">
         <div>
           <span className="eyebrow">ACCOUNT INFORMATION</span>
@@ -89,7 +91,7 @@ export default function MyProfile() {
       <section className="content-card">
         <h3>Personal and Academic Details</h3>
 
-        <form onSubmit={saveProfile}>
+        <form className='input-grid' onSubmit={saveProfile}>
           <div className="form-grid">
             {fields.map(([name, label, type]) => (
               <label key={name}>
@@ -110,7 +112,8 @@ export default function MyProfile() {
               </label>
             ))}
           </div>
-
+          
+          {/*
           {editing ? (
             <div className="button-group">
               <button type="submit">Save Changes</button>
@@ -129,13 +132,13 @@ export default function MyProfile() {
               Edit Profile
             </button>
           )}
+          */}
         </form>
 
         {message && <p role="status">{message}</p>}
 
         <p>
-          Official student details must be updated by authorised
-          staff where required.
+          Student details can only be changed by authorized trainers and faculty.
         </p>
       </section>
     </Layout>

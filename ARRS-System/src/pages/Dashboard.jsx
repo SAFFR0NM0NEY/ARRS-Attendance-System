@@ -1,6 +1,7 @@
-
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout.jsx";
+import {supabase} from '../supabase.js'
+import {useState, useEffect} from 'react'
 
 const dashboardData = {
   student: {
@@ -8,19 +9,19 @@ const dashboardData = {
     greeting: "Welcome back, Student!",
     description: "Here is an overview of your academic activity.",
     stats: [
-      ["My Classes", "0", "▦"],
-      ["Attendance Rate", "0%", "✓"],
-      ["Upcoming Classes", "0", "◷"],
+      ["My Classes", "--", "▦"],
+      ["Attendance Rate", "--", "✓"],
+      ["Upcoming Class", "--", "◷"],
     ],
     actions: [
        ["Log Attendance", "/check-in"],
        ["My Attendance", "/student/attendance"],
        ["View Timetable", "/student/timetable"],
        ["My Enrolment", "/student/enrolment"],
-       ["View Reports", "/student/reports"],
-       ["Notifications", "/student/notifications"],
+       //["View Reports", "/student/reports"],
+       //["Notifications", "/student/notifications"],
        ["My Profile", "/student/profile"],
-       ["Settings", "/student/settings"],
+       //["Settings", "/student/settings"],
     ],
   },
   trainer: {
@@ -68,6 +69,7 @@ const dashboardData = {
     ],
     actions: [
       ["User Management", "/admin/users"],
+      ['Register User Account','/admin/register']
       ["Manage Classes", "/admin/classes"],
       ["View Attendance", "/admin/attendance"],
       ["Generate Reports", "/admin/reports"],
@@ -76,7 +78,107 @@ const dashboardData = {
 };
 
 export default function Dashboard({ role = "student" }) {
-  const data = dashboardData[role] || dashboardData.student;
+  const BaseData = dashboardData[role] || dashboardData.student;
+
+  const [DBData, setDBData] = useState(null)
+  const [DBLoading, setDBLoading] = useState(true)
+  const [DBError, setDBError] = useState(null)
+
+  const data = BaseData && DBData
+    ? {
+      ...BaseData,
+      title: `Dashboard`,
+      description: `${BaseData.description} -- ${DBData.email}`,
+    }
+    : BaseData;
+
+  const loadStudentData = async() => {
+    setDBLoading(true)
+    setDBError(null)
+
+    const {data: {user}, error: userError} = 
+      await supabase.auth.getUser();
+
+      if(userError || !user){
+        setDBError(userError?.message ?? 'Please sign in to view your dashboard.')
+        setDBLoading(false)
+        return;
+      }
+
+      const {data: attendence, error: attendenceError} = await supabase
+        .from('student_profiles')
+        .select('name, student_nr, email')
+        .eq('id', user.id)
+        .single();
+
+      if(attendenceError){
+        setDBError(attendenceError.message);
+        setDBLoading(false)
+        return;
+      }
+
+      setDBData(attendence)
+
+
+      setDBLoading(false)
+  }
+
+  const loadFacultyData = async () => {
+    setDBLoading(true)
+    setDBError(null)
+
+    const {data: {user}, error: userError} =
+      await supabase.auth.getUser();
+
+    if(userError || !user){
+      setDBError(userError?.message ?? 'Please sign in to view dashboard')
+      setDBLoading(false)
+      return;
+    }
+
+    const {data: facultyData, error: facultyError} = await supabase
+      .from('faculty_profiles')
+      .select('name, email, title')
+      .eq('id', user.id)
+      .single()
+
+    if(facultyError){
+      setDBError(facultyError.message)
+      setDBLoading(false)
+    }
+
+    setDBData(facultyData)
+    setDBLoading(false)
+  }
+
+  const fetchStudentData = async () => {
+
+  }
+
+  const fetchTrainerData = async () => {
+
+  }
+
+  const fetchFacultyData = async () => {
+    
+  }
+
+  useEffect(() => {
+    if(role == 'student'){
+      loadStudentData();
+    }
+    else {
+      loadFacultyData();
+    }
+  }, []);
+
+
+  {DBLoading && <p>Loading Data...</p>}
+  {DBError && <p>Something Went Wrong</p>}
+
+  if(!data){
+    return <p>Dashboard Unavailable</p>
+  }
 
   return (
     <Layout role={role} title={data.title}>
@@ -131,12 +233,14 @@ export default function Dashboard({ role = "student" }) {
           <span className="message-icon">✦</span>
           <h3>Stay connected</h3>
           <p>
-            Check your timetable, review notifications and keep
-            your academic information up to date.
+            Check your timetable, keep an eye on your attendence, and assure your
+            details are correct.
           </p>
+          {/*
           <Link className="text-link" to={`/${role}/notifications`}>
             View notifications →
           </Link>
+          */}
         </article>
       </section>
     </Layout>

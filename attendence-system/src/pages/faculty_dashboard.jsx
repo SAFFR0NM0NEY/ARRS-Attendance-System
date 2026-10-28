@@ -307,6 +307,9 @@ export default function Faculty_Dashboard() {
         return;
       }
 
+      //adjusting the insert_student function so don't copy and paste
+      //selected table must include group+year with seperate input also needed
+
       const {err} = await supabase.rpc('insert_student', {
         target_table: select_student_tab,
         search_student_nr: student_nr

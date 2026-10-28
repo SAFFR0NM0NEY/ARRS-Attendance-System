@@ -1,8 +1,9 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect} from "react";
 import Layout from "../components/Layout.jsx";
+import {supabase} from '../supabase.js'
 
 export default function MyAttendance() {
+  {/*
   const [records] = useState(() => {
     try {
       return JSON.parse(
@@ -90,9 +91,18 @@ export default function MyAttendance() {
     link.click();
     URL.revokeObjectURL(url);
   }
+  */}
+
+  const [sessions, setSessions] = useState('--')
+  const [present, setPresent] = useState('--')
+  const [absent, setAbsent] = useState('--')
+  const [attendRate, setAttendRate] = useState('--')
+
+  const [loading, setLoading] = useState(true)
+  const [attendError, setAttendError] = useState(null)
 
   return (
-    <Layout role="student" title="My Attendance">
+    <Layout role="student" title="Attendance">
       <section className="page-heading">
         <div>
           <span className="eyebrow">STUDENT SERVICES</span>
@@ -101,21 +111,36 @@ export default function MyAttendance() {
         </div>
       </section>
 
+      <section className='content-card' style={{marginBottom:'15px'}}>
+        <article className='stat-card'>
+          <p>Select Class</p>
+          <select className='full-field'>
+            
+          </select>
+        </article>
+      </section>
+
       <section className="stats-grid">
         <article className="stat-card">
-          <p>Recorded Classes</p>
-          <strong>{records.length}</strong>
+          <p>Sessions</p>
+          <strong>{sessions}</strong>
         </article>
         <article className="stat-card">
           <p>Present</p>
           <strong>{present}</strong>
         </article>
+        <article className='stat-card'>
+          <p>Absent</p>
+          <strong>{absent}</strong>
+        </article>
         <article className="stat-card">
           <p>Attendance Rate</p>
-          <strong>{attendanceRate}%</strong>
+          <strong>{attendRate}</strong>
         </article>
+        
       </section>
 
+      {/*
       <section className="content-card">
         <div className="card-heading">
           <div>
@@ -147,7 +172,6 @@ export default function MyAttendance() {
               <option>Present</option>
               <option>Late</option>
               <option>Absent</option>
-              <option>Excused</option>
             </select>
           </label>
 
@@ -196,6 +220,7 @@ export default function MyAttendance() {
           </p>
         )}
       </section>
+      */}
     </Layout>
   );
 }

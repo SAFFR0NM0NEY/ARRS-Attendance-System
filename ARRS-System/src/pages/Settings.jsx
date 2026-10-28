@@ -86,7 +86,7 @@ export default function Settings() {
   ];
 
   return (
-    <Layout role="student" title="Settings">
+    <Layout role="students" title="Settings">
       <section className="page-heading">
         <div>
           <span className="eyebrow">ACCOUNT PREFERENCES</span>

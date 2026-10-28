@@ -9,6 +9,9 @@ import Dashboard from "./pages/Dashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
+//Faculty Specific Pages
+import TrainerRegister from './pages/Register.jsx';
+
 // Student pages
 import MyAttendance from "./pages/MyAttendance.jsx";
 import Timetable from "./pages/Timetable.jsx";
@@ -26,7 +29,6 @@ export default function App() {
       {/* Public pages */}
       <Route path="/" element={<Welcome />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
       <Route path="/check-in" element={<CheckIn />} />
 
       {/* Student dashboard - support both URLs */}
@@ -76,6 +78,7 @@ export default function App() {
         }
       />
 
+      {/*
       <Route
         path="/student/reports"
         element={
@@ -85,6 +88,7 @@ export default function App() {
         }
       />
 
+      
       <Route
         path="/student/notifications"
         element={
@@ -93,6 +97,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      */}
 
       <Route
         path="/student/profile"
@@ -103,6 +108,7 @@ export default function App() {
         }
       />
 
+      {/*
       <Route
         path="/student/settings"
         element={
@@ -111,19 +117,44 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      */}
 
       {/* Trainer, faculty and admin dashboards */}
       {roles.map((role) => (
         <Route
-          key={role}
-          path={`/${role}/*`}
-          element={
-            <ProtectedRoute allowedRoles={[role]}>
-              <Dashboard role={role} />
-            </ProtectedRoute>
-          }
+        key={role}
+        path={`/${role}/*`}
+        element={
+          <ProtectedRoute allowedRoles={[role]}>
+            <Dashboard role={role} />
+          </ProtectedRoute>
+        }
         />
       ))}
+
+
+      {/* Admin Pages */}
+      <Route
+        path='/admin/register'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <Register />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Faculty Pages */}
+
+
+      {/* Trainer Pages */}
+      <Route
+        path='/trainer/register'
+        element={
+          <ProtectedRoute allowedRoles={'trainer'}>
+            <TrainerRegister />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Unknown URLs */}
       <Route path="*" element={<NotFound />} />

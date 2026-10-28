@@ -1,6 +1,7 @@
 
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import itcaLogo from '../assets/itca-logo.png';
+import {useState, useEffect} from 'react'
 import {supabase} from '../supabase'
 
 const navigation = {
@@ -9,10 +10,10 @@ const navigation = {
     { label: "My Attendance", path: "attendance", icon: "✓" },
     { label: "Timetable", path: "timetable", icon: "▦" },
     { label: "My Enrolment", path: "enrolment", icon: "▤" },
-    { label: "Reports", path: "reports", icon: "▥" },
-    { label: "Notifications", path: "notifications", icon: "♧" },
+    //{ label: "Reports", path: "reports", icon: "▥" },
+    //{ label: "Notifications", path: "notifications", icon: "♧" },
     { label: "My Profile", path: "profile", icon: "◉" },
-    { label: "Settings", path: "settings", icon: "⚙" },
+    //{ label: "Settings", path: "settings", icon: "⚙" },
   ],
   trainer: [
     { label: "Dashboard", path: "dashboard", icon: "⌂" },
@@ -20,29 +21,30 @@ const navigation = {
     { label: "Attendance", path: "attendance", icon: "✓" },
     { label: "Students", path: "students", icon: "♙" },
     { label: "Timetable", path: "timetable", icon: "▤" },
-    { label: "Reports", path: "reports", icon: "▥" },
-    { label: "Notifications", path: "notifications", icon: "♧" },
-    { label: "Settings", path: "settings", icon: "⚙" },
+    //{ label: "Reports", path: "reports", icon: "▥" },
+    //{ label: "Notifications", path: "notifications", icon: "♧" },
+    //{ label: "Settings", path: "settings", icon: "⚙" },
   ],
   faculty: [
     { label: "Dashboard", path: "dashboard", icon: "⌂" },
     { label: "Enrolments", path: "enrolment", icon: "▤" },
     { label: "Timetable", path: "timetable", icon: "▦" },
-    { label: "Reports", path: "reports", icon: "▥" },
-    { label: "Notifications", path: "notifications", icon: "♧" },
+    //{ label: "Reports", path: "reports", icon: "▥" },
+    //{ label: "Notifications", path: "notifications", icon: "♧" },
     { label: "My Profile", path: "profile", icon: "◉" },
-    { label: "Settings", path: "settings", icon: "⚙" },
+    //{ label: "Settings", path: "settings", icon: "⚙" },
   ],
   admin: [
     { label: "Dashboard", path: "dashboard", icon: "⌂" },
     { label: "User Management", path: "users", icon: "♙" },
+    { label: 'Register User', path: 'register', icon: '▦'},
     { label: "Classes & Modules", path: "classes", icon: "▦" },
     { label: "Attendance", path: "attendance", icon: "✓" },
     { label: "Timetable", path: "timetable", icon: "▤" },
     { label: "Enrolments", path: "enrolment", icon: "▧" },
-    { label: "Reports", path: "reports", icon: "▥" },
-    { label: "Notifications", path: "notifications", icon: "♧" },
-    { label: "Settings", path: "settings", icon: "⚙" },
+    //{ label: "Reports", path: "reports", icon: "▥" },
+    //{ label: "Notifications", path: "notifications", icon: "♧" },
+    //{ label: "Settings", path: "settings", icon: "⚙" },
   ],
 };
 
@@ -52,8 +54,47 @@ function formatRole(role = "student") {
 
 export default function Layout({ role = "student", children, title }) {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("itcaUser") || "null");
+
+  const [user, setUser] = useState(null);
+  const [userLoading, setLoading] = useState(false)
+  const [userError, setError] = useState(null)
+
   const links = navigation[role] || navigation.student;
+
+  const loadStudent = async() => {
+    setLoading(true)
+    setError(null)
+
+    const {data: {user}, error: userError} =
+      await supabase.auth.getUser();
+
+      if(userError || !user){
+        setError(userError?.message ?? 'Please sign in')
+        setLoading(false)
+        return;
+      }
+
+      const {data: student, error: studentError} = await supabase
+        .from('student_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if(studentError){
+        setError(studentError.message);
+        setLoading(false)
+        return;
+      }
+
+      setUser(student)
+      setLoading(false)
+  }
+
+  useEffect(() => {
+    if(role == 'student'){
+      loadStudent();
+    }
+  }, [])
 
   const logout = async() => {
     await supabase.auth.signOut();
@@ -96,10 +137,18 @@ export default function Layout({ role = "student", children, title }) {
             <span className="user-avatar">
               {(user?.name || formatRole(role)).charAt(0).toUpperCase()}
             </span>
-            <span className="user-details">
-              <strong>{user?.name || `${formatRole(role)} User`}</strong>
-              <small>{formatRole(role)}</small>
-            </span>
+
+            {userLoading
+            ? (
+                <span className='user-details'>
+                  <strong>Loading...</strong>
+                </span>
+              ) : (
+                <span className="user-details">
+                  <strong>{user?.name + ' ' + user?.surname|| `${formatRole(role)} User`}</strong>
+                  <small>{formatRole(role)}</small>
+                </span>
+              )}
           </div>
 
           <button className="logout-button" onClick={logout}>
@@ -112,7 +161,16 @@ export default function Layout({ role = "student", children, title }) {
         <header className="topbar">
           <div>
             <p className="topbar-kicker">ITCA DIGITAL CAMPUS</p>
-            <h1 className="topbar-title">{title || "Dashboard"}</h1>
+            <h1 className="topbar-title">
+              {userLoading ?
+              (
+                'Loading...'
+              ) :
+              (
+                user?.name + '\'s ' + title || "Dashboard"
+              )}
+              
+            </h1>
           </div>
 
           <div className="topbar-actions">
