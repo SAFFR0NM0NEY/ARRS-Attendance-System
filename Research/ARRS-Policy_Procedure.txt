@@ -1,0 +1,74 @@
+Attendance Register Policy & Procedures
+1. Purpose
+1.1 This Policy establishes the rules and procedures governing the recording of student attendance through the QR‑based digital register system.
+1.2 The objective is to ensure accuracy, integrity, and fairness in attendance tracking across all participating campuses.
+
+2. Scope
+2.1 This Policy applies to all students, faculty, and administrators utilizing the attendance register system.
+2.2 Enforcement of disciplinary measures shall be subject to campus‑specific regulations.
+
+3. Definitions
+3.1 Valid Excuse shall mean a documented or verifiable reason for lateness or absence, including but not limited to medical certificates or official transport disruptions.
+3.2 Late shall mean arrival sixteen (16) minutes or more after the scheduled commencement of class.
+3.3 Fraudulent Login shall mean any attempt to mark attendance using another student’s credentials or while not physically present on campus.
+3.4 Attendance Threshold shall mean the minimum requirement of eighty percent (80%) attendance to qualify for examination participation.
+
+4. Roles and Responsibilities
+4.1 Students shall:
+a) Scan the QR code provided in class to access the attendance site;
+b) Log in to mark presence using their student number and a randomly generated daily passcode;
+c) Access their dashboard using email and password credentials, as determined by campus rules;
+d) Maintain confidentiality of all login credentials.
+
+4.2 Faculty shall:
+a) Generate and distribute daily passcodes;
+b) Monitor attendance records and override entries where appropriate;
+c) Mark students absent if late beyond fifteen (15) minutes without a valid excuse;
+d) Correct fraudulent or mistaken entries.
+
+4.3 Administrators shall:
+a) Assign system roles to individuals;
+b) Ensure compliance with this Policy and system integrity;
+c) Oversee archival and retention of attendance records.
+
+5. Authentication and Access Control
+5.1 Attendance login shall require a student number and a daily random passcode generated via SQL function.
+5.2 Dashboard login shall require email and password credentials, with the type of email and password determined by campus rules.
+5.3 System access shall be restricted to approved public IP ranges.
+5.4 Audit logs shall record login attempts, timestamps, and IP addresses.
+5.5 All data shall be encrypted in transit and at rest.
+
+6. Attendance Rules
+6.1 Students arriving sixteen (16) minutes or more late shall be marked absent unless a valid excuse is approved by faculty.
+6.2 Household inconveniences, including but not limited to water outages, shall not constitute valid excuses.
+6.3 Students marked present but not physically on campus shall be corrected to absent.
+6.4 Credential sharing or fraudulent login attempts shall constitute misconduct subject to disciplinary review.
+6.5 Faculty may override attendance status upon receipt of valid documentation.
+
+7. Data Integrity and Security
+7.1 Attendance logs shall be immutable for students.
+7.2 Faculty and administrators may update records only for legitimate corrections.
+7.3 Supabase backend shall enforce row‑level security; Firebase frontend shall be restricted by IP.
+7.4 Daily passcode rotation shall prevent credential reuse or sharing.
+
+8. Reporting and Notifications
+8.1 Students shall have access to attendance summaries via their dashboard.
+8.2 Faculty shall receive daily class attendance reports.
+8.3 Administrators shall generate campus‑level compliance reports.
+8.4 Parents or guardians shall be notified of low attendance below eighty percent (80%).
+
+9. Archival and Retention
+9.1 At the conclusion of each academic year, or upon student departure, a summary of attendance shall be created.
+9.2 Records shall be archived in accordance with campus rules and retained for extended periods, typically decades, to support graduate verification.
+9.3 Archived records shall be immutable and accessible only to authorized administrators.
+
+10. Enforcement and Penalties
+10.1 Penalties for lateness, absence, or fraudulent login shall be determined by campus‑specific regulations.
+10.2 Faculty may deny examination access to students whose attendance falls below eighty percent (80%).
+10.3 Repeated violations may be escalated to disciplinary committees.
+10.4 Fraudulent login attempts may result in suspension or expulsion, subject to severity and campus rules.
+
+11. Review and Amendment
+11.1 This Policy shall be reviewed annually or upon material changes to the system.
+11.2 Amendments shall be communicated to all stakeholders prior to enforcement.
+11.3 Campus administrators may adapt enforcement details to comply with local regulations.
