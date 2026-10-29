@@ -664,6 +664,9 @@ export default function Faculty_Dashboard() {
               <option value='' disabled>
                 -- Choose Table --
               </option>
+              <option value='CYSC_Y1-2026'>
+                CYSC_Y1-2026
+              </option>
               {student_tables.map((table) => (
                 <option key={table} value={table}>
                   {table}

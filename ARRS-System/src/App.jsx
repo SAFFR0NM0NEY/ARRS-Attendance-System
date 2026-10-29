@@ -12,6 +12,9 @@ import NotFound from "./pages/NotFound.jsx";
 //Faculty Specific Pages
 import TrainerRegister from './pages/Register.jsx';
 
+//Admin Pages
+import UserManager from './pages/user_manage.jsx'
+
 // Student pages
 import MyAttendance from "./pages/MyAttendance.jsx";
 import Timetable from "./pages/Timetable.jsx";
@@ -139,6 +142,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={'admin'}>
             <Register />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/admin/users'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <UserManager />
           </ProtectedRoute>
         }
       />

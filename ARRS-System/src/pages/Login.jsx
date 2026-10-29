@@ -90,7 +90,7 @@ export default function Login() {
             />
           </label>
 
-          <label classname='full-field' htmlFor="password">
+          <label className='full-field' htmlFor="password">
             Password
             <input
               id="password"

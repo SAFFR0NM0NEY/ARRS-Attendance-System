@@ -69,7 +69,7 @@ const dashboardData = {
     ],
     actions: [
       ["User Management", "/admin/users"],
-      ['Register User Account','/admin/register']
+      ['Register User Account','/admin/register'],
       ["Manage Classes", "/admin/classes"],
       ["View Attendance", "/admin/attendance"],
       ["Generate Reports", "/admin/reports"],
@@ -89,6 +89,11 @@ export default function Dashboard({ role = "student" }) {
       ...BaseData,
       title: `Dashboard`,
       description: `${BaseData.description} -- ${DBData.email}`,
+      stats:[
+        ["My Classes", `${DBData.classes}`, "▦"],
+      ["Attendance Rate", "--", "✓"],
+      ["Upcoming Class", "--", "◷"],
+      ],
     }
     : BaseData;
 
@@ -96,14 +101,12 @@ export default function Dashboard({ role = "student" }) {
     setDBLoading(true)
     setDBError(null)
 
-    const {data: {user}, error: userError} = 
+    try{
+      const {data: {user}, error: userError} = 
       await supabase.auth.getUser();
 
-      if(userError || !user){
-        setDBError(userError?.message ?? 'Please sign in to view your dashboard.')
-        setDBLoading(false)
-        return;
-      }
+      if(userError) throw userError
+      if(!user) throw new Error('Please sign in to view your dashboard')
 
       const {data: attendence, error: attendenceError} = await supabase
         .from('student_profiles')
@@ -111,17 +114,27 @@ export default function Dashboard({ role = "student" }) {
         .eq('id', user.id)
         .single();
 
-      if(attendenceError){
-        setDBError(attendenceError.message);
-        setDBLoading(false)
-        return;
-      }
+      if(attendenceError) throw attendenceError
 
-      setDBData(attendence)
+      const {data: classes, error: classError} = await supabase.rpc('get_student_classes',{
+        p_year: new Date().getFullYear()
+      })
 
+      if(classError) throw classError
 
+      setDBData({
+        ...attendence,
+        classes: classes ?? [],
+      });
+    }
+    catch (err){
+      setDBError(err.message)
+    }
+    finally{
       setDBLoading(false)
+    }
   }
+    
 
   const loadFacultyData = async () => {
     setDBLoading(true)
@@ -151,9 +164,44 @@ export default function Dashboard({ role = "student" }) {
     setDBLoading(false)
   }
 
-  const fetchStudentData = async () => {
+  {/*
+  const [StudentClass, setStudentClass] = useState([])
+  const [classLoading, setClassloading] = useState(true)
+  const [classError, setClasserror] = useState(null)
 
+  const year = new Date().getFullYear();
+
+  const fetchStudentData = async () => {
+    try {
+      setClassloading(true)
+      setClasserror(null)
+
+      if(!year){
+        setClasserror('Something went wrong with the year')
+        setClassloading(false)
+        return
+      }
+
+      const {data, error} = await supabase.rpc('get_student_classes', {
+        p_year: year,
+      });
+
+      if(error) throw error
+
+      setStudentClass(data || [])
+    }
+    catch(err){
+      console.error('Error fetching description:',err.message)
+      setClasserror(err.message)
+    }
+    finally{
+      setClassloading(false)
+    }
   }
+
+  useEffect(() => {
+    fetchStudentData();
+  }, [])
 
   const fetchTrainerData = async () => {
 
@@ -162,6 +210,7 @@ export default function Dashboard({ role = "student" }) {
   const fetchFacultyData = async () => {
     
   }
+  */}
 
   useEffect(() => {
     if(role == 'student'){

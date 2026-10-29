@@ -90,9 +90,40 @@ export default function Layout({ role = "student", children, title }) {
       setLoading(false)
   }
 
+  const loadFaculty = async() => {
+    setLoading(true)
+    setError(null)
+
+    const {data: {user}, error: userError} = 
+      await supabase.auth.getUser();
+
+      if(userError || !user){
+        setError(userError?.message || 'Please sign in')
+        setLoading(false)
+        return;
+      }
+
+      const {data: faculty, error: facultyError} = await supabase
+        .from('faculty_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if(facultyError){
+        setError(facultyError.message)
+        return;
+      }
+
+      setUser(faculty)
+      setLoading(false)
+  }
+
   useEffect(() => {
     if(role == 'student'){
       loadStudent();
+    }
+    else {
+      loadFaculty();
     }
   }, [])
 
@@ -146,7 +177,13 @@ export default function Layout({ role = "student", children, title }) {
               ) : (
                 <span className="user-details">
                   <strong>{user?.name + ' ' + user?.surname|| `${formatRole(role)} User`}</strong>
-                  <small>{formatRole(role)}</small>
+                  {role == 'faculty' ?
+                  (
+                    <small>{user?.title}</small>
+                  ) : (
+                    <small>{formatRole(role)}</small>
+                  )}
+                  
                 </span>
               )}
           </div>
