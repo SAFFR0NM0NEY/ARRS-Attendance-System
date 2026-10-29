@@ -83,20 +83,33 @@ export default function Dashboard({ role = "student" }) {
   const [DBData, setDBData] = useState(null)
   const [DBLoading, setDBLoading] = useState(true)
   const [DBError, setDBError] = useState(null)
+  const [counts, setCounts] = useState({students: 0, faculty: 0})
+  const [countsLoading, setCountsLoading] = useState(true);
 
-  const data = BaseData && DBData
+  const data = role == 'student' && BaseData && DBData
     ? {
       ...BaseData,
-      title: `Dashboard`,
-      description: `${BaseData.description} -- ${DBData.email}`,
+      greeting: `Welcome Back, ${DBData.profile.name}`,
+      description: `${BaseData.description} -- ${DBData.profile.email}`,
       stats:[
-        ["My Classes", `${DBData.classes}`, "▦"],
-      ["Attendance Rate", "--", "✓"],
-      ["Upcoming Class", "--", "◷"],
+        ["My Classes", `${DBData.classes.length}`, "▦"],
+        ["Attendance Rate", "--", "✓"],
+        ["Upcoming Class", "--", "◷"],
       ],
     }
+    : role == 'admin' && BaseData && DBData ? {
+      ...BaseData,
+      greeting: `Welcome Back Administrator, ${DBData.profile.name}`,
+      description: `${BaseData.description} -- ${DBData.profile.email}`,
+      stats: [
+        ["Student Accounts", `${countsLoading ? 'Loading...' : counts.students}`, "♙"],
+        ["Staff Accounts", `${countsLoading ? 'Loading...' : counts.faculty}`, "♧"],
+        ["Classes & Modules", "—", "▦"],
+        ["Pending Requests", "—", "⚑"],
+      ],
+    } 
     : BaseData;
-
+    
   const loadStudentData = async() => {
     setDBLoading(true)
     setDBError(null)
@@ -120,11 +133,11 @@ export default function Dashboard({ role = "student" }) {
         p_year: new Date().getFullYear()
       })
 
-      if(classError) throw classError
+      if(classError) throw classError;
 
       setDBData({
-        ...attendence,
-        classes: classes ?? [],
+        profile: attendence,
+        classes: Array.isArray(classes) ? classes : [],
       });
     }
     catch (err){
@@ -140,29 +153,49 @@ export default function Dashboard({ role = "student" }) {
     setDBLoading(true)
     setDBError(null)
 
-    const {data: {user}, error: userError} =
+    try{
+      const {data: {user}, error: userError} =
       await supabase.auth.getUser();
 
-    if(userError || !user){
-      setDBError(userError?.message ?? 'Please sign in to view dashboard')
-      setDBLoading(false)
-      return;
+      if(userError) throw userError
+      if(!user) throw new Error('Please sign in to view your dashboard')
+
+      const {data: facultyData, error: facultyError} = await supabase
+        .from('faculty_profiles')
+        .select('name, email, title')
+        .eq('id', user.id)
+        .single()
+
+      if(facultyError) throw facultyError
+
+      setDBData({
+        profile: facultyData,
+      })
     }
-
-    const {data: facultyData, error: facultyError} = await supabase
-      .from('faculty_profiles')
-      .select('name, email, title')
-      .eq('id', user.id)
-      .single()
-
-    if(facultyError){
-      setDBError(facultyError.message)
+    catch(err){
+      setDBError(err.message)
+    }
+    finally {
       setDBLoading(false)
     }
-
-    setDBData(facultyData)
-    setDBLoading(false)
   }
+
+  
+
+  useEffect(() => {
+    async function fetchCounts(){
+      const {data, error} = await supabase.rpc('get_user_counts');
+
+      if(error){
+        console.error('Error fetching counts:',error);
+      }
+      else{
+        setCounts(data);
+      }
+      setCountsLoading(false);
+    }
+    fetchCounts();
+  }, [])
 
   {/*
   const [StudentClass, setStudentClass] = useState([])
@@ -222,12 +255,12 @@ export default function Dashboard({ role = "student" }) {
   }, []);
 
 
-  {DBLoading && <p>Loading Data...</p>}
-  {DBError && <p>Something Went Wrong</p>}
-
   if(!data){
     return <p>Dashboard Unavailable</p>
   }
+
+  {DBLoading && <p role='status'>Loading dashboard data...</p>}
+  {DBError && <p role='alert'>Unable to load dashboard data: {DBError}</p>}
 
   return (
     <Layout role={role} title={data.title}>
@@ -259,6 +292,7 @@ export default function Dashboard({ role = "student" }) {
         ))}
       </section>
 
+      
       <section className="dashboard-lower-grid">
         <article className="content-card">
           <div className="card-heading">
