@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>ITCA Employee Directory</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Employee navigation">
+      <a class="brand" href="./employees.html">
+        <span class="brand-mark" aria-hidden="true">I</span>
+        <span><strong>ITCA</strong><small>Employee directory</small></span>
+      </a>
+      <div class="nav-caption">EMPLOYEE SYSTEM</div>
+      <nav class="nav-list">
+        <a href="./employees.html" aria-current="page">Directory</a>
+        <a href="#profile">My profile</a>
+        <a href="#departments">Departments</a>
+        <a href="../attendance/attendance.html">Attendance system</a>
+      </nav>
+      <p class="sidebar-note">Employee records are limited to directory information. Payroll and sensitive HR files are not included.</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="topbar-label">ITCA STAFF SERVICES</p><p class="topbar-title">Employee directory</p></div>
+        <a class="topbar-link" href="../attendance/attendance.html">Attendance system</a>
+      </header>
+
+      <div class="content">
+        <section class="page-heading">
+          <div>
+            <span class="eyebrow">EMPLOYEE MANAGEMENT</span>
+            <h1>Staff directory</h1>
+            <p class="lede">A separate employee application for staff profiles, department membership and job titles, protected by employee-specific roles and network access rules.</p>
+          </div>
+          <span class="badge">UI prototype — not connected</span>
+        </section>
+
+        <div class="notice" role="note">
+          <strong>This screen is a static prototype.</strong>
+          No employee records are loaded or changed here. The production API must authenticate each request, enforce employee-admin permissions, and audit profile changes.
+        </div>
+
+        <div class="grid">
+          <section class="card" id="profile">
+            <h2>My employee profile</h2>
+            <p>Employees may view their own profile. Changes are made by an authorized employee administrator.</p>
+            <div class="status"><span>Account</span><strong>Sign in through the approved identity provider</strong></div>
+            <div class="status"><span>Role</span><strong>Read from trusted server-side role claims</strong></div>
+            <div class="status"><span>Network</span><strong>Managed staff network or VPN</strong></div>
+          </section>
+
+          <section class="card" id="departments">
+            <h2>Directory filters</h2>
+            <p>Directory results are returned only after authentication and role checks. Do not place employee data in public HTML.</p>
+            <div class="field">
+              <label for="department">Department</label>
+              <select id="department" disabled>
+                <option>Available after secure API connection</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="search">Search name or job title</label>
+              <input id="search" type="search" placeholder="Directory API not connected" disabled>
+            </div>
+            <button class="button button-secondary" type="button" disabled>Load directory</button>
+          </section>
+
+          <section class="card">
+            <h2>Employees</h2>
+            <p>Only active, authorized employee accounts are included in the directory.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Department</th><th>Job title</th></tr></thead>
+                <tbody><tr><td class="empty" colspan="3">No records loaded — connect the authenticated API.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Administrator actions</h2>
+            <p>Create, update, and deactivate employee directory entries only with the employee-admin role.</p>
+            <div class="status"><span>API state</span><strong class="api-status">Not connected</strong></div>
+            <div class="status"><span>Change audit</span><strong>Server-side append-only log</strong></div>
+            <div class="status"><span>Payroll data</span><strong>Not collected by this system</strong></div>
+          </section>
+        </div>
+
+        <p class="footer">Protect employee records as personal information. Apply retention, access review and incident-response policies before connecting real data.</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

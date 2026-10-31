@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>ITCA Attendance Portal</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Attendance navigation">
+      <a class="brand" href="./attendance.html">
+        <span class="brand-mark" aria-hidden="true">I</span>
+        <span><strong>ITCA</strong><small>Attendance portal</small></span>
+      </a>
+      <div class="nav-caption">ATTENDANCE</div>
+      <nav class="nav-list">
+        <a href="./attendance.html" aria-current="page">Check-in</a>
+        <a href="#session-details">Session details</a>
+        <a href="#security">Security status</a>
+        <a href="../employees/employees.html">Employee system</a>
+      </nav>
+      <p class="sidebar-note">Campus attendance is subject to server-side authentication, session validation and network policy.</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="topbar-label">ITCA DIGITAL CAMPUS</p><p class="topbar-title">Student attendance</p></div>
+        <a class="topbar-link" href="../employees/employees.html">Employee system</a>
+      </header>
+
+      <div class="content">
+        <section class="page-heading">
+          <div>
+            <span class="eyebrow">SECURE ATTENDANCE</span>
+            <h1>Class check-in</h1>
+            <p class="lede">Attendance requests must be authenticated and checked by the server against the active session, venue, registered device, and approved campus network.</p>
+          </div>
+          <span class="badge">UI prototype — not connected</span>
+        </section>
+
+        <div class="notice" role="note">
+          <strong>This screen does not record attendance.</strong>
+          Connect it to the authenticated API and Supabase migration before operational use. Never accept attendance solely from a QR scan or browser-side network check.
+        </div>
+
+        <div class="grid">
+          <section class="card" id="session-details">
+            <h2>Attendance session</h2>
+            <p>Session and venue values must come from the server-validated QR context; the QR itself is not authorization.</p>
+            <div class="field">
+              <label for="session-reference">Session reference</label>
+              <input id="session-reference" type="text" placeholder="Provided by the secured attendance API" disabled>
+            </div>
+            <div class="field">
+              <label for="venue">Venue code</label>
+              <input id="venue" type="text" placeholder="Read from the fixed venue QR" disabled>
+            </div>
+            <button class="button" type="button" disabled>Submit check-in (API not connected)</button>
+          </section>
+
+          <section class="card" id="security">
+            <h2>Request security</h2>
+            <p>The trusted gateway supplies the verified client address. Browser-provided IP headers and geolocation are not trusted.</p>
+            <div class="status"><span>API state</span><strong class="api-status">Not connected</strong></div>
+            <div class="status"><span>Campus network</span><strong>Gateway check required</strong></div>
+            <div class="status"><span>Session time</span><strong>Server validation required</strong></div>
+            <div class="status"><span>Duplicate scan</span><strong>Unique database key</strong></div>
+          </section>
+        </div>
+
+        <p class="footer">Do not enter passwords on this static prototype. Sign-in must use the institution's approved identity flow. Attendance is available only through the campus-managed network or approved managed VPN.</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

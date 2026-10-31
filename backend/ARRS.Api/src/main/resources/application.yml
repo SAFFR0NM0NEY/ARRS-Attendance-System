@@ -1,0 +1,34 @@
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: none
+  error:
+    include-message: never
+    include-stacktrace: never
+
+security:
+  jwt:
+    issuer: ${SUPABASE_JWT_ISSUER}
+    jwks-uri: ${SUPABASE_JWKS_URI}
+    audience: ${SUPABASE_JWT_AUDIENCE:authenticated}
+  network:
+    gateway-token: ${SECURITY_NETWORK_GATEWAY_TOKEN}
+    attendance-cidrs: ${ATTENDANCE_ALLOWED_CIDRS}
+    employee-cidrs: ${EMPLOYEE_ALLOWED_CIDRS}
+
+spring:
+  application:
+    name: itca-attendance-employee-api
+  datasource:
+    url: ${DATABASE_JDBC_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DATABASE_POOL_SIZE:8}
+      connection-timeout: 3000
+      validation-timeout: 1000
+      data-source-properties:
+        sslmode: verify-full
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
