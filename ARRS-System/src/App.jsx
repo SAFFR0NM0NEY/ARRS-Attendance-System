@@ -3,25 +3,29 @@ import { Route, Routes } from "react-router-dom";
 
 import Welcome from "./pages/Welcome.jsx";
 import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
 import CheckIn from "./pages/CheckIn.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
-//Faculty Specific Pages
-import TrainerRegister from './pages/Register.jsx';
+//Trainer Pages
+import TrainerRegister from "./pages/register_trainer.jsx";
+import TrainerEnrolment from "./pages/enrolment_trainer.jsx";
 
 //Admin Pages
 import UserManager from './pages/user_manage.jsx'
+import GroupManager from './pages/classes.jsx'
+import AdminEnrolment from "./pages/enrolment.jsx";
+import AdminTimetable from "./pages/timetable_admin.jsx";
+import Register from "./pages/Register.jsx";
 
 // Student pages
 import MyAttendance from "./pages/MyAttendance.jsx";
 import Timetable from "./pages/Timetable.jsx";
 import MyEnrolment from "./pages/MyEnrolment.jsx";
+import MyProfile from "./pages/MyProfile.jsx";
 import Reports from "./pages/Reports.jsx";
 import Notifications from "./pages/Notifications.jsx";
-import MyProfile from "./pages/MyProfile.jsx";
 import Settings from "./pages/Settings.jsx";
 
 const roles = ["trainer", "faculty", "admin"];
@@ -155,6 +159,33 @@ export default function App() {
         }
       />
 
+      <Route 
+        path='/admin/classes'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <GroupManager />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path='/admin/enrolment'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <AdminEnrolment />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/admin/timetable'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <AdminTimetable />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Faculty Pages */}
 
 
@@ -164,6 +195,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={'trainer'}>
             <TrainerRegister />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path='/trainer/enrolment'
+        element={
+          <ProtectedRoute allowedRoles={'trainer'}>
+            <TrainerEnrolment />
           </ProtectedRoute>
         }
       />

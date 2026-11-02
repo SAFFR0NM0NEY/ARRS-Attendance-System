@@ -39,6 +39,7 @@ const dashboardData = {
       ["Record Attendance", "/trainer/attendance"],
       ["View Students", "/trainer/students"],
       ["View Timetable", "/trainer/timetable"],
+      ['Register Student','/trainer/register'],
     ],
   },
   faculty: {
@@ -64,15 +65,17 @@ const dashboardData = {
     stats: [
       ["Student Accounts", "—", "♙"],
       ["Staff Accounts", "—", "♧"],
-      ["Classes & Modules", "—", "▦"],
+      ["Groups", "—", "▦"],
       ["Pending Requests", "—", "⚑"],
     ],
     actions: [
       ["User Management", "/admin/users"],
       ['Register User Account','/admin/register'],
-      ["Manage Classes", "/admin/classes"],
+      ["Group Management", "/admin/classes"],
       ["View Attendance", "/admin/attendance"],
-      ["Generate Reports", "/admin/reports"],
+      ['Enroll Student','/admin/enrolment'],
+      ['View Timetable','/admin/timetable'],
+      //["Generate Reports", "/admin/reports"],
     ],
   },
 };
@@ -80,9 +83,12 @@ const dashboardData = {
 export default function Dashboard({ role = "student" }) {
   const BaseData = dashboardData[role] || dashboardData.student;
 
+  //Profile Data constants
   const [DBData, setDBData] = useState(null)
   const [DBLoading, setDBLoading] = useState(true)
   const [DBError, setDBError] = useState(null)
+
+  //Admin Constants
   const [counts, setCounts] = useState({students: 0, faculty: 0})
   const [countsLoading, setCountsLoading] = useState(true);
 
@@ -104,7 +110,7 @@ export default function Dashboard({ role = "student" }) {
       stats: [
         ["Student Accounts", `${countsLoading ? 'Loading...' : counts.students}`, "♙"],
         ["Staff Accounts", `${countsLoading ? 'Loading...' : counts.faculty}`, "♧"],
-        ["Classes & Modules", "—", "▦"],
+        ["Groups", "—", "▦"],
         ["Pending Requests", "—", "⚑"],
       ],
     } 
@@ -179,8 +185,6 @@ export default function Dashboard({ role = "student" }) {
       setDBLoading(false)
     }
   }
-
-  
 
   useEffect(() => {
     async function fetchCounts(){

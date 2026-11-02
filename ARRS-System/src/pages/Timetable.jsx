@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import Layout from "../components/Layout.jsx";
+import { supabase } from "../supabase.js";
 
 export default function Timetable() {
   {/*

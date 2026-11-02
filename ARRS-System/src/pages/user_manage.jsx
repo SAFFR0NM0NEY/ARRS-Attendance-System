@@ -8,7 +8,7 @@ export default function UserManager() {
   const [errorMessage, setErrorMessage] = useState(null)
 
   if(!errorMessage) {
-    <p>errorMessage</p>
+    <p>{errorMessage}</p>
   }
 
   return (
@@ -17,7 +17,7 @@ export default function UserManager() {
         <div>
           <span className='eyebrow'>Manage ITCA Accounts</span>
           <h2>User Accounts</h2>
-          <p>Manage ITCA student, faculty, and trainer accounts</p>
+          <p>Manage ITCA Student, Faculty, and Trainer accounts</p>
         </div>
       </section>
     </Layout>
