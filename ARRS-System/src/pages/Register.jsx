@@ -9,6 +9,24 @@ export default function Register() {
     password: ""
   });
 
+  const [studentInfo, setStudentInfo] = useState({
+    name: '',
+    surname: '',
+    student_nr: '',
+    contact: '',
+    spon_name: '',
+    spon_surname: '',
+    spon_email: '',
+    spon_contact: ''
+  });
+
+  const [facultyInfo, setFacultyInfo] = useState({
+    name: '',
+    surname: '',
+    contact: '',
+    title: '',
+    status: ''
+  })
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("");
@@ -21,6 +39,18 @@ export default function Register() {
       [event.target.name]: event.target.value
     });
     setMessage("");
+  }
+
+  function handleOtherChange(e) {
+    if(form.role === 'student'){
+      setStudentInfo({
+        ...studentInfo,
+        [e.target.name]: e.target.value
+      })
+    }
+    else if(form.role === 'trainer'){
+
+    }
   }
 
   const handleSubmit = async (event) => {
@@ -39,6 +69,39 @@ export default function Register() {
       setLoading(false)
     }
     else {
+      if(form.role === 'student'){
+        const {insertError} = await supabase.rpc('insert_student_profile',{
+          p_name: studentInfo.name,
+          p_surname: studentInfo.surname,
+          p_student_nr: studentInfo.student_nr,
+          p_email: form.email,
+          p_contact: studentInfo.contact,
+          p_spon_name: studentInfo.spon_name,
+          p_spon_surname: studentInfo.spon_surname,
+          p_spon_email: studentInfo.spon_email,
+          p_spon_contact: studentInfo.spon_contact
+        })
+
+        if(insertError){
+          setErrorMessage('Something went wrong inserting student', insertError.message)
+          setLoading(false)
+        }
+        else {
+          setStudentInfo({
+            name: '',
+            surname: '',
+            student_nr: '',
+            contact: '',
+            spon_name: '',
+            spon_surname: '',
+            spon_email: '',
+            spon_contact: ''
+          })
+        }
+      }
+      else if(form.role === 'trainer' || form.role === 'faculty' || form.role === 'admin'){
+
+      }
       setMessage('Account Registered')
       setForm({
         email: '',
@@ -64,7 +127,7 @@ export default function Register() {
 
         <form className='input-grid' onSubmit={handleSubmit}>
           <label className='full-field' htmlFor="registerEmail">
-            Email address:
+            User Email address:
             <input
               id="registerEmail"
               name="email"
@@ -77,23 +140,8 @@ export default function Register() {
             />
           </label>
 
-          <label className='full-field' htmlFor='registerRole'>
-            User Role:
-            <select
-              id='userRole'
-              name='role'
-              value={form.role}
-              onChange={handleChange}
-            >
-              <option value='student'>Student</option>
-              <option value='faculty'>Faculty</option>
-              <option value='trainer'>Trainer</option>
-              <option value='admin'>Admin</option>
-            </select>
-          </label>
-
           <label className='full-field' htmlFor="registerPassword">
-            Create password:
+            Create Temp password:
             <input
               id="registerPassword"
               name="password"
@@ -106,6 +154,120 @@ export default function Register() {
               required
             />
           </label>
+
+          <label className='full-field' htmlFor='registerRole'>
+            User Role:
+            <select
+              id='userRole'
+              name='role'
+              value={form.role}
+              onChange={handleChange}
+              required
+            >
+              <option value='' disabled>--Select Role--</option>
+              <option value='student'>Student</option>
+              <option value='faculty'>Faculty</option>
+              <option value='trainer'>Trainer</option>
+              <option value='admin'>Admin</option>
+            </select>
+          </label>
+
+          {form.role === 'student'
+          ? (
+            <>
+              <label className='full-field' htmlFor='registerName'>
+                Student Name:
+                <input 
+                  name='name'
+                  type='text'
+                  value={studentInfo.name}
+                  onChange={handleOtherChange}
+                  required
+                /> 
+              </label>
+
+              <label className='full-field' htmlFor='registerSurname'>
+                Student Last Name:
+                <input
+                  type='text'
+                  name='surname'
+                  value={studentInfo.surname}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerStudentNr'>
+                Student Number:
+                <input
+                  type='text'
+                  name='student_nr'
+                  value={studentInfo.student_nr}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSponsorName'>
+                Sponsor Name:
+                <input
+                  type='text'
+                  name='spon_name'
+                  value={studentInfo.spon_name}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSponsorSurname'>
+                Sponsor Last Name:
+                <input
+                  type='text'
+                  name='spon_surname'
+                  value={studentInfo.spon_surname}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSponsorEmail'>
+                Sponsor Email:
+                <input
+                  type='email'
+                  name='spon_email'
+                  value={studentInfo.spon_email}
+                  onChange={handleOtherChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSponsorContact'>
+                Sponsor Contact:
+                <input
+                  type='text'
+                  name='spon_contact'
+                  value={studentInfo.spon_contact}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+            </>
+          ) : form.role === 'trainer' ? (
+            <label className='full-field' htmlFor='registerName'>
+              Trainer Name:
+              <input
+                type='text'
+                name='name'
+                value={facultyInfo.name}
+                onChange={handleOtherChange}
+              />
+            </label>
+          ) : (
+            <>
+            </>
+          )}
 
           <button type="submit" className="button button-primary button-full" disabled={loading}>
             {loading ? 'Registering...' : 'Register Account'}
