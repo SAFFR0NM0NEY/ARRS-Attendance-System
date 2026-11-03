@@ -13,6 +13,7 @@ export default function Register() {
     name: '',
     surname: '',
     student_nr: '',
+    id_nr: '',
     contact: '',
     spon_name: '',
     spon_surname: '',
@@ -48,8 +49,11 @@ export default function Register() {
         [e.target.name]: e.target.value
       })
     }
-    else if(form.role === 'trainer'){
-
+    else if(form.role === 'trainer' || form.role === 'faculty' || form.role === 'admin'){
+      setFacultyInfo({
+        ...facultyInfo,
+        [e.target.name]: e.target.value
+      })
     }
   }
 
@@ -70,10 +74,11 @@ export default function Register() {
     }
     else {
       if(form.role === 'student'){
-        const {insertError} = await supabase.rpc('insert_student_profile',{
+        const {studentInsertError} = await supabase.rpc('insert_student_profile',{
           p_name: studentInfo.name,
           p_surname: studentInfo.surname,
           p_student_nr: studentInfo.student_nr,
+          p_id_nr: studentInfo.id_nr,
           p_email: form.email,
           p_contact: studentInfo.contact,
           p_spon_name: studentInfo.spon_name,
@@ -82,8 +87,8 @@ export default function Register() {
           p_spon_contact: studentInfo.spon_contact
         })
 
-        if(insertError){
-          setErrorMessage('Something went wrong inserting student', insertError.message)
+        if(studentInsertError){
+          setErrorMessage('Something went wrong inserting student', studentInsertError.message)
           setLoading(false)
         }
         else {
@@ -91,6 +96,7 @@ export default function Register() {
             name: '',
             surname: '',
             student_nr: '',
+            id_nr: '',
             contact: '',
             spon_name: '',
             spon_surname: '',
@@ -100,7 +106,27 @@ export default function Register() {
         }
       }
       else if(form.role === 'trainer' || form.role === 'faculty' || form.role === 'admin'){
+        const {facultyInsertError} = await supabase.rpc('insert_faculty_profile', {
+          f_email: form.email,
+          f_name: facultyInfo.name,
+          f_surname: facultyInfo.surname,
+          f_contact: facultyInfo.contact,
+          f_title: facultyInfo.title,
+          f_status: facultyInfo.status
+        })
 
+        if(facultyInsertError){
+          setErrorMessage('Something went wrong inserting faculty', facultyInsertError.message)
+        }
+        else {
+          setFacultyInfo({
+            name: '',
+            surname: '',
+            contact: '',
+            title: '',
+            status: ''
+          })
+        }
       }
       setMessage('Account Registered')
       setForm({
@@ -208,6 +234,28 @@ export default function Register() {
                 />
               </label>
 
+              <label className='full-field' htmlFor='registerIdNr'>
+                Student ID Number:
+                <input
+                  type='text'
+                  name='id_nr'
+                  value={studentInfo.id_nr}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerContact'>
+                Student Contact:
+                <input
+                  type='text'
+                  name='contact'
+                  value={studentInfo.contact}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
               <label className='full-field' htmlFor='registerSponsorName'>
                 Sponsor Name:
                 <input
@@ -255,15 +303,182 @@ export default function Register() {
               </label>
             </>
           ) : form.role === 'trainer' ? (
-            <label className='full-field' htmlFor='registerName'>
-              Trainer Name:
-              <input
-                type='text'
-                name='name'
-                value={facultyInfo.name}
-                onChange={handleOtherChange}
-              />
-            </label>
+            <>
+              <label className='full-field' htmlFor='registerName'>
+                Trainer Name:
+                <input
+                  type='text'
+                  name='name'
+                  value={facultyInfo.name}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSurname'>
+                Trainer Surname:
+                <input
+                  type='text'
+                  name='surname'
+                  value={facultyInfo.surname}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerContact'>
+                Trainer Contact:
+                <input
+                  type='text'
+                  name='contact'
+                  value={facultyInfo.contact}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerTitle'>
+                Trainer Title:
+                <input
+                  type='text'
+                  name='title'
+                  value={facultyInfo.title}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerStatus'>
+                Trainer Status:
+                <select
+                  name='status'
+                  value={facultyInfo.status}
+                  onChange={handleOtherChange}
+                >
+                  <option value='' disabled>--Select Status--</option>
+                  <option value='Active'>Active</option>
+                  <option value='Not-Active'>Not Active</option>
+                </select>
+              </label>
+            </>
+          ) : form.role === 'faculty' ? (
+            <>
+              <label className='full-field' htmlFor='registerName'>
+                Faculty Name:
+                <input
+                  type='text'
+                  name='name'
+                  value={facultyInfo.name}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSurname'>
+                Faculty Surname:
+                <input
+                  type='text'
+                  name='surname'
+                  value={facultyInfo.surname}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerContact'>
+                Faculty Contact:
+                <input
+                  type='text'
+                  name='contact'
+                  value={facultyInfo.contact}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerTitle'>
+                Faculty Title:
+                <input
+                  type='text'
+                  name='title'
+                  value={facultyInfo.title}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerStatus'>
+                Faculty Status:
+                <select
+                  name='status'
+                  value={facultyInfo.status}
+                  onChange={handleOtherChange}
+                >
+                  <option value='' disabled>--Select Status--</option>
+                  <option value='Active'>Active</option>
+                  <option value='Not-Active'>Not Active</option>
+                </select>
+              </label>
+            </>
+          ) : form.role === 'admin' ? (
+            <>
+              <label className='full-field' htmlFor='registerName'>
+                Administrator Name:
+                <input
+                  type='text'
+                  name='name'
+                  value={facultyInfo.name}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerSurname'>
+                Administrator Surname:
+                <input
+                  type='text'
+                  name='surname'
+                  value={facultyInfo.surname}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerContact'>
+                Administrator Contact:
+                <input
+                  type='text'
+                  name='contact'
+                  value={facultyInfo.contact}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerTitle'>
+                Administrator Title:
+                <input
+                  type='text'
+                  name='title'
+                  value={facultyInfo.title}
+                  onChange={handleOtherChange}
+                  required
+                />
+              </label>
+
+              <label className='full-field' htmlFor='registerStatus'>
+                Administrator Status:
+                <select
+                  name='status'
+                  value={facultyInfo.status}
+                  onChange={handleOtherChange}
+                >
+                  <option value='' disabled>--Select Status--</option>
+                  <option value='Active'>Active</option>
+                  <option value='Not-Active'>Not Active</option>
+                </select>
+              </label>
+            </>
           ) : (
             <>
             </>
