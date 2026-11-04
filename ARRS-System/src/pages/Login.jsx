@@ -41,6 +41,37 @@ export default function Login() {
       return
     }
 
+    const table = account.role === 'student' ? 'student_profiles' : 'faculty_profiles';
+
+    const col = table === 'student_profiles' ? 'student_status' : 'status';
+
+    const {data: details, error: detailsError} = await supabase
+      .from(table)
+      .select(col)
+      .eq('id', userId)
+      .single()
+
+    if(detailsError){
+      setError('Somthing Went Wrong with Your Account')
+      setLoading(false)
+      return
+    }
+
+    if(table === 'student_profiles'){
+      if(!details.student_status){
+        setError('Your account is no longer active, please contact authorized personal to resolve this issue.')
+        setLoading(false)
+        return
+      }
+    }
+    else {
+      if(details.status === 'Not Active'){
+        setError('Your account is no longer active, please contact authorized personal to resolve this issue.')
+        setLoading(false)
+        return
+      }
+    }
+
     // Return to the requested page only if it belongs to this role.
     const requestedPath = location.state?.from?.pathname;
     const safeDefault = `/${account.role}/dashboard`;

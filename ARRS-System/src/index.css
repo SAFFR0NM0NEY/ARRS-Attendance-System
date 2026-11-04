@@ -206,6 +206,33 @@ textarea:focus-visible {
   transform: translateY(-2px);
 }
 
+.dashboard-button {
+  padding-left: 20px;
+  min-height: 23px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.dashboard-button-block {
+  display: inline-flex;
+  gap: 5px;
+  padding-left: 0px;
+  padding-top: 5px;
+}
+
+.filter_block label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.filter_value {
+  width: 60%;
+
+}
+
+
 .button-primary {
   color: #fff;
   background: linear-gradient(110deg, var(--green-dark), var(--green));
