@@ -14,6 +14,25 @@ export default function UserManager() {
   const [editingField, setEditingField] = useState(null)
   const [editValue, setEditValue] = useState('');
 
+  const [editFormS, setEditFormS] = useState({
+    name: '',
+    surname: '',
+    student_nr: '',
+    id_nr: '',
+    contact: '',
+    spon_name: '',
+    spon_surname: '',
+    spon_email: '',
+    spon_contact: '',
+  })
+
+  const [editFormF, setEditFormF] = useState({
+    name: '',
+    surname: '',
+    title: '',
+    contact: ''
+  })
+
   const role_config = {
     Student: {
       table: 'student_profiles',
@@ -86,14 +105,49 @@ export default function UserManager() {
     return matchValue && matchRole
   })
 
-  const handleEdit = (profile) => {
+  const handleEditS = (profile) => {
     setEditingID(profile.id);
-    setEditValue(profile.name || '');
+    setEditFormS({
+      name: profile.name || '',
+      surname: profile.surname || '',
+      student_nr: profile.student_nr || '',
+      id_nr: profile.id_nr || '',
+      contact: profile.contact_nr || '',
+    })
   }
 
-  const handleSurname = (profile) => {
+  const editSChange = (e) => {
+    setEditFormS({
+      ...editFormS,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleEditSS = (profile) => {
     setEditingID(profile.id);
-    setEditValue(profile.surname || '');
+    setEditFormS({
+      spon_name: profile.sponsor_name || '',
+      spon_surname: profile.sponsor_surname || '',
+      spon_email: profile.sponsor_email || '',
+      spon_contact: profile.sponsor_contact || '',
+    })
+  }
+
+  const handleEditF = (profile) => {
+    setEditingID(profile.id);
+    setEditFormF({
+      name: profile.name || '',
+      surname: profile.surname || '',
+      title: profile.title || '',
+      contact: profile.contact || '',
+    })
+  }
+
+  const editFChange = (e) => {
+    setEditFormF({
+      ...editFormF,
+      [e.target.name]: e.target.value,
+    })
   }
 
   const handleRT = (profile) => {
@@ -106,52 +160,94 @@ export default function UserManager() {
     }
   }
 
-  const saveEdit = async (profile) => {
-    try {
-      const tableName = profile.role === 'Student' ? 'student_profiles' : 'faculty_profiles';
-
-      const {error: updateError} = await supabase
-        .from(tableName)
-        .update({name: editValue})
-        .eq('id', profile.id);
-
-      if(updateError) throw updateError
-
-      setProfiles(prevProfiles => 
-        prevProfiles.map(p => (p.id === profile.id ? {...p, name: editValue} : p))
-      );
-
-      setEditingID(null)
-      setEditingField(null)
-      setEditValue('')
-    }
-    catch(err){
-      console.error('Error Updating User:', err.message);
-      setErrorMessage(err.message)
-    }
-  }
-
-  const saveSurname = async (profile) => {
+  const saveEditS = async (profile) => {
     try {
       const table = profile.role === 'Student' ? 'student_profiles' : 'faculty_profiles';
 
       const {error: updateError} = await supabase
         .from(table)
-        .update({surname: editValue})
-        .eq('id', profile.id);
+        .update({
+          name: editFormS.name,
+          surname: editFormS.surname,
+          student_nr: editFormS.student_nr,
+          id_nr: editFormS.id_nr,
+          contact_nr: editFormS.contact
+        })
+        .eq('id',profile.id);
 
       if(updateError) throw updateError
 
-      setProfiles(prevProfiles =>
-        prevProfiles.map(p => (p.id === profile.id ? {...p, surname: editValue} : p))
+      setProfiles(prevProfiles => 
+        prevProfiles.map(p => (p.id === profile.id ? {...p, 
+          name: editFormS.name,
+          surname: editFormS.surname,
+          student_nr: editFormS.student_nr,
+          id_nr: editFormS.id_nr,
+          contact_nr: editFormS.contact
+        } : p))
       )
 
       setEditingID(null)
       setEditingField(null)
-      setEditValue('')
+      setEditFormS({
+        name: '',
+        surname: '',
+        student_nr: '',
+        id_nr: '',
+        contact: '',
+        spon_name: '',
+        spon_surname: '',
+        spon_email: '',
+        spon_contact: '',
+      })
     }
     catch(err){
-      console.error('Error Updating User:', err.message)
+      console.error('Error updating User:',err.message)
+      setErrorMessage(err.message)
+    }
+  }
+
+  const saveEditSS = async (profile) => {
+    try{
+      const table = profile.role === 'Student' ? 'student_profiles' : 'faculty_profiles'
+
+      const {error: updateError} = await supabase
+        .from(table)
+        .update({
+          sponsor_name: editFormS.spon_name,
+          sponsor_surname: editFormS.spon_surname,
+          sponsor_email: editFormS.spon_email,
+          sponsor_contact: editFormS.spon_contact
+        })
+        .eq('id',profile.id)
+
+      if(updateError) throw updateError
+
+      setProfiles(prevProfiles => 
+        prevProfiles.map(p => (p.id === profile.id ? {...p, 
+          sponsor_name: editFormS.spon_name,
+          sponsor_surname: editFormS.spon_surname,
+          sponsor_email: editFormS.spon_email,
+          sponsor_contact: editFormS.spon_contact
+        }: p))
+      )
+
+      setEditingID(null)
+      setEditingField(null)
+      setEditFormS({
+        name: '',
+        surname: '',
+        student_nr: '',
+        id_nr: '',
+        contact: '',
+        spon_name: '',
+        spon_surname: '',
+        spon_email: '',
+        spon_contact: '',
+      })
+    }
+    catch(err){
+      console.error('Somethin went wrong updating user:',err.message)
       setErrorMessage(err.message)
     }
   }
@@ -325,27 +421,72 @@ export default function UserManager() {
                       </label>
                       <div className='dashboard-button-block'>
                         <button className='button button-primary dashboard-button' onClick={() => statusChange(profile)}>Change Status</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {handleEdit(profile); setEditingField('Name')}}>Edit Name</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {handleSurname(profile); setEditingField('Surname')}}>Edit Surname</button>
-                        <button className='button button-primary dashboard-button'>Edit Sponsor Details</button> 
+                        <button className='button button-primary dashboard-button' onClick={() => {handleEditS(profile); setEditingField('StudentDetails')}}>Edit Student Details</button>
+                        <button className='button button-primary dashboard-button' onClick={() => {handleEditSS(profile); setEditingField('SponsorDetails')}}>Edit Sponsor Details</button> 
                       </div>
                       <br/>
                       
                       {isEditing ? (
                         <>
-                          {editingField === 'Name' ? (
+                          {editingField === 'StudentDetails' ? (
                             <>
                               <label className='full-field'>
-                                Enter Name: 
+                                Enter Name:
                                 <input
                                   type='text'
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  placeholder='Enter name here'
+                                  name='name'
+                                  value={editFormS.name}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Enter Name Here'
                                 />
                               </label>
+                              <br/>
+                              <label className='full-field'>
+                                Enter Surname:
+                                <input
+                                  type='text'
+                                  name='surname'
+                                  value={editFormS.surname}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Enter Surname Here'
+                                />
+                              </label>
+                              <br/>
+                              <label className='full-field'>
+                                Enter Student Nr:
+                                <input
+                                  type='text'
+                                  name='student_nr'
+                                  value={editFormS.student_nr}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Enter Student Nr Here'
+                                />
+                              </label>
+                              <br/>
+                              <label className='full-field'>
+                                Enter ID Number:
+                                <input
+                                  type='text'
+                                  name='id_nr'
+                                  value={editFormS.id_nr}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Enter ID Number Here'
+                                />
+                              </label>
+                              <br/>
+                              <label className='full-field'>
+                                Enter Contact Nr:
+                                <input
+                                  type='text'
+                                  name='contact'
+                                  value={editFormS.contact}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Enter Contact Number Here'
+                                />
+                              </label>
+                              <br/>
                               <div className='dashboard-button-block'>
-                                <button className='button button-primary dashboard-button' onClick={() => {saveEdit(profile); setEditingField(null)}}>
+                                <button className='button button-primary dashboard-button' onClick={() => {saveEditS(profile); setEditingField(null)}}>
                                   Save
                                 </button>
                                 <button className='button button-primary dashboard-button' onClick={() => {setEditingID(null); setEditingField(null)}}>
@@ -353,19 +494,58 @@ export default function UserManager() {
                                 </button>
                               </div>
                             </>
-                          ) : editingField === 'Surname' ? (
+                          ): editingField === 'SponsorDetails' ? (
                             <>
-                              <label className='full-field'>
-                                Enter Surname:
+                              <label ClassName='full-field'>
+                                Enter Sponsor Name:
                                 <input
                                   type='text'
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  placeholder='Enter surname here'
+                                  name='spon_name'
+                                  value={editFormS.spon_name}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Sponsor Name Here'
                                 />
                               </label>
+                              <br/>
+
+                              <label ClassName='full-field'>
+                                Enter Sponsor Surname:
+                                <input
+                                  type='text'
+                                  name='spon_surname'
+                                  value={editFormS.spon_surname}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Sponsor Surname Here'
+                                />
+                              </label>
+                              <br/>
+
+                              <label ClassName='full-field'>
+                                Enter Sponsor Email:
+                                <input
+                                  type='text'
+                                  name='spon_email'
+                                  value={editFormS.spon_email}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Sponsor Email Here'
+                                />
+                              </label>
+                              <br/>
+
+                              <label ClassName='full-field'>
+                                Enter Sponsor Contact Nr:
+                                <input
+                                  type='text'
+                                  name='spon_contact'
+                                  value={editFormS.spon_contact}
+                                  onChange={(e) => editSChange(e)}
+                                  placeholder='Sponsor Contact Nr Here'
+                                />
+                              </label>
+                              <br/>
+
                               <div className='dashboard-button-block'>
-                                <button className='button button-primary dashboard-button' onClick={() => {saveSurname(profile); setEditingField(null)}}>
+                                <button className='button button-primary dashboard-button' onClick={() => {saveEditSS(profile); setEditingField(null)}}>
                                   Save
                                 </button>
                                 <button className='button button-primary dashboard-button' onClick={() => {setEditingID(null); setEditingField(null)}}>
@@ -376,8 +556,7 @@ export default function UserManager() {
                           ) : (
                             <>
                             </>
-                          )}
-                          
+                          )} 
                         </>
                       ) : (
                         <>
