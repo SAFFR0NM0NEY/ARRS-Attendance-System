@@ -22,24 +22,3 @@ export default function AdminEnrolment(){
     </Layout>
   )
 }
-
-export function TrainerEnrolment() {
-
-  const [loadingMess, setLoadingMess] = useState(false)
-  const [errorMess, setErrorMess] = useState(null)
-
-  if(!errorMess){
-    <p>{errorMess} Something went wrong</p>
-  }
-
-  return (
-    <Layout role='trainer' title='Enrolments'>
-      <section className='page-heading'>
-        <div>
-          <span className='eyebrow'>Manage ITCA Student Enrolments</span>
-          <h2>Enrolments</h2>
-        </div>
-      </section>
-    </Layout>
-  )
-}

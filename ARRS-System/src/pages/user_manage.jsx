@@ -12,7 +12,6 @@ export default function UserManager() {
 
   const [editingID, setEditingID] = useState(null)
   const [editingField, setEditingField] = useState(null)
-  const [editValue, setEditValue] = useState('');
 
   const [editFormS, setEditFormS] = useState({
     name: '',
@@ -150,16 +149,6 @@ export default function UserManager() {
     })
   }
 
-  const handleRT = (profile) => {
-    setEditingID(profile.id);
-    if(profile.role === 'Student'){
-      setEditValue(profile.role)
-    }
-    else{
-      setEditValue(profile.title)
-    }
-  }
-
   const saveEditS = async (profile) => {
     try {
       const table = profile.role === 'Student' ? 'student_profiles' : 'faculty_profiles';
@@ -252,36 +241,42 @@ export default function UserManager() {
     }
   }
 
-  const saveRT = async (profile) => {
+  const saveEditF = async (profile) => {
     try {
       const table = profile.role === 'Student' ? 'student_profiles' : 'faculty_profiles';
-      const config = role_config[profile.role];
 
-      if(!config){
-        throw new Error(`Unknown profile role: ${profile.role}`)
-      }
-
-      const update = {
-        [config.titleColumn]: editValue,
-      }
-      
       const {error: updateError} = await supabase
         .from(table)
-        .update(update)
+        .update({
+          name: editFormF.name,
+          surname: editFormF.surname,
+          title: editFormF.title,
+          contact: editFormF.contact,
+        })
         .eq('id', profile.id)
 
       if(updateError) throw updateError
 
-      setProfiles(prevProfiles => 
-        prevProfiles.map((p) => (p.id === profile.id ? {...p, [config.titleColumn]:editValue} : p))
+      setProfiles(prevProfiles =>
+        prevProfiles.map(p => (p.id === profile.id ? {...p,
+          name: editFormF.name,
+          surname: editFormF.surname,
+          title: editFormF.title,
+          contact: editFormF.contact,
+        } : p))
       )
 
       setEditingID(null)
       setEditingField(null)
-      setEditValue('')
+      setEditFormF({
+        name: '',
+        surname: '',
+        title: '',
+        contact: '',
+      })
     }
     catch(err){
-      console.error('Error updating User:', err.message)
+      console.error('Something went wrong updating user:', err.message)
       setErrorMessage(err.message)
     }
   }
@@ -416,7 +411,7 @@ export default function UserManager() {
                         Sponsor: {profile.sponsor_name} {profile.sponsor_surname} <br/>
                         Sponsor Email: {profile.sponsor_email} <br/>
                         Sponsor Contact: {profile.sponsor_contact} <br/>
-                        Groups: {profile.groups} <br/> 
+                        Groups: {profile.groups === null ? 'No Enrolled Groups' : profile.groups} <br/> 
                         Student Status: {profile.student_status ? 'Active' : 'Not Active'} <br/>
                       </label>
                       <div className='dashboard-button-block'>
@@ -568,83 +563,70 @@ export default function UserManager() {
                       <label>
                         Title: {profile.title} <br/>
                         Contact: {profile.contact} <br/>
+                        Groups: {profile.assigned_groups === null ? 'No Assigned Groups' : profile.assigned_groups} <br/>
                         Status: {profile.status} <br/>
                       </label>
                       <div className='dashboard-button-block'>
                         <button className='button button-primary dashboard-button' onClick={() => statusChange(profile)}>Change Status</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {handleEdit(profile); setEditingField('Name')}}>Edit Name</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {handleSurname(profile); setEditingField('Surname')}}>Edit Surname</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {handleRT(profile); setEditingField('Title')}}>Edit Title</button>
+                        <button className='button button-primary dashboard-button' onClick={() => handleEditF(profile)}>Edit User</button>
                       </div>
                       <br/>
 
                       {isEditing ? (
                         <>
-                          {editingField === 'Name' ? (
-                            <>
-                              <label className='full-field'>
-                                Enter Name: 
-                                <input
-                                type='text'
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                placeholder='Enter name here'
-                                />
-                              </label>
-                              <div className='dashboard-button-block'>
-                                <button className='button button-primary dashboard-button' onClick={() => saveEdit(profile)}>
-                                  Save
-                                </button>
-                                <button className='button button-primary dashboard-button' onClick={() => setEditingID(null)}>
-                                  Cancel
-                                </button>
-                              </div>
-                            </>
-                          ) : editingField === 'Surname' ? (
-                            <>
-                              <label className='full-field'>
-                                Enter Surname:
-                                <input
-                                  type='text'
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  placeholder='Enter surname here'
-                                />
-                              </label>
-                              <div className='dashboard-button-block'>
-                                <button className='button button-primary dashboard-button' onClick={() => {saveSurname(profile); setEditingField(null)}}>
-                                  Save
-                                </button>
-                                <button className='button button-primary dashboard-button' onClick={() => {setEditingID(null); setEditingField(null)}}>
-                                  Cancel
-                                </button>
-                              </div>
-                            </>
-                          ) : editingField === 'Title' ? (
-                            <>
-                              <label className='full-field'>
-                                Enter Title:
-                                <input
-                                  type='text'
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  placeholder='Enter title here'
-                                />
-                              </label>
-                              <div className='dashboard-button-block'>
-                                <button className='button button-primary dashboard-button' onClick={() => {saveRT(profile); setEditingField(null)}}>
-                                  Save
-                                </button>
-                                <button className='button button-primary dashboard-button' onClick={() => {setEditingID(null); setEditingField(null)}}>
-                                  Cancel
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                            </>
-                          )}
-                          
+                          <label className='full-field'>
+                            Enter Name:
+                            <input
+                              type='text'
+                              name='name'
+                              value={editFormF.name}
+                              onChange={(e) => editFChange(e)}
+                              placeholder='Enter name here'
+                            />
+                          </label>
+                          <br/>
+                          <label className='full-field'>
+                            Enter Surname:
+                            <input
+                              type='text'
+                              name='surname'
+                              value={editFormF.surname}
+                              onChange={(e) => editFChange(e)}
+                              placeholder='Enter surname here'
+                            />
+                          </label>
+                          <br/>
+                          <label className='full-field'>
+                            Enter Title:
+                            <input
+                              type='text'
+                              name='title'
+                              value={editFormF.title}
+                              onChange={(e) => editFChange(e)}
+                              placeholder='Enter title here'
+                            />
+                          </label>
+                          <br/>
+                          <label className='full-field'>
+                            Enter Contact:
+                            <input
+                              type='text'
+                              name='contact'
+                              value={editFormF.contact}
+                              onChange={(e) => editFChange(e)}
+                              placeholder='Enter contact here'
+                            />
+                          </label>
+                          <br/>
+
+                          <div className='dashboard-button-block'>
+                            <button className='button button-primary dashboard-button' onClick={() => saveEditF(profile)}>
+                              Save
+                            </button>
+                            <button className='button button-primary dashboard-button' onClick={() => setEditingID(null)}>
+                              Cancel
+                            </button>
+                          </div>
                         </>
                       ) : (
                         <>
