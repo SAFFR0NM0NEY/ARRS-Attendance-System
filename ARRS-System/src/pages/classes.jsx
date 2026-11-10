@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Layout from '../components/Layout'
 import {supabase} from '../supabase'
 
@@ -17,9 +17,10 @@ export default function GroupManager() {
 
   const [year_group, setYearGroup] = useState('')
   const [groupForm, setGroupForm] = useState({
-    group: '',
+    title: '',
     description: ''
   })
+  const [refreshing, setRefresh] = useState(false)
   const [groupStatus, setGroupStatus] = useState('')
   
   const CreateYearTable = async () => {
@@ -64,8 +65,13 @@ export default function GroupManager() {
     })
   }
 
+  useEffect(() => {
+
+  })
+
   const CreateGroup = async (e) => {
     e.preventDeafult();
+    setLoading(true)
     setGroupStatus('Creating Group...')
 
     try{
@@ -85,6 +91,10 @@ export default function GroupManager() {
     catch(err){
       console.error('Error creating group:',err.message);
       setGroupStatus(`Error: ${err.message}`)
+
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -117,7 +127,7 @@ export default function GroupManager() {
       </section>
       <br/>
       <section className='content-card'>
-        Create Year For {year} <br/>
+        <h4>Create Year For {year} </h4>
         <button className='button button-primary dashboard-button' onClick={CreateYearTable}>
           Create Year
         </button>
@@ -126,7 +136,53 @@ export default function GroupManager() {
       </section>
       <br/>
       <section className='content-card'>
-        Create Group
+        <h4>Create Group</h4>
+        
+        <form className='input-grid' >
+          <label className='full-field' htmlFor='groupYear'>
+            Select Year 
+            <select
+              className='filter_role'
+              value={year_group}
+              onChange={(e) => setYearGroup(e.target.value)}
+              required
+            >
+              <option value='' disabled>--Select Year--</option>
+            </select>
+            <button className='button button-primary dashboard-button'>
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </label>
+
+          <label className='full-field' htmlFor='groupTitle'>
+            Enter Group Title:
+            <input
+              name='title'
+              type='text'
+              value={groupForm.title}
+              onChange={GroupChange}
+              required
+            />
+          </label>
+          <label className='full-field' htmlFor='groupDescription'>
+            Enter Group Description:
+            <input
+              name='description'
+              type='text'
+              value={groupForm.description}
+              onChange={GroupChange}
+              required
+            />
+          </label>
+
+          <button type='submit' className='button button-primary button-full' disabled={loading}>
+            {loading ? 'Creating Group...' : 'Create Group'}
+          </button>
+        </form>
+
+        {groupStatus && (
+          <p className='form-success' role='status'>{groupStatus}</p>
+        )}
       </section>
     </Layout>
   )
