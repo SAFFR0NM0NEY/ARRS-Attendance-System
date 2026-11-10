@@ -5,10 +5,14 @@ import {supabase} from '../supabase'
 export default function GroupManager() {
 
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
 
-  const [year_table, setYearTable] = useState('')
-  const [year_cols, setYearCols] = useState('')
+  const [yearError, setYearError] = useState(null)
+  const [groupError, setGroupError] = useState(null)
+
+  const year = new Date().getFullYear();
+
+  const [year_table, setYearTable] = useState(year)
+  const [year_cols, setYearCols] = useState('group, description')
   const [year_status, setYearStatus] = useState('')
 
   const [year_group, setYearGroup] = useState('')
@@ -18,8 +22,7 @@ export default function GroupManager() {
   })
   const [groupStatus, setGroupStatus] = useState('')
   
-  const CreateYearTable = async (e) => {
-    e.preventDeafult();
+  const CreateYearTable = async () => {
     setYearStatus('Creating Year Table');
 
     const columnArray = year_cols
@@ -33,7 +36,16 @@ export default function GroupManager() {
         column_names: columnArray,
       });
 
-      if(error) throw error
+      if(error) {
+        switch(error.code){
+          case '42P07':
+            setYearError('Year Already Created, Either create groups or new Year');
+            break;
+          default:
+            setYearError(`Database Error: ${error.message}`);
+        }
+        return;
+      }
 
       setYearStatus(`Success! Table ${year_table} was created`)
       setYearTable('')
@@ -76,10 +88,6 @@ export default function GroupManager() {
     }
   };
 
-  if(!error){
-    <p>{error}</p>
-  }
-
   return (
     <Layout role='admin' title='Group Management'>
       <section className='page-heading'>
@@ -109,7 +117,12 @@ export default function GroupManager() {
       </section>
       <br/>
       <section className='content-card'>
-        Create New Year 
+        Create Year For {year} <br/>
+        <button className='button button-primary dashboard-button' onClick={CreateYearTable}>
+          Create Year
+        </button>
+        {year_status && <p>{year_status}</p>}
+        {yearError && <p>{yearError}</p>}
       </section>
       <br/>
       <section className='content-card'>
