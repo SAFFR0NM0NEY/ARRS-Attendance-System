@@ -5,9 +5,9 @@ import {supabase} from '../supabase'
 export default function GroupManager() {
 
   const [loading, setLoading] = useState(false)
+  const [fetchError, setFetchError] = useState(null)
 
   const [yearError, setYearError] = useState(null)
-  const [groupError, setGroupError] = useState(null)
 
   const year = new Date().getFullYear();
 
@@ -17,14 +17,18 @@ export default function GroupManager() {
 
   const [year_group, setYearGroup] = useState('')
   const [groupForm, setGroupForm] = useState({
-    title: '',
+    group: '',
     description: ''
   })
   const [refreshing, setRefresh] = useState(false)
   const [groupStatus, setGroupStatus] = useState('')
+
+  const [yearTables, setYearTables] = useState([])
+
+  const [groups, setGroups] = useState([])
   
   const CreateYearTable = async () => {
-    setYearStatus('Creating Year Table');
+    setYearStatus('Creating Year Table...');
 
     const columnArray = year_cols
       .split(',')
@@ -39,11 +43,13 @@ export default function GroupManager() {
 
       if(error) {
         switch(error.code){
-          case '42P07':
+          case 'duplicate_table':
             setYearError('Year Already Created, Either create groups or new Year');
+            setYearStatus('Failed Creating Year Table')
             break;
           default:
             setYearError(`Database Error: ${error.message}`);
+            setYearStatus('Failed Creating Year Table')
         }
         return;
       }
@@ -58,7 +64,7 @@ export default function GroupManager() {
     }
   }
 
-  const GroupChange = (e) => {
+  function GroupChange(e) {
     setGroupForm({
       ...groupForm,
       [e.target.name]: e.target.value
@@ -66,11 +72,57 @@ export default function GroupManager() {
   }
 
   useEffect(() => {
+    async function fetchYears(){
+      try{
+        setLoading(true)
+        setFetchError(null)
 
-  })
+        const {data, error} = await supabase
+          .from('year_table')
+          .select('id, year_column')
+          .order('year_column',{ascending: true});
+
+        if(error) throw error;
+
+        setYearTables(data || []);
+      }
+      catch(err){
+        console.error('Error Fetching Years:', err.message)
+        setFetchError(err.message)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+
+    async function fetchGroups(){
+      try {
+        setLoading(true)
+        setFetchError(null)
+
+        const {data, error} = await supabase
+          .from('group_table')
+          .select('*');
+
+        if(error) throw error;
+
+        setGroups(data || []);
+      }
+      catch(err){
+        console.error('Error Fetching Groups:', err.message)
+        setFetchError(err.message)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+
+    fetchYears();
+    fetchGroups();
+  }, [])
 
   const CreateGroup = async (e) => {
-    e.preventDeafult();
+    e.preventDefault();
     setLoading(true)
     setGroupStatus('Creating Group...')
 
@@ -84,7 +136,7 @@ export default function GroupManager() {
 
       setGroupStatus(`Success! Group created successfully for year ${year_group}`)
       setGroupForm({
-        title: '',
+        group: '',
         description: '',
       })
     }
@@ -109,24 +161,6 @@ export default function GroupManager() {
       </section>
 
       <section className='content-card'>
-        <div className='filter_block'>
-          <label>
-            Filter by Year:
-            <input
-
-            />
-          </label>
-          <br/>
-          <label>
-            Filter by Category:
-            <select>
-              
-            </select>
-          </label>
-        </div>
-      </section>
-      <br/>
-      <section className='content-card'>
         <h4>Create Year For {year} </h4>
         <button className='button button-primary dashboard-button' onClick={CreateYearTable}>
           Create Year
@@ -138,8 +172,8 @@ export default function GroupManager() {
       <section className='content-card'>
         <h4>Create Group</h4>
         
-        <form className='input-grid' >
-          <label className='full-field' htmlFor='groupYear'>
+        <form className='input-grid' onSubmit={CreateGroup}>
+          <label className='full-field'>
             Select Year 
             <select
               className='filter_role'
@@ -148,23 +182,30 @@ export default function GroupManager() {
               required
             >
               <option value='' disabled>--Select Year--</option>
+              {yearTables.map((year) => (
+                <option key={year.id} value={year.year_column}>
+                  {year.year_column}
+                </option>
+              ))}
             </select>
+            {/*
             <button className='button button-primary dashboard-button'>
               {refreshing ? 'Refreshing...' : 'Refresh'}
             </button>
+            */}
           </label>
 
-          <label className='full-field' htmlFor='groupTitle'>
-            Enter Group Title:
+          <label className='full-field'>
+            Enter Group Name:
             <input
-              name='title'
+              name='group'
               type='text'
-              value={groupForm.title}
+              value={groupForm.group}
               onChange={GroupChange}
               required
             />
           </label>
-          <label className='full-field' htmlFor='groupDescription'>
+          <label className='full-field'>
             Enter Group Description:
             <input
               name='description'
@@ -184,6 +225,32 @@ export default function GroupManager() {
           <p className='form-success' role='status'>{groupStatus}</p>
         )}
       </section>
+      <br/>
+
+      {groups.length === 0 ? (
+        <section className='content-card'>
+          {loading ? 'Loading Groups...' : 'No Groups Found'}
+        </section>
+      ) : (
+        <>
+          {groups.map((group) => {
+
+            return (
+              <>
+                <section className='content-card'>
+                  <h4>{group.group_description}</h4>
+                  <label className='full-field'>
+                    Group Name: {group.group_name} <br/>
+                    Group ID: {group.group_id} <br/>
+                    Group Year: {group.group_year} <br/>
+                  </label>
+                </section>
+                <br/>
+              </>
+            )
+          })}
+        </>
+      )}
     </Layout>
   )
 }
