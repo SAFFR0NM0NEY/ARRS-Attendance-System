@@ -17,7 +17,12 @@ export default function AdminEnrolment(){
         <div>
           <span className='eyebrow'>Manage ITCA Enrolments</span>
           <h2>Enrolments</h2>
+          <p>Manage and Enroll students to groups</p>
         </div>
+      </section>
+
+      <section className='content-card'>
+        
       </section>
     </Layout>
   )
