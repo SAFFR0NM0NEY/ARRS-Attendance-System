@@ -89,7 +89,7 @@ export default function Dashboard({ role = "student" }) {
   const [DBError, setDBError] = useState(null)
 
   //Admin Constants
-  const [counts, setCounts] = useState({students: 0, faculty: 0})
+  const [counts, setCounts] = useState({students: 0, faculty: 0, groups: 0, flags: 0})
   const [countsLoading, setCountsLoading] = useState(true);
 
   const data = role == 'student' && BaseData && DBData
@@ -110,8 +110,8 @@ export default function Dashboard({ role = "student" }) {
       stats: [
         ["Student Accounts", `${countsLoading ? 'Loading...' : counts.students}`, "♙"],
         ["Staff Accounts", `${countsLoading ? 'Loading...' : counts.faculty}`, "♧"],
-        ["Groups", "—", "▦"],
-        ["Pending Requests", "—", "⚑"],
+        ["Groups", `${countsLoading ? 'Loading...' : counts.groups}`, "▦"],
+        ["Pending Requests", `${countsLoading ? 'Loading' : counts.flags}`, "⚑"],
       ],
     } 
     : BaseData;

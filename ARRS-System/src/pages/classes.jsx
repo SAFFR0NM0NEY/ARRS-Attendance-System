@@ -31,7 +31,9 @@ export default function GroupManager() {
   const [inserting, setInsert] = useState(false);
   const [assignError, setAssignError] = useState(null)
   const [action, setAction] = useState('')
+  const [trainerStatus, setTrainerStatus] = useState(null)
   const [assigning, setAssign] = useState(false)
+  const [unassigning, setUnassign] = useState(false)
   const [selectedTrainer, setSelectedTrainer] = useState('')
   
   const CreateYearTable = async () => {
@@ -191,30 +193,46 @@ export default function GroupManager() {
     }
   };
 
-  const AssignTrainer = async (group, trainer) => {
+  const AssignTrainer = async (group, select, action) => {
     try {
       setInsert(true)
+      setTrainerStatus(null)
+      if(select === ''){
+        setTrainerStatus('Must Select a Trainer to proceed!')
+        setInsert(false)
+        setAction('')
+        return
+      }
+
+      const trainer = trainerData.find((item) => item.id === select) 
+
       if(action === 'add'){
         const {error} = await supabase.rpc('modify_array',{
         target_table: 'faculty_profiles',
         target_column: 'assigned_groups',
         row_id: trainer.id,
-        target_item: group.id,
+        target_item: group.group_name,
         action: 'add'
         });
 
         if(error) throw error
+
+        setTrainerStatus(`Successfully assigned ${trainer.name} ${trainer.surname} to ${group.name}`)
+        window.location.reload()
       }
       else if(action === 'remove'){
         const {error} = await supabase.rpc('modify_array',{
           target_table: 'faculty_profiles',
           target_column: 'assigned_groups',
           row_id: trainer.id,
-          target_item: group.id,
+          target_item: group.group_name,
           action: 'remove'
         });
 
         if(error) throw error
+
+        setTrainerStatus(`Successfully unassigned ${trainer.name} ${trainer.surname} from ${group.name}`)
+        window.location.reload()
       }
     }
     catch(err){
@@ -311,7 +329,7 @@ export default function GroupManager() {
         <>
           {groups.map((group) => {
             const assignedTrainer = trainerData.find(
-              (trainer) => trainer.assigned_groups?.includes(group.group_id)
+              (trainer) => trainer.assigned_groups?.includes(group.group_name)
             );
             return (
               <>
@@ -324,13 +342,14 @@ export default function GroupManager() {
                     Assigned Trainer: {assignedTrainer ? `${assignedTrainer.name} ${assignedTrainer.surname}` : 'No Assigned Trainers'}<br/>
                   </label>
                   <div className='dashboard-button-block'>
-                    <button className='button button-primary dashboard-button' onClick={() => setAssign(true)}>Assign Trainer</button>
+                    <button className='button button-primary dashboard-button' onClick={() => {setAssign(true); setUnassign(false); setSelectedTrainer('')}}>{assigning ? 'Assigning' :'Assign Trainer'}</button>
+                    <button className='button button-primary dashboard-button' onClick={() => {setUnassign(true); setAssign(false); setSelectedTrainer('')}}>{unassigning ? 'Unassiging' : 'Unassign Trainer'}</button>
                   </div>
                   <br/>
                   {assigning ? (
                     <>
                       <label className='full-field'>
-                        Select Trainer:
+                        Select Trainer: 
                         <select 
                           value={selectedTrainer}
                           onChange={(e) => setSelectedTrainer(e.target.value)}
@@ -346,8 +365,44 @@ export default function GroupManager() {
                       </label>
                       <br/>
                       <div className='dashboard-button-block'>
-
+                        <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'add')}>Assign</button>
                         <button className='button button-primary dashboard-button' onClick={() => {setAssign(false); setSelectedTrainer('')}}>
+                          Cancel
+                        </button>
+                      </div>
+                      {assignError && (
+                        <p>Something went wrong assigning</p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                    </>
+                  )}
+                  {unassigning ? (
+                    <>
+                      <label className='full-field'>
+                        Select Trainer:  
+                        <select
+                          value={selectedTrainer}
+                          onChange={(e) => setSelectedTrainer(e.target.value)}
+                        >
+                          <option value='' disabled>--Select Trainer--</option>
+                          
+                          {trainerData
+                            .filter((trainer) =>
+                              trainer.assigned_groups?.includes(group.group_name)
+                            )
+                            .map((trainer) => (
+                              <option key={trainer.id} value={trainer.id}>
+                                {trainer.name} {trainer.surname}
+                              </option>
+                            ))}
+                        </select> 
+                      </label>
+                      <br/>
+                      <div className='dashboard-button-block'>
+                        <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'remove')}>Unassign</button>
+                        <button className='button button-primary dashboard-button' onClick={() => {setUnassign(false); setSelectedTrainer('')}}>
                           Cancel
                         </button>
                       </div>
@@ -356,6 +411,10 @@ export default function GroupManager() {
                     <>
                     </>
                   )}
+
+                  {inserting && (<p>Performing Action...</p>)}
+                  {assignError && (<p>{assignError}</p>)}
+                  {trainerStatus && (<p>{trainerStatus}</p>)}
                 </section>
                 <br/>
               </>
