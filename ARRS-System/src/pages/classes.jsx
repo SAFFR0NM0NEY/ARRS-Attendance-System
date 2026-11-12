@@ -9,9 +9,10 @@ export default function GroupManager() {
 
   const [yearError, setYearError] = useState(null)
 
-  const year = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({length:6}, (_, i) => currentYear + i);
 
-  const [year_table, setYearTable] = useState(year)
+  const [selectedYear, setSelectedYear] = useState('')
   const [year_cols, setYearCols] = useState('group, description')
   const [year_status, setYearStatus] = useState('')
 
@@ -20,7 +21,6 @@ export default function GroupManager() {
     group: '',
     description: ''
   })
-  const [refreshing, setRefresh] = useState(false)
   const [groupStatus, setGroupStatus] = useState('')
 
   const [yearTables, setYearTables] = useState([])
@@ -38,6 +38,7 @@ export default function GroupManager() {
   
   const CreateYearTable = async () => {
     setYearStatus('Creating Year Table...');
+    setYearError(null)
 
     const columnArray = year_cols
       .split(',')
@@ -45,8 +46,13 @@ export default function GroupManager() {
       .filter((col) => col.length > 0);
 
     try {
+      if(selectedYear === ''){
+        setYearStatus('Please Select a Year to proceed.')
+        return
+      }
+
       const {error} = await supabase.rpc('create_year_table', {
-        year_name: year_table,
+        year_name: selectedYear,
         column_names: columnArray,
       });
 
@@ -63,8 +69,8 @@ export default function GroupManager() {
         return;
       }
 
-      setYearStatus(`Success! Table ${year_table} was created`)
-      setYearTable('')
+      setYearStatus(`Success! Table ${selectedYear} was created`)
+      setSelectedYear('')
       setYearCols('')
     }
     catch(err){
@@ -255,7 +261,22 @@ export default function GroupManager() {
       </section>
 
       <section className='content-card'>
-        <h4>Create Year For {year} </h4>
+        <label className='full-field'>
+          Select Year:
+          <select
+            className='filter_role'
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          >
+            <option value='' disabled>--Select Year--</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </label>
+        <br/>
         <button className='button button-primary dashboard-button' onClick={CreateYearTable}>
           Create Year
         </button>
