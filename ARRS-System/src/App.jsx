@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound.jsx";
 //Trainer Pages
 import TrainerRegister from "./pages/register_trainer.jsx";
 import TrainerEnrolment from "./pages/enrolment_trainer.jsx";
+import StudentsTrainer from "./pages/students_trainer.jsx";
 
 //Admin Pages
 import UserManager from './pages/user_manage.jsx'
@@ -18,6 +19,7 @@ import GroupManager from './pages/classes.jsx'
 import AdminEnrolment from "./pages/enrolment.jsx";
 import AdminTimetable from "./pages/timetable_admin.jsx";
 import Register from "./pages/Register.jsx";
+import AdminAttendance from './pages/attendence_admin.jsx'
 
 // Student pages
 import MyAttendance from "./pages/MyAttendance.jsx";
@@ -186,6 +188,15 @@ export default function App() {
         }
       />
 
+      <Route
+        path='/admin/attendance'
+        element={
+          <ProtectedRoute allowedRoles={'admin'}>
+            <AdminAttendance />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Faculty Pages */}
 
 
@@ -204,6 +215,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={'trainer'}>
             <TrainerEnrolment />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/trainer/students'
+        element={
+          <ProtectedRoute allowedRoles={'trainer'}>
+            <StudentsTrainer />
           </ProtectedRoute>
         }
       />

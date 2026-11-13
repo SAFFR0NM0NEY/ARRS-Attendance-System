@@ -73,7 +73,7 @@ export default function TrainerRegister(){
           </label>
 
           <label className='full-field' htmlFor="registerPassword">
-            Create password:
+            Create password (temp):
             <input
               id="registerPassword"
               name="password"

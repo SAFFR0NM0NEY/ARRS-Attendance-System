@@ -72,6 +72,7 @@ export default function GroupManager() {
       setYearStatus(`Success! Table ${selectedYear} was created`)
       setSelectedYear('')
       setYearCols('')
+      window.location.reload();
     }
     catch(err){
       console.error('Error creating table:',err.message)
@@ -188,6 +189,7 @@ export default function GroupManager() {
         group: '',
         description: '',
       })
+      window.location.reload();
     }
     catch(err){
       console.error('Error creating group:',err.message);
@@ -217,7 +219,7 @@ export default function GroupManager() {
         target_table: 'faculty_profiles',
         target_column: 'assigned_groups',
         row_id: trainer.id,
-        target_item: group.group_name,
+        target_item: group.group_id,
         action: 'add'
         });
 
@@ -350,7 +352,7 @@ export default function GroupManager() {
         <>
           {groups.map((group) => {
             const assignedTrainer = trainerData.find(
-              (trainer) => trainer.assigned_groups?.includes(group.group_name)
+              (trainer) => trainer.assigned_groups?.includes(group.group_id)
             );
             return (
               <>

@@ -96,7 +96,7 @@ export default function UserManager() {
       (profile.name?.toLowerCase() || '').includes(value) ||
       (profile.surname?.toLowerCase() || '').includes(value) ||
       (profile.email?.toLowerCase() || '').includes(value) ||
-      (profile.groups?.toLowerCase() || '').includes(value) ||
+      (profile.groups?.some((group) => group.toLowerCase().includes(value)) || '') ||
       (profile.title?.toLowerCase() || '').includes(value);
 
     const matchRole = filterRole === 'all' || profile.role === filterRole;
@@ -411,7 +411,7 @@ export default function UserManager() {
                         Sponsor: {profile.sponsor_name} {profile.sponsor_surname} <br/>
                         Sponsor Email: {profile.sponsor_email} <br/>
                         Sponsor Contact: {profile.sponsor_contact} <br/>
-                        Groups: {profile.groups === null ? 'No Enrolled Groups' : profile.groups} <br/> 
+                        Groups: {profile.groups === null ? ('No Enrolled Groups') : (profile.groups.length === 0 ? 'No Enrolled Groups' : profile.groups.map((group) => group + ' '))} <br/> 
                         Student Status: {profile.student_status ? 'Active' : 'Not Active'} <br/>
                       </label>
                       <div className='dashboard-button-block'>

@@ -21,13 +21,14 @@ export default function AdminEnrolment(){
 
   const [enrolStatus, setEnrolStatus] = useState(null)
 
-
+  /*
   const [removeData, setRemoveData] = useState({
     studentNr: '',
     target_group: '',
   })
   const [enrolledData, setEnrolled] = useState([])
   const [enrolledError, setEnrolledError] = useState(null)
+  */
 
   function FormChange(e) {
     setInsertData({
@@ -49,10 +50,11 @@ export default function AdminEnrolment(){
         if(error) throw error
 
         setGroupData(data || [])
+        setGroupError(!null)
       }
       catch(err){
         console.error('Error Fetching Groups: ',err.message)
-        setGroupError(err.message)
+        setGroupError(null)
       }
       finally{
         setLoading(false)
@@ -71,10 +73,11 @@ export default function AdminEnrolment(){
         if(error) throw error
 
         setStudentData(data || [])
+        setStudentError(!null)
       }
       catch(err){
         console.error('Error Fetching Students: ', err.message)
-        setStudentError(err.message)
+        setStudentError(null)
       }
       finally{
         setLoading(false)
@@ -145,12 +148,12 @@ export default function AdminEnrolment(){
                   required
                 >
                   <option value='' disabled>--Select Group--</option>
-                  {groupError ? (
+                  {groupError === null ? (
                     <option disabled>--Error Fetching Groups--</option>
                   ) : (
                     groupData.map((group) => (
                       <option key={group.id} value={group.group_id}>
-                        {group.group_name}
+                        {group.group_id}
                       </option>
                     ))
                   )}
@@ -168,7 +171,7 @@ export default function AdminEnrolment(){
                   required
                 >
                   <option value='' disabled>--Select Student--</option>
-                  {studentError ? (
+                  {studentError === null ? (
                     <option value='' disabled>
                       --Error Fetching Students--
                     </option>
@@ -193,16 +196,25 @@ export default function AdminEnrolment(){
             )}
           </section>
           <br/>
+          {/*
           <section className='content-card'>
             <h4>Remove Student From Group</h4>
 
             <form className='input-grid'>
               <label className='full-field'>
                 Select Group: 
-                
+                <select
+                  className='filter_role'
+                  name='target_group'
+                  value={removeData.target_group}
+                  onChange={}
+                >
+
+                </select>
               </label>
             </form>
           </section>
+          */}
         </>
       )}
         
