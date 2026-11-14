@@ -20,6 +20,7 @@ const navigation = {
     { label: "My Classes", path: "classes", icon: "▦" },
     { label: "Attendance", path: "attendance", icon: "✓" },
     { label: "Students", path: "students", icon: "♙" },
+    { label: 'Attendance Register', path: 'attendance-register', icon: '✓'},
     { label: "Timetable", path: "timetable", icon: "▤" },
     { label: 'Register Student', path: 'register', icon: '▦'},
     //{ label: "Reports", path: "reports", icon: "▥" },

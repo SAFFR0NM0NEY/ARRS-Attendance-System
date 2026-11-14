@@ -40,6 +40,7 @@ const dashboardData = {
       ["View Students", "/trainer/students"],
       ["View Timetable", "/trainer/timetable"],
       ['Register Student','/trainer/register'],
+      ['Attendance Register','/trainer/attendance-register'],
     ],
   },
   faculty: {
