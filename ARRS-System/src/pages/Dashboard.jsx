@@ -31,7 +31,9 @@ const dashboardData = {
     stats: [
       ["My Classes", "0", "▦"],
       ["Total Students", "0", "♙"],
-      ["Attendance Today", "—", "✓"],
+      ["Present Today", "—", "✓"],
+      ['Absent Today', '—', '✕'],
+      ['Other Today','—', '…'],
       ["Pending Flags", "—", "⚑"],
     ],
     actions: [
@@ -85,6 +87,28 @@ export default function Dashboard({ role = "student" }) {
   const BaseData = dashboardData[role] || dashboardData.student;
 
   //Profile Data constants
+  const date = new Date()
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2,'0');
+
+  const FDate = `${year}-${month}-${day}`
+
+  const [trainerDash, setTrainerDash] = useState({
+    id: null,
+    DateT: FDate,
+  })
+
+  const [trainerCounts, setTrainerCounts] = useState({
+    classes: 0,
+    students: 0,
+    attandance: 0,
+    abesent: 0,
+    other: 0,
+    flags: 0
+  })
+
   const [DBData, setDBData] = useState(null)
   const [DBLoading, setDBLoading] = useState(true)
   const [DBError, setDBError] = useState(null)
@@ -106,7 +130,7 @@ export default function Dashboard({ role = "student" }) {
     }
     : role == 'admin' && BaseData && DBData ? {
       ...BaseData,
-      greeting: `Welcome Back Administrator, ${DBData.profile.name}`,
+      greeting: `Welcome Back ${DBData.profile.title}, ${DBData.profile.name} ${DBData.profile.surname}`,
       description: `${BaseData.description} -- ${DBData.profile.email}`,
       stats: [
         ["Student Accounts", `${countsLoading ? 'Loading...' : counts.students}`, "♙"],
@@ -115,6 +139,19 @@ export default function Dashboard({ role = "student" }) {
         ["Pending Requests", `${countsLoading ? 'Loading' : counts.flags}`, "⚑"],
       ],
     } 
+    : role == 'trainer' && BaseData && DBData ? {
+      ...BaseData,
+      greeting: `Welcome Back ${DBData.profile.title}, ${DBData.profile.name} ${DBData.profile.surname}`,
+      description: `${BaseData.description} -- ${DBData.profile.email}`,
+      stats: [
+        ["My Classes", `${countsLoading ? 'Loading...' : trainerCounts.classes}`, "▦"],
+        ["Total Students", `${countsLoading ? 'Loading...' : trainerCounts.students}`, "♙"],
+        ["Present Today", `${countsLoading ? 'Loading...' : trainerCounts.attandance}`, "✓"],
+        ['Absent Today', `${countsLoading ? 'Loading...' : trainerCounts.abesent}`, '✕'],
+        ['Other Today', `${countsLoading ? 'Loading...' : trainerCounts.other}`, '…'],
+        ["Pending Flags", `${countsLoading ? 'Loading...' : trainerCounts.flags}`, "⚑"],
+      ],
+    }
     : BaseData;
     
   const loadStudentData = async() => {
@@ -166,10 +203,15 @@ export default function Dashboard({ role = "student" }) {
 
       if(userError) throw userError
       if(!user) throw new Error('Please sign in to view your dashboard')
+      
+      setTrainerDash({
+        ...trainerDash,
+        id: user.id
+      })
 
       const {data: facultyData, error: facultyError} = await supabase
         .from('faculty_profiles')
-        .select('name, email, title')
+        .select('name, surname, email, title')
         .eq('id', user.id)
         .single()
 
@@ -188,19 +230,68 @@ export default function Dashboard({ role = "student" }) {
   }
 
   useEffect(() => {
-    async function fetchCounts(){
-      const {data, error} = await supabase.rpc('get_user_counts');
+    if(role == 'student'){
+      loadStudentData();
+    }
+    else {
+      loadFacultyData();
+    }
+  }, []);
 
-      if(error){
-        console.error('Error fetching counts:',error);
+  useEffect(() => {
+    if(role !== 'trainer' && role !== 'admin') return
+    if(!trainerDash.id) return
+
+    async function fetchCounts(){
+      try{
+        const {data: facultyData, error:facultyError} = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', trainerDash.id)
+          .single();
+
+        if(facultyError) throw facultyError
+        
+        const title = facultyData?.role
+
+        if(title === 'admin'){
+          const {data, error} = await supabase.rpc('get_user_counts');
+
+          if(error){
+            console.error('Error fetching counts:',error);
+          }
+          else{
+            setCounts(data);
+          }
+        }
+        else if(title === 'trainer'){
+          try {
+            const {data: trainerDashData, error:trainerDashError} = await supabase.rpc('get_trainer_dash_data',{
+              trainer_id: trainerDash.id,
+              today_date: trainerDash.DateT,
+            })
+
+            if(trainerDashError) throw trainerDashError
+
+            setTrainerCounts(trainerDashData)
+          }
+          catch(err){
+            console.error(`Error Counting Trainer Dash: ${err.message}`)
+            setDBError(`Trainer Dash ${err.message}`)
+          }
+        }
       }
-      else{
-        setCounts(data);
+      catch(err){
+        console.error(`Error Counting: ${err.message}`)
+        setDBError(err.message)
       }
-      setCountsLoading(false);
+      finally {
+        setCountsLoading(false);
+      }
+      
     }
     fetchCounts();
-  }, [])
+  }, [role, trainerDash.id, trainerDash.DateT])
 
   {/*
   const [StudentClass, setStudentClass] = useState([])
@@ -250,14 +341,7 @@ export default function Dashboard({ role = "student" }) {
   }
   */}
 
-  useEffect(() => {
-    if(role == 'student'){
-      loadStudentData();
-    }
-    else {
-      loadFacultyData();
-    }
-  }, []);
+  
 
 
   if(!data){

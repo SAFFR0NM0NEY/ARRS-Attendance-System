@@ -320,7 +320,7 @@ export default function StudentsTrainer() {
                 <>
                   {groupData.map((group) => (
                     <option key={group.id} value={group.group_id}>
-                      {group.group_id}
+                      {group.group_description} -- {group.group_year}
                     </option>
                   ))}
                 </>

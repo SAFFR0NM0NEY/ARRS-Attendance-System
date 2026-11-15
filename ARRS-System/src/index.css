@@ -626,6 +626,46 @@ textarea:focus-visible {
   background: #fff;
 }
 
+.input-grid label:has(> input.form-checkbox) {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-grid input.form-checkbox {
+  appearance: none;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #9bb3b8;
+  border-radius: 5px;
+  background: #fff;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.input-grid input.form-checkbox::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+}
+
+.input-grid input.form-checkbox:checked {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.input-grid input.form-checkbox:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
 .input-grid input:focus,
 .input-grid select:focus,
 .input-grid textarea:focus {

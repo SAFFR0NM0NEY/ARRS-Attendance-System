@@ -11,7 +11,7 @@ export default function TrainerAttendanceRegister(){
   const [trainerGroups, setTrainerGroups] = useState([])
   const [groups, setGroups] = useState([])
   const [groupStatus, setGroupStatus] = useState(null)
-
+  const [Gdescription, setDescription] = useState('')
   
   const [selectDate, setSelectDate] = useState(false)
 
@@ -111,6 +111,10 @@ export default function TrainerAttendanceRegister(){
   const [students, setStudents] = useState([])
   const [studentStatus, setStudentStatus] = useState(null)
 
+  const [passcode_session, setPasscode_session] = useState(null)
+  const [passcodeGen, setPasscodeGen] = useState(false)
+  const [passcodeStatus, setPasscodeStatus] = useState(null)
+
   const [flagStudent, setFlagStudent] = useState({
     studentNr: '',
     studentName: '',
@@ -125,6 +129,14 @@ export default function TrainerAttendanceRegister(){
   })
 
   function filterChange(e){
+    if(e.target.name === 'group'){
+      const groupValue = groups.find((g) => g.group_id === e.target.value)
+
+      const groupDes = groupValue ? groupValue.group_description : '';
+
+      setDescription(groupDes)
+    }
+
     setFilter({
       ...filter,
       [e.target.name]: e.target.value
@@ -177,6 +189,8 @@ export default function TrainerAttendanceRegister(){
 
           const sessionID = schedule?.[0].session_id
 
+          setPasscode_session(sessionID)
+
           const {data: attendance, error: attendanceError} = await supabase
             .from(table2)
             .select('*')
@@ -206,6 +220,49 @@ export default function TrainerAttendanceRegister(){
       fetchData();
     }
   },[filter.group, filter.date])
+
+  const GeneratePasscode = async() => {
+    setPasscodeGen(true)
+    setPasscodeStatus(null)
+
+    try {
+      const table = `${filter.group}_schedule`
+
+      if(passcode_session === null){
+        throw new Error(`Error With Session ID`)
+      }
+
+      const {error} = await supabase.rpc('generate_passcode_for_session', {
+        target_table: table,
+        target_session_id: passcode_session
+      });
+
+      if(error) throw error
+
+      setPasscodeStatus(!null)
+
+    }
+    catch(err){
+      console.error(`Error Generating Passcode: ${err.message}`)
+      setPasscodeStatus(null)
+    }
+    finally{
+      setPasscodeGen(false)
+    }
+  }
+
+  useEffect(() => {
+    if(selectedDate === FDate){
+      const TSession = session.find((r) => r.calendar_date === FDate)
+
+      const Class = TSession ? TSession.category : '';
+      const passcode = TSession ? TSession.passcode_id : 'Needs Passcode';
+
+      if(Class === 'Class' && passcode === null){
+        GeneratePasscode();
+      }
+    }
+  },[])
 
   return (
     <Layout role='trainer' title='Attendance Register'>
@@ -256,7 +313,7 @@ export default function TrainerAttendanceRegister(){
                 <>
                   {groups.map((group) => (
                     <option key={group.id} value={group.group_id}>
-                      {group.group_id}
+                      {group.group_description} -- {group.group_year}
                     </option>
                   ))}
                 </>
@@ -279,10 +336,23 @@ export default function TrainerAttendanceRegister(){
         <section className='content-card'>
           <h4>Select a Group To View Attendance</h4>
         </section>
-      ) : attendanceStatus === null || sessionStatus === null || students === null ? (
+      ) : attendanceStatus === null || sessionStatus === null || studentStatus === null ? (
         <section className='content-card'>
           <h4>Something Went Wrong With Getting Data</h4>
         </section>
+        /*
+        <section className='content-card'>
+          {attendanceStatus === null && (
+            <h4>Something Went Wrong With Getting Attendance Data</h4>
+          )}
+          {sessionStatus === null && (
+            <h4>Something Went Wrong With Getting Session Data</h4>
+          )}
+          {studentStatus === null && (
+            <h4>Something Went Wrong With Getting Student Data</h4>
+          )}
+        </section>
+        */
       ) : (
         <>
           {session.map((record) => (
@@ -290,17 +360,23 @@ export default function TrainerAttendanceRegister(){
               {record.clock_time === 'Whole Day' || record.clock_time === 'Afternoon' || record.clock_time === 'Morning' ? (
                 <>
                   <section className='content-card'>
+                    <h1>Group: {Gdescription === '' ? filter.group : Gdescription}</h1>
                     <h1>Passcode: {record.passcode_id === null ? 'No Passcode Generated' : record.passcode_id}</h1>
-                    {record.passcode_id === null && (
+                    {record.passcode_id === null && record.calendar_date === FDate ? (
                       <button 
                         className='button button-primary dashboard-button'
                         type='button'
+                        onClick={() => GeneratePasscode}
+                        disabled={passcodeGen}
                       >
-                        Generate Passcode
+                        {passcodeGen ? 'Generating...' : 'Generate Passcode'}
                       </button>
+                    ): (
+                      <>
+                      </>
                     )}
                     {/*<h4>(temp) Session ID: {record.session_id}</h4>*/}
-                    <h4>Number of Students: </h4>
+                    <h4>Number of Students: {students.length}</h4>
                     <h4>Session Time: {record.clock_time}</h4>
                     {record.clock_time === 'Whole Day' ? (
                       <p>
@@ -325,9 +401,26 @@ export default function TrainerAttendanceRegister(){
                       <h4>No Students have marked present</h4>
                     </section>
                   ) : (
-                    <section className='content-card'>
-                      <h4>Testing stuff</h4>
-                    </section>
+                    <>
+                      {attendance.map((record) => (
+                        <section className='content-card'>
+                          <h2>{record.student_name} -- {record.student_nr}</h2>
+                          <h4>Status: {record.attend_status}</h4>
+                          {record.attend_status === 'Present' ? (
+                            <>
+                              <h4>Arrival Time: {record.arrival_time || 'Error'}</h4>
+                            </>
+                          ) : record.attend_status === 'Late' ? (
+                            <>
+                             <h4>Arrival Time: {record.arrival_time || 'Error'}</h4>
+                            </>
+                          ) : record.attend_status === 'Absent' || record.attend_status !== null && (
+                            <>
+                            </>
+                          )}
+                        </section>
+                      ))}
+                    </>
                   )}
                 </>
               ) : (

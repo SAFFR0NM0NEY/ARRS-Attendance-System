@@ -32,6 +32,8 @@ export default function GroupManager() {
   const [assignError, setAssignError] = useState(null)
   const [action, setAction] = useState('')
   const [trainerStatus, setTrainerStatus] = useState(null)
+
+  const [editingID, setEditingID] = useState(null)
   const [assigning, setAssign] = useState(false)
   const [unassigning, setUnassign] = useState(false)
   const [selectedTrainer, setSelectedTrainer] = useState('')
@@ -233,7 +235,7 @@ export default function GroupManager() {
           target_table: 'faculty_profiles',
           target_column: 'assigned_groups',
           row_id: trainer.id,
-          target_item: group.group_name,
+          target_item: group.group_id,
           action: 'remove'
         });
 
@@ -354,6 +356,8 @@ export default function GroupManager() {
             const assignedTrainer = trainerData.find(
               (trainer) => trainer.assigned_groups?.includes(group.group_id)
             );
+            const isEditing = editingID === group.id
+
             return (
               <>
                 <section className='content-card'>
@@ -365,79 +369,87 @@ export default function GroupManager() {
                     Assigned Trainer: {assignedTrainer ? `${assignedTrainer.name} ${assignedTrainer.surname}` : 'No Assigned Trainers'}<br/>
                   </label>
                   <div className='dashboard-button-block'>
-                    <button className='button button-primary dashboard-button' onClick={() => {setAssign(true); setUnassign(false); setSelectedTrainer('')}}>{assigning ? 'Assigning' :'Assign Trainer'}</button>
-                    <button className='button button-primary dashboard-button' onClick={() => {setUnassign(true); setAssign(false); setSelectedTrainer('')}}>{unassigning ? 'Unassiging' : 'Unassign Trainer'}</button>
+                    <button className='button button-primary dashboard-button' onClick={() => {setAssign(true); setUnassign(false); setEditingID(group.id); setSelectedTrainer('')}}>{assigning ? 'Assigning' :'Assign Trainer'}</button>
+                    <button className='button button-primary dashboard-button' onClick={() => {setUnassign(true); setAssign(false); setEditingID(group.id); setSelectedTrainer('')}}>{unassigning ? 'Unassiging' : 'Unassign Trainer'}</button>
                   </div>
                   <br/>
-                  {assigning ? (
+                  
+                  {isEditing ? (
                     <>
-                      <label className='full-field'>
-                        Select Trainer: 
-                        <select 
-                          value={selectedTrainer}
-                          onChange={(e) => setSelectedTrainer(e.target.value)}
-                        >
-                          <option value='' disabled>--Select Trainer--</option>
-                          {trainerData.map((trainer) =>(
-                            <option key={trainer.id} value={trainer.id}>
-                              {trainer.name} {trainer.surname}
-                            </option>
-                          ))}
-                        </select>
-                          
-                      </label>
-                      <br/>
-                      <div className='dashboard-button-block'>
-                        <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'add')}>Assign</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {setAssign(false); setSelectedTrainer('')}}>
-                          Cancel
-                        </button>
-                      </div>
-                      {assignError && (
-                        <p>Something went wrong assigning</p>
+                      {assigning ? (
+                        <>
+                          <label className='full-field'>
+                            Select Trainer: 
+                            <select 
+                              value={selectedTrainer}
+                              onChange={(e) => setSelectedTrainer(e.target.value)}
+                            >
+                              <option value='' disabled>--Select Trainer--</option>
+                              {trainerData.map((trainer) =>(
+                                <option key={trainer.id} value={trainer.id}>
+                                  {trainer.name} {trainer.surname}
+                                </option>
+                              ))}
+                            </select>
+                              
+                          </label>
+                          <br/>
+                          <div className='dashboard-button-block'>
+                            <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'add')}>Assign</button>
+                            <button className='button button-primary dashboard-button' onClick={() => {setAssign(false); setEditingID(null); setSelectedTrainer('')}}>
+                              Cancel
+                            </button>
+                          </div>
+                          {assignError && (
+                            <p>Something went wrong assigning</p>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                        </>
                       )}
-                    </>
-                  ) : (
-                    <>
-                    </>
-                  )}
-                  {unassigning ? (
-                    <>
-                      <label className='full-field'>
-                        Select Trainer:  
-                        <select
-                          value={selectedTrainer}
-                          onChange={(e) => setSelectedTrainer(e.target.value)}
-                        >
-                          <option value='' disabled>--Select Trainer--</option>
-                          
-                          {trainerData
-                            .filter((trainer) =>
-                              trainer.assigned_groups?.includes(group.group_name)
-                            )
-                            .map((trainer) => (
-                              <option key={trainer.id} value={trainer.id}>
-                                {trainer.name} {trainer.surname}
-                              </option>
-                            ))}
-                        </select> 
-                      </label>
-                      <br/>
-                      <div className='dashboard-button-block'>
-                        <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'remove')}>Unassign</button>
-                        <button className='button button-primary dashboard-button' onClick={() => {setUnassign(false); setSelectedTrainer('')}}>
-                          Cancel
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                    </>
-                  )}
+                      {unassigning ? (
+                        <>
+                          <label className='full-field'>
+                            Select Trainer:  
+                            <select
+                              value={selectedTrainer}
+                              onChange={(e) => setSelectedTrainer(e.target.value)}
+                            >
+                              <option value='' disabled>--Select Trainer--</option>
+                              
+                              {trainerData
+                                .filter((trainer) =>
+                                  trainer.assigned_groups?.includes(group.group_id)
+                                )
+                                .map((trainer) => (
+                                  <option key={trainer.id} value={trainer.id}>
+                                    {trainer.name} {trainer.surname}
+                                  </option>
+                                ))}
+                            </select> 
+                          </label>
+                          <br/>
+                          <div className='dashboard-button-block'>
+                            <button className='button button-primary dashboard-button' onClick={() => AssignTrainer(group, selectedTrainer, 'remove')}>Unassign</button>
+                            <button className='button button-primary dashboard-button' onClick={() => {setUnassign(false); setEditingID(null); setSelectedTrainer('')}}>
+                              Cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                        </>
+                      )}
 
-                  {inserting && (<p>Performing Action...</p>)}
-                  {assignError && (<p>{assignError}</p>)}
-                  {trainerStatus && (<p>{trainerStatus}</p>)}
+                      {inserting && (<p>Performing Action...</p>)}
+                      {assignError && (<p>{assignError}</p>)}
+                      {trainerStatus && (<p>{trainerStatus}</p>)}
+                    </>
+                  ) : (
+                    <>
+                    </>
+                  )}
                 </section>
                 <br/>
               </>

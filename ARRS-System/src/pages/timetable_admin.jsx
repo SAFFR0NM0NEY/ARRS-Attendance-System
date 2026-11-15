@@ -11,6 +11,8 @@ export default function AdminTimetable() {
   const [groupData, setGroupData] = useState([])
   const [groupStatus, setGroupStatus] = useState(null)
 
+  const [selectDate, setSelectDate] = useState(false)
+
   const [schedule, setSchedule] = useState({
     target_table: '',
     start_date: '',
@@ -21,10 +23,19 @@ export default function AdminTimetable() {
   })
 
   function scheduleChange(e) {
-    setSchedule({
-      ...schedule,
-      [e.target.name]: e.target.value
-    })
+    if(e.target.name === 'single_date'){
+      setSchedule({
+        ...schedule,
+        start_date: e.target.value,
+        end_date: e.target.value,
+      })
+    }
+    else {
+      setSchedule({
+        ...schedule,
+        [e.target.name]: e.target.value
+      })
+    }
   }
 
   useEffect(() => {
@@ -123,34 +134,61 @@ export default function AdminTimetable() {
                 ) : (
                   groupData.map((group) => (
                     <option key={group.id} value={`${group.group_id}_schedule`}>
-                      {group.group_id}
+                      {group.group_description} -- {group.group_year}
                     </option>
                   ))
                 )}
               </select>
             </label>
 
-            <label className='full-field'>
-              Select Start Date:
+            <label>
+              Date Range: 
               <input
-                type='date'
-                name='start_date'
-                value={schedule.start_date}
-                onChange={scheduleChange}
-                required
+                className='form-checkbox'
+                type='checkbox'
+                checked={selectDate}
+                onChange={(e) => setSelectDate(e.target.checked)}
               />
             </label>
 
-            <label className='full-field'>
-              Select End Date:
-              <input
-                type='date'
-                name='end_date'
-                value={schedule.end_date}
-                onChange={scheduleChange}
-                required
-              />
-            </label>
+            {selectDate ? (
+              <>
+                <label className='full-field'>
+                  Select Start Date:
+                  <input
+                    type='date'
+                    name='start_date'
+                    value={schedule.start_date}
+                    onChange={scheduleChange}
+                    required
+                  />
+                </label>
+
+                <label className='full-field'>
+                  Select End Date:
+                  <input
+                    type='date'
+                    name='end_date'
+                    value={schedule.end_date}
+                    onChange={scheduleChange}
+                    required
+                  />
+                </label>
+              </>
+            ) : (
+              <>
+                <label className='full-field'>
+                  Select Date:
+                  <input
+                    type='date'
+                    name='single_date'
+                    value={schedule.start_date}
+                    onChange={scheduleChange}
+                    required
+                  />
+                </label>
+              </>
+            )}
 
             <label className='full-field'>
               Enter Summary:

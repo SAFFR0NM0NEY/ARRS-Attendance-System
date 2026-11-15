@@ -15,6 +15,7 @@ import StudentsTrainer from "./pages/students_trainer.jsx";
 import TrainerGroupManager from "./pages/classes_trainer.jsx";
 import TrainerAttendanceRegister from "./pages/attendance_register_trainer.jsx";
 import TrainerAttendanceManager from "./pages/attendance_trainer.jsx";
+import TrainerTimetable from "./pages/timetable_trainer.jsx";
 
 //Admin Pages
 import UserManager from './pages/user_manage.jsx'
@@ -254,6 +255,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={'trainer'}>
             <TrainerAttendanceRegister />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/trainer/timetable'
+        element={
+          <ProtectedRoute allowedRoles={'trainer'}>
+            <TrainerTimetable />
           </ProtectedRoute>
         }
       />
