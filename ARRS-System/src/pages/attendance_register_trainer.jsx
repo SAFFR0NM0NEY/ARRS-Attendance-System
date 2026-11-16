@@ -225,6 +225,12 @@ export default function TrainerAttendanceRegister(){
     setPasscodeGen(true)
     setPasscodeStatus(null)
 
+    if(filter.group === ''){
+      setPasscodeStatus(null)
+      setPasscodeGen(false)
+      return;
+    }
+
     try {
       const table = `${filter.group}_schedule`
 
@@ -258,11 +264,11 @@ export default function TrainerAttendanceRegister(){
       const Class = TSession ? TSession.category : '';
       const passcode = TSession ? TSession.passcode_id : 'Needs Passcode';
 
-      if(Class === 'Class' && passcode === null){
+      if(Class === 'Class' && passcode === 'Needs Passcode'){
         GeneratePasscode();
       }
     }
-  },[])
+  },[selectedDate])
 
   return (
     <Layout role='trainer' title='Attendance Register'>
