@@ -188,9 +188,16 @@ export default function TrainerAttendanceRegister(){
           setSessionStatus(!null)
 
           const sessionID = schedule?.[0].session_id
+          const sessionPasscode = schedule?.[0].passcode_id
 
           setPasscode_session(sessionID)
-
+          if(sessionPasscode !== null){
+            setPasscodeStatus(!null)
+          }
+          else{
+            GeneratePasscode();
+          }
+          
           const {data: attendance, error: attendanceError} = await supabase
             .from(table2)
             .select('*')
@@ -225,7 +232,7 @@ export default function TrainerAttendanceRegister(){
     setPasscodeGen(true)
     setPasscodeStatus(null)
 
-    if(filter.group === ''){
+    if(filter.group === '' || filter.date !== FDate){
       setPasscodeStatus(null)
       setPasscodeGen(false)
       return;
@@ -245,8 +252,15 @@ export default function TrainerAttendanceRegister(){
 
       if(error) throw error
 
-      setPasscodeStatus(!null)
+      const {data: updatedSchedule, error: refreshError} = await supabase
+        .from(table)
+        .select('*')
+        .eq('calendar_date', filter.date);
 
+      if(refreshError) throw refreshError
+
+      setSession(updatedSchedule || [])
+      setPasscodeStatus(!null)
     }
     catch(err){
       console.error(`Error Generating Passcode: ${err.message}`)
@@ -262,13 +276,13 @@ export default function TrainerAttendanceRegister(){
       const TSession = session.find((r) => r.calendar_date === FDate)
 
       const Class = TSession ? TSession.category : '';
-      const passcode = TSession ? TSession.passcode_id : 'Needs Passcode';
+      const passcode = TSession ? TSession.passcode_id : null;
 
-      if(Class === 'Class' && passcode === 'Needs Passcode'){
+      if(Class === 'Class' && passcode === null){
         GeneratePasscode();
       }
     }
-  },[selectedDate])
+  },[selectedDate, session])
 
   return (
     <Layout role='trainer' title='Attendance Register'>
@@ -367,18 +381,30 @@ export default function TrainerAttendanceRegister(){
                 <>
                   <section className='content-card'>
                     <h1>Group: {Gdescription === '' ? filter.group : Gdescription}</h1>
-                    <h1>Passcode: {record.passcode_id === null ? 'No Passcode Generated' : record.passcode_id}</h1>
-                    {record.passcode_id === null && record.calendar_date === FDate ? (
-                      <button 
-                        className='button button-primary dashboard-button'
-                        type='button'
-                        onClick={() => GeneratePasscode}
-                        disabled={passcodeGen}
-                      >
-                        {passcodeGen ? 'Generating...' : 'Generate Passcode'}
-                      </button>
-                    ): (
+                    {passcodeStatus === null ?(
                       <>
+                        <h4>Passcode Can Only be Viewed On The Day</h4>
+                      </>
+                    ) : (
+                      <>
+                        {passcodeGen ? (
+                          <h1>Generating Passcode...</h1>
+                        ) : (
+                          <h1>Passcode: {record.passcode_id === null ? 'No Passcode Generated' : record.passcode_id}</h1>
+                        )}
+                        {record.passcode_id === null && record.calendar_date === FDate ? (
+                          <button 
+                            className='button button-primary dashboard-button'
+                            type='button'
+                            onClick={() => GeneratePasscode()}
+                            disabled={passcodeGen}
+                          >
+                            {passcodeGen ? 'Generating...' : 'Generate Passcode'}
+                          </button>
+                        ): (
+                          <>
+                          </>
+                        )}
                       </>
                     )}
                     {/*<h4>(temp) Session ID: {record.session_id}</h4>*/}

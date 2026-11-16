@@ -9,7 +9,7 @@ const dashboardData = {
     greeting: "Welcome back, Student!",
     description: "Here is an overview of your academic activity.",
     stats: [
-      ["My Classes", "--", "▦"],
+      ["My Classes Today", "--", "▦"],
       ["Attendance Rate", "--", "✓"],
       ["Upcoming Class", "--", "◷"],
     ],
@@ -109,6 +109,22 @@ export default function Dashboard({ role = "student" }) {
     flags: 0
   })
 
+  const [studentDash, setStudentDash] = useState({
+    student_nr: null,
+    DateT: FDate,
+    DateY: year,
+  })
+
+  const [studentDashLoad, setStudentDashLoad] = useState(true)
+
+  const [studentCount, setStudentCount] = useState({
+    classes: 0,
+    attendance: 0,
+    next_class: '--',
+    next_class_time: '',
+
+  })
+
   const [DBData, setDBData] = useState(null)
   const [DBLoading, setDBLoading] = useState(true)
   const [DBError, setDBError] = useState(null)
@@ -123,9 +139,9 @@ export default function Dashboard({ role = "student" }) {
       greeting: `Welcome Back, ${DBData.profile.name}`,
       description: `${BaseData.description} -- ${DBData.profile.email}`,
       stats:[
-        ["My Classes", `${DBData.classes.length}`, "▦"],
-        ["Attendance Rate", "--", "✓"],
-        ["Upcoming Class", "--", "◷"],
+        ["My Classes Today", `${studentDashLoad ? 'Loading...' : studentCount.classes}`, "▦"],
+        ["Attendance Rate", `${studentDashLoad ? 'Loading...' : studentCount.attendance}`, "✓"],
+        ["Upcoming Class", `${studentDashLoad ? 'Loading...' : studentCount.next_class + '\n' + studentCount.next_class_time}`, "◷"],
       ],
     }
     : role == 'admin' && BaseData && DBData ? {
@@ -165,23 +181,21 @@ export default function Dashboard({ role = "student" }) {
       if(userError) throw userError
       if(!user) throw new Error('Please sign in to view your dashboard')
 
+      setStudentDash({
+        ...studentDash,
+        student_nr: user.id
+      })
+
       const {data: attendence, error: attendenceError} = await supabase
         .from('student_profiles')
-        .select('name, student_nr, email')
+        .select('name, student_nr, email, groups')
         .eq('id', user.id)
         .single();
 
       if(attendenceError) throw attendenceError
 
-      const {data: classes, error: classError} = await supabase.rpc('get_student_classes',{
-        p_year: new Date().getFullYear()
-      })
-
-      if(classError) throw classError;
-
       setDBData({
         profile: attendence,
-        classes: Array.isArray(classes) ? classes : [],
       });
     }
     catch (err){
@@ -292,6 +306,35 @@ export default function Dashboard({ role = "student" }) {
     }
     fetchCounts();
   }, [role, trainerDash.id, trainerDash.DateT])
+
+  useEffect(() => {
+    if(role !== 'student') return
+    if(!studentDash.student_nr) return
+
+    async function fetchStudentCounts(){
+      try {
+        const {data: studentDashData, error: studentDashError} = await supabase.rpc('get_student_dash_data',{
+          input_nr: studentDash.student_nr,
+          today_date: studentDash.DateT,
+          current_year: studentDash.DateY,
+        })
+
+        if(studentDashError) throw studentDashError
+
+        setStudentCount(studentDashData)
+        setStudentDashLoad(false)
+      }
+      catch(err){
+        console.error(`Error Getting Student Dash: ${err.message}`)
+        setDBError(`Student Dash: ${err.message}`)
+      }
+      finally{
+        setStudentDashLoad(false)
+      }
+    }
+
+    fetchStudentCounts();
+  },[role, studentDash.id, studentDash.DateT])
 
   {/*
   const [StudentClass, setStudentClass] = useState([])
