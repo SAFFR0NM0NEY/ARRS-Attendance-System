@@ -12,6 +12,7 @@ const dashboardData = {
       ["My Classes Today", "--", "▦"],
       ["Attendance Rate", "--", "✓"],
       ["Upcoming Class", "--", "◷"],
+      ['Upcoming Class Time', '--','◷'],
     ],
     actions: [
        ["Log Attendance", "/check-in"],
@@ -112,7 +113,7 @@ export default function Dashboard({ role = "student" }) {
   const [studentDash, setStudentDash] = useState({
     student_nr: null,
     DateT: FDate,
-    DateY: year,
+    DateY: `${year}`,
   })
 
   const [studentDashLoad, setStudentDashLoad] = useState(true)
@@ -141,7 +142,8 @@ export default function Dashboard({ role = "student" }) {
       stats:[
         ["My Classes Today", `${studentDashLoad ? 'Loading...' : studentCount.classes}`, "▦"],
         ["Attendance Rate", `${studentDashLoad ? 'Loading...' : studentCount.attendance}`, "✓"],
-        ["Upcoming Class", `${studentDashLoad ? 'Loading...' : studentCount.next_class + '\n' + studentCount.next_class_time}`, "◷"],
+        ["Upcoming Class", `${studentDashLoad ? 'Loading...' : studentCount.next_class}`, "◷"],
+        ['Upcoming Class Time', `${studentDashLoad ? 'Loading...' : studentCount.next_class_time}`,'◷'],
       ],
     }
     : role == 'admin' && BaseData && DBData ? {
@@ -181,11 +183,6 @@ export default function Dashboard({ role = "student" }) {
       if(userError) throw userError
       if(!user) throw new Error('Please sign in to view your dashboard')
 
-      setStudentDash({
-        ...studentDash,
-        student_nr: user.id
-      })
-
       const {data: attendence, error: attendenceError} = await supabase
         .from('student_profiles')
         .select('name, student_nr, email, groups')
@@ -193,6 +190,13 @@ export default function Dashboard({ role = "student" }) {
         .single();
 
       if(attendenceError) throw attendenceError
+
+      const attendanceNr = attendence?.student_nr;
+
+      setStudentDash({
+        ...studentDash,
+        student_nr: attendanceNr
+      });
 
       setDBData({
         profile: attendence,
@@ -316,7 +320,7 @@ export default function Dashboard({ role = "student" }) {
         const {data: studentDashData, error: studentDashError} = await supabase.rpc('get_student_dash_data',{
           input_nr: studentDash.student_nr,
           today_date: studentDash.DateT,
-          current_year: studentDash.DateY,
+          current_year: studentDash.DateY
         })
 
         if(studentDashError) throw studentDashError
@@ -334,7 +338,7 @@ export default function Dashboard({ role = "student" }) {
     }
 
     fetchStudentCounts();
-  },[role, studentDash.id, studentDash.DateT])
+  },[role, studentDash.student_nr, studentDash.DateT])
 
   {/*
   const [StudentClass, setStudentClass] = useState([])

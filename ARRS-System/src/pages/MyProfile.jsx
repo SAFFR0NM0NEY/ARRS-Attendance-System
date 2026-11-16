@@ -1,33 +1,48 @@
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import Layout from "../components/Layout.jsx";
-
-const emptyProfile = {
-  name: "",
-  studentNumber: "",
-  email: "",
-  phone: "",
-  programme: "",
-  academicYear: "",
-};
+import {supabase} from '../supabase.js'
 
 export default function MyProfile() {
-  const [profile, setProfile] = useState(() => {
-    try {
-      return {
-        ...emptyProfile,
-        ...JSON.parse(
-          localStorage.getItem("itca_student_profile") || "{}"
-        ),
-      };
-    } catch {
-      return emptyProfile;
+  const [profile, setProfile] = useState(null)
+
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    setMessage(null)
+
+    async function fetchStudentProfile(){
+      try {
+        const {data: {user}, error: userError} = await supabase.auth.getUser()
+
+        if(userError) throw userError
+        if(!user) throw new Error(`Please Sign Up To View Profile`)
+
+        const {data: profileData, error: profileError} = await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if(profileError) throw profileError
+
+        setProfile(profileData)
+        setMessage(null)
+      }
+      catch(err) {
+        console.error(`Error fetching: ${err.message}`)
+        setMessage(`Problem Fetching Your Data ${err.message}`)
+      }
+      finally {
+        setLoading(false)
+      }
     }
-  });
 
-  const [editing, setEditing] = useState(false);
-  const [message, setMessage] = useState("");
+    fetchStudentProfile();
+  }, [])
 
+  /*
   function handleChange(event) {
     const { name, value } = event.target;
     setProfile((current) => ({ ...current, [name]: value }));
@@ -50,7 +65,7 @@ export default function MyProfile() {
     setEditing(false);
     setMessage("Profile changes saved in this browser.");
   }
-
+  */
   {/*
   function cancelEditing() {
     try {
@@ -68,7 +83,8 @@ export default function MyProfile() {
     setMessage("");
   }
   */}
-
+  
+  /*
   const fields = [
     ["name", "Full Name", "text"],
     ["studentNumber", "Student Number", "text"],
@@ -77,6 +93,7 @@ export default function MyProfile() {
     ["programme", "Programme", "text"],
     ["academicYear", "Academic Year", "text"],
   ];
+  */
 
   return (
     <Layout role="student" title="Profile">
@@ -90,7 +107,34 @@ export default function MyProfile() {
 
       <section className="content-card">
         <h3>Personal and Academic Details</h3>
-
+        {loading ? (
+          <div>
+            <h3>Loading...</h3>
+          </div>
+        ) : (
+          <div className='input-grid'>
+            <label>
+              <strong style={{textDecorationLine: 'underline'}}>Full Name</strong>
+              <h3>{profile.name} {profile.surname}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Email</strong>
+              <h3>{profile.email}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Student Number</strong>
+              <h3>{profile.student_nr}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>ID Number</strong>
+              <h3>{profile.id_nr}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Contact Number</strong>
+              <h3>{profile.contact_nr}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Sponsor Full Name</strong>
+              <h3>{profile.sponsor_name} {profile.sponsor_surname}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Sponsor Email</strong>
+              <h3>{profile.sponsor_email}</h3>
+              <strong style={{textDecorationLine: 'underline'}}>Sponsor Contact</strong>
+              <h3>{profile.sponsor_contact}</h3>
+            </label>
+          </div>
+        )}
+        
+        {/*
         <form className='input-grid' onSubmit={saveProfile}>
           <div className="form-grid">
             {fields.map(([name, label, type]) => (
@@ -132,8 +176,9 @@ export default function MyProfile() {
               Edit Profile
             </button>
           )}
-          */}
+          
         </form>
+        */}
 
         {message && <p role="status">{message}</p>}
 
