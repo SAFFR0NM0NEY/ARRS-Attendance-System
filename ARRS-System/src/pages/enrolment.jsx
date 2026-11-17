@@ -12,7 +12,6 @@ export default function AdminEnrolment(){
     target_group: '',
   })
 
-  const year = new Date().getFullYear();
 
   const [groupData, setGroupData] = useState([])
   const [groupError, setGroupError] = useState(null)
@@ -94,9 +93,15 @@ export default function AdminEnrolment(){
     setEnrolStatus(null)
 
     try{
+      const selectedGroup = groupData.find(g => g.group_id === insertData.target_group)
+
+      if(!selectedGroup){
+        throw new Error(`Error Finding Group`)
+      }
+
       const {error} = await supabase.rpc('insert_student',{
         target_table: insertData.target_group,
-        p_year: year,
+        p_year: selectedGroup.group_year,
         search_student_nr: insertData.studentNr
       });
 

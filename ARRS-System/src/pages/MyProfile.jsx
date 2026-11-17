@@ -9,6 +9,13 @@ export default function MyProfile() {
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState(null);
 
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [newConfirmation, setNewConfirmation] = useState('')
+
+  const [passLoad, setPassLoad] = useState(false)
+  const [passMess, setPassMess] = useState(null)
+
   useEffect(() => {
     setMessage(null)
 
@@ -186,6 +193,50 @@ export default function MyProfile() {
           Student details can only be changed by authorized trainers and faculty.
         </p>
       </section>
+      <br/>
+      <section className='content-card'>
+        <h3>Change Account Password</h3>
+
+        <form className='input-grid'>
+          <label className='full-field'>
+            Enter Current Password:
+
+            <input
+              type='password'
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </label>
+          <label className='full-field'>
+            Enter New Password:
+
+            <input
+              type='password'
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </label>
+
+          <label className='full-field'>
+            Confirm New Password:
+
+            <input
+              type='password'
+              value={newConfirmation}
+              onChange={(e) => setNewConfirmation(e.target.value)}
+            />
+          </label>
+
+          <button 
+            className='button button-primary button-full'
+            type='submit'
+            disabled={passLoad}
+          >
+            {passLoad ? 'Changing...' : 'Change'}
+          </button>
+        </form>  
+      </section>
+
     </Layout>
   );
 }

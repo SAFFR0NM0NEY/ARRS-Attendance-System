@@ -99,6 +99,7 @@ export default function Dashboard({ role = "student" }) {
   const [trainerDash, setTrainerDash] = useState({
     id: null,
     DateT: FDate,
+    DateY: `${year}`
   })
 
   const [trainerCounts, setTrainerCounts] = useState({
@@ -287,6 +288,7 @@ export default function Dashboard({ role = "student" }) {
             const {data: trainerDashData, error:trainerDashError} = await supabase.rpc('get_trainer_dash_data',{
               trainer_id: trainerDash.id,
               today_date: trainerDash.DateT,
+              current_year: trainerDash.DateY,
             })
 
             if(trainerDashError) throw trainerDashError

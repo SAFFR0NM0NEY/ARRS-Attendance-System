@@ -242,7 +242,7 @@ export default function TrainerAttendanceRegister(){
       const table = `${filter.group}_schedule`
 
       if(passcode_session === null){
-        throw new Error(`Error With Session ID`)
+        throw new Error(`Error With Session ID passcode_session`)
       }
 
       const {error} = await supabase.rpc('generate_passcode_for_session', {
@@ -407,6 +407,7 @@ export default function TrainerAttendanceRegister(){
                         )}
                       </>
                     )}
+                    <h4>Summary: {record.summary}</h4>
                     {/*<h4>(temp) Session ID: {record.session_id}</h4>*/}
                     <h4>Number of Students: {students.length}</h4>
                     <h4>Session Time: {record.clock_time}</h4>
