@@ -16,6 +16,51 @@ export default function MyProfile() {
   const [passLoad, setPassLoad] = useState(false)
   const [passMess, setPassMess] = useState(null)
 
+  const ChangePassword = async (e) => {
+    e.preventDefault();
+    setPassLoad(true)
+    setPassMess(null)
+
+    if(newPassword !== newConfirmation){
+      setPassMess({type: 'error', text: 'New passwords do not match.'})
+      setLoading(false)
+      return;
+    }
+
+    try {
+      const {data: {user}, error: userError} = await supabase.auth.getUser()
+
+      if(userError || !user?.email) throw new Error('No active user session found')
+      
+      const {error: signInError} = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if(signInError){
+        throw new Error('Current Password is incorrect')
+      }
+
+      const {error: updateError} = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if(updateError) throw updateError
+
+      setPassMess({type: 'success', text: 'Password successfully updated!'});
+      setCurrentPassword('')
+      setNewConfirmation('')
+      setNewConfirmation('')
+    }
+    catch(err){
+      console.error(`Error Changing Password, ${err.message}`)
+      setPassMess(`Something went wrong changing password`)
+    }
+    finally {
+      setPassLoad(false)
+    }
+  }
+
   useEffect(() => {
     setMessage(null)
 
@@ -197,7 +242,13 @@ export default function MyProfile() {
       <section className='content-card'>
         <h3>Change Account Password</h3>
 
-        <form className='input-grid'>
+        <form className='input-grid' onSubmit={ChangePassword}>
+
+          {passMess && (
+            <p style={{color: passMess.type === 'error' ? 'red' : 'green'}}>
+              {passMess.text}
+            </p>
+          )}
           <label className='full-field'>
             Enter Current Password:
 
@@ -205,6 +256,7 @@ export default function MyProfile() {
               type='password'
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
+              required
             />
           </label>
           <label className='full-field'>
@@ -214,6 +266,8 @@ export default function MyProfile() {
               type='password'
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={8}
             />
           </label>
 
@@ -224,12 +278,14 @@ export default function MyProfile() {
               type='password'
               value={newConfirmation}
               onChange={(e) => setNewConfirmation(e.target.value)}
+              required
+              minLength={8}
             />
           </label>
 
           <button 
             className='button button-primary button-full'
-            type='submit'
+            type='button'
             disabled={passLoad}
           >
             {passLoad ? 'Changing...' : 'Change'}

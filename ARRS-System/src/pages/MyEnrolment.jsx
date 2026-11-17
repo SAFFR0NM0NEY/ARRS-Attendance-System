@@ -1,6 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import Layout from "../components/Layout.jsx";
+import {supabase} from '../supabase.js'
 
 export default function MyEnrolment() {
   {/*
@@ -25,6 +26,70 @@ export default function MyEnrolment() {
   );
   */}
 
+  const [loading, setLoading] = useState(false)
+  
+  const [studentData, setStudentData] = useState([])
+  const [studentStatus, setStudentStatus] = useState(null)
+
+  const [groupData, setGroupData] = useState([])
+  const [groupStatus, setGroupStatus] = useState(null)
+
+  useEffect(() => {
+    async function fetchStudentGroups(){
+      setLoading(true)
+      setStudentStatus(null)
+      setGroupStatus(null)
+
+      try {
+        const {data: {user}, error: userError} = await supabase.auth.getUser()
+
+        if(userError || !user?.id) throw new Error(`Error Fetching User`)
+
+        const {data: student, error: studentError} = await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('id', user.id);
+
+        if(studentError) throw studentError
+
+        setStudentData(student || [])
+        setStudentStatus(!null)
+
+        const enrolG = student?.[0]?.groups
+        if(!Array.isArray(enrolG) || enrolG.length === 0){
+          setGroupData([])
+          setGroupStatus(!null)
+          return;
+        }
+
+        try {
+          const {data: group, error: groupError} = await supabase
+            .from('group_table')
+            .select('*')
+            .in('group_id', enrolG);
+
+          if(groupError) throw groupError
+
+          setGroupData(group || [])
+          setGroupStatus(!null)
+        }
+        catch(err){
+          console.error(`Error Getting Groups, ${err.message}`)
+          setGroupStatus(null)
+        }
+      }
+      catch(err){
+        console.error(`Error Getting User Data, ${err.message}`)
+        setStudentStatus(null)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+
+    fetchStudentGroups();
+  },[])
+
   return (
     <Layout role="student" title="Enrolment">
       <section className="page-heading">
@@ -36,17 +101,33 @@ export default function MyEnrolment() {
       </section>
 
       <section className="content-card">
-        <h3>Enrolment Summary</h3>
-        <div className="stats-grid">
-          <article className='stat-card'>
-            <strong>--</strong>
-          </article>
-
-          <article className="stat-card">
-            <strong>--</strong>
-          </article>
-        </div>
-
+        {loading ? (
+          <>
+            <h3>Loading...</h3>
+          </>
+        ) : studentStatus === null ? (
+          <>
+            <h3>Something Went Wrong Getting User</h3>
+          </>
+        ) : groupStatus === null ? (
+          <>
+            <h3>Something Went Wrong Getting Your Data</h3>
+          </>
+        ) : (
+          <>
+            <h3>Enrolment Summary</h3>
+            <div className="stats-grid">
+              {groupData.map((group) => (
+                <article className='stat-card'>
+                  <strong>Group Name: {group.group_description}</strong>
+                  <p>
+                    Year: {group.group_year}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
         {/*
         <label>
           Search modules
@@ -87,8 +168,6 @@ export default function MyEnrolment() {
           </p>
         )}
         */}
-
-
       </section>
     </Layout>
   );
