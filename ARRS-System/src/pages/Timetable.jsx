@@ -114,12 +114,12 @@ export default function Timetable() {
   const [groups, setGroups] = useState([])
   const [groupStatus, setGroupStatus] = useState(null)
 
-  const [schedule, setSchedul] = useState([])
+  const [selectedGroup, setSelectedGroup] = useState('')
+
+
+  const [schedule, setSchedule] = useState([])
   const [scheduleStatus, setScheduleStatus] = useState(null)
-
-  const [selectMonth, setSelectMonth] = useState(true)
-
-  const [selectedMonth, setSelectedMonth] = useState(month)
+  const [scheduleLoad, setScheduleLoad] = useState(false)
 
   const [displayData, setDisplayData] = useState({
     trainer: null,
@@ -129,9 +129,7 @@ export default function Timetable() {
   })
 
   useEffect(() => {
-    
-
-    async function fetchTimetableData(){
+    async function fetchStudentData(){
       setLoading(true)
       setScheduleStatus(null)
       setGroupStatus(null)
@@ -152,16 +150,66 @@ export default function Timetable() {
         setStudentData(student || [])
         setStudentStatus(!null)
 
+        const Egroups = student?.[0]?.groups
+
+        if(!Array.isArray(Egroups) || Egroups.length === 0){
+          setGroups([])
+          setGroupStatus(!null)
+          return;
+        }
+        try {
+          const {data: studentGroups, error: studentGroupError} = await supabase
+            .from('group_table')
+            .select('*')
+            .in('group_id', Egroups);
+
+          if(studentGroupError) throw studentGroupError
+
+          setGroups(studentGroups || [])
+          setGroupStatus(!null)
+        }
+        catch(err){
+          console.error(`Error Fetching Groups, ${err.message}`)
+          setGroupStatus(null)
+        }
       }
       catch(err){
-
+        console.error(`Error Fetching Student Data, ${err.message}`)
+        studentStatus(null)
       }
       finally{
         setLoading(false)
       }
 
     }
-  })
+
+    fetchStudentData();
+  }, [])
+
+  useEffect(() => {
+    setDisplayData({
+      trainer: null,
+      classes: null,
+      classTime: null,
+      description: null,
+    })
+    setScheduleLoad(true)
+    setScheduleStatus(!null)
+    async function fetchTimetableData(){
+      try{
+        
+      }
+      catch(err){
+        console.error(`Error Fetching Timetable Data, ${err.message}`)
+        setScheduleStatus(null)
+      }
+      finally{
+        setScheduleLoad(false)
+      }
+    }
+
+    fetchTimetableData();
+  }, [selectedGroup, selectedWeek])
 
   return (
     <Layout role="student" title="Timetable">
@@ -171,45 +219,47 @@ export default function Timetable() {
           <h2>My Timetable</h2>
           <h2>Current Date</h2>
           <p>View your scheduled classes and practical sessions.</p>
-          
         </div>
       </section>
 
-      <section className='content-card'>
-        <div className='filter_block'>
-          <button
-            className='button button-primary'
-            type='button'
-            onClick={() => setSelectMonth(!selectMonth)}
-          >
-            {selectMonth ? 'Month' : 'Week'}
-          </button>
-          
-          {selectMonth ? (
-            <>
+      {loading ? (
+        <section className='content-card'>
+          <h3>Loading...</h3>
+        </section>
+      ) : studentStatus === null ? (
+        <section className='content-card'>
+          <h3>Something went wrong with getting your data.</h3>
+        </section>
+      ) : groupStatus === null ? (
+        <section className='content-card'>
+          <h3>Something went wrong while retrieving your data. Please Try Again Later</h3>
+        </section>
+      ) : (
+        <>
+          <section className='content-card'>
+            <div className='filter_block'>
               <label>
-                Select Month:
+                Select Group:
+
                 <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  value={selectedGroup}
+                  onChange={(e) => setSelectedGroup(e.target.value)}
                 >
-                  <option value='01'>Janaury</option>
-                  <option value='02'>Febuary</option>
-                  <option value='03'>March</option>
-                  <opiton value='04'>April</opiton>
-                  <option value='05'>May</option>
-                  <option value='06'>June</option>
-                  <option value='07'>July</option>
-                  <option value='08'>August</option>
-                  <option value='09'>September</option>
-                  <option value='10'>October</option>
-                  <option value='11'>November</option>
-                  <option value='12'>December</option>
+                  <option value='' disabled>--Select Group--</option>
+                  {groupStatus === null ? (
+                    <option disabled>--Error Fetching Group Data--</option>
+                  ) : (
+                    <>
+                      {groups.map((group) => (
+                        <option key={group.id} value={group.group_id}>
+                          {group.group_description} -- {group.group_year}
+                        </option>
+                      ))}
+                    </>
+                  )}
                 </select>
               </label>
-            </>
-          ) : (
-            <>
+              <br/>
               <label>
                 Select Week:
 
@@ -224,38 +274,78 @@ export default function Timetable() {
                   ))}
                 </select>
               </label>
+            </div>
+            {start.toDateString()} <br/>
+            {end.toDateString()} <br/>
+            {toDateOnly(start)} <br/>
+            {toDateOnly(end)}
+          </section>
+
+          <br/>
+          
+          {scheduleLoad ? (
+            <section className='content-card'>
+              <h3>Loading...</h3>
+            </section>
+          ) : scheduleStatus === null ? (
+            <section className='content-card'>
+              <h3>Something went wrong while retrieving your data. Please Try Again.</h3>
+            </section>
+          ) : (
+            <>
+              <section className="stats-grid">
+                <article className="stat-card">
+                  <p>
+                    Scheduled Classes for Week <br/>
+                    From: {dateRangeLabel}
+                  </p>
+                  <strong>
+                    {displayData.classes === null ? (
+                      '--'
+                    ): (
+                      displayData.classes
+                    )}
+                  </strong>
+                </article>
+
+                <article className='stat-card'>
+                  <p>Trainer</p>
+                  <strong>
+                    {displayData.trainer === null ? (
+                      '--'
+                    ) : (
+                      displayData.trainer
+                    )}
+                  </strong>
+                </article>
+
+                <article className='stat-card'>
+                  <p>Class Time</p>
+                  <strong>
+                    {displayData.classTime === null ? (
+                      '--'
+                    ) : (
+                      displayData.classTime
+                    )}
+                  </strong>
+                </article>
+
+                <article className='stat-card'>
+                  <p>Description</p>
+                  <strong>
+                    {displayData.description === null ? (
+                      '--'
+                    ) : (
+                      displayData.description
+                    )}
+                  </strong>
+                </article>
+              </section>
             </>
           )}
-        </div>
-        {start.toDateString()} <br/>
-        {end.toDateString()} <br/>
-        {toDateOnly(start)} <br/>
-        {toDateOnly(end)}
-      </section>
-
-      <br/>
-
-      <section className="stats-grid">
-        <article className="stat-card">
-          <p>Scheduled Classes for current month</p>
-          <strong>--</strong>
-        </article>
-
-        <article className='stat-card'>
-          <p>Trainer</p>
-          <strong>--</strong>
-        </article>
-
-        <article className='stat-card'>
-          <p>Class Time</p>
-          <strong>--</strong>
-        </article>
-
-        <article className='stat-card'>
-          <p>Description</p>
-          <strong>--</strong>
-        </article>
-      </section>
+        </>
+      )}
+      
 
       {/*
       <section className="content-card">
