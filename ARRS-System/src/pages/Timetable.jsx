@@ -188,15 +188,39 @@ export default function Timetable() {
 
   useEffect(() => {
     setDisplayData({
-      trainer: null,
-      classes: null,
-      classTime: null,
-      description: null,
+      trainer: null
     })
     setScheduleLoad(true)
     setScheduleStatus(!null)
     async function fetchTimetableData(){
       try{
+        const table1 = `${selectedGroup}_schedule`
+        const startString = start instanceof Date ? start.toISOString() : start;
+        const endString = end instanceof Date ? end.toISOString() : end;
+
+        const {data: classData, error: classError} = await supabase
+          .from(table1)
+          .select('*')
+          .gte('calendar_date',startString)
+          .lte('calendar_date', endString);
+        
+        if(classError) throw classError
+
+        setSchedule(classData || [])
+        setScheduleStatus(!null)
+
+        const {data: trainerData, error: trainerError} = await supabase
+          .from('faculty_profiles')
+          .select('*')
+          .in('assigned_groups', selectedGroup)
+          .single();
+
+        if(trainerError) throw trainerError
+
+        setDisplayData({
+          ...displayData,
+          trainer: trainerData || []
+        })
         
       }
       catch(err){
@@ -287,6 +311,10 @@ export default function Timetable() {
             <section className='content-card'>
               <h3>Loading...</h3>
             </section>
+          ) : selectedGroup === '' ? (
+            <section className='content-card'>
+              <h3>Please Select a Group To Continue</h3>
+            </section>
           ) : scheduleStatus === null ? (
             <section className='content-card'>
               <h3>Something went wrong while retrieving your data. Please Try Again.</h3>
@@ -299,13 +327,6 @@ export default function Timetable() {
                     Scheduled Classes for Week <br/>
                     From: {dateRangeLabel}
                   </p>
-                  <strong>
-                    {displayData.classes === null ? (
-                      '--'
-                    ): (
-                      displayData.classes
-                    )}
-                  </strong>
                 </article>
 
                 <article className='stat-card'>
@@ -343,6 +364,8 @@ export default function Timetable() {
               </section>
             </>
           )}
+
+
         </>
       )}
       

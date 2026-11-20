@@ -101,6 +101,74 @@ export default function MyAttendance() {
   const [loading, setLoading] = useState(true)
   const [attendError, setAttendError] = useState(null)
 
+  const [studentGroups, setGroups] = useState([])
+
+  const [student, setStudent] = useState([])
+  const [studentStatus, setStudentStatus] = useState(null)
+
+  const [groupData, setGroupData] = useState([])
+  const [groupError, setGroupError] = useState(null)
+
+  const [selectedGroup, setSelectedGroup] = useState('')
+
+
+  useEffect(() => {
+    async function fetchStudentGroup(){
+      setLoading(true)
+      setAttendError(null)
+
+      try {
+        const {data: {user}, error: userError} = await supabase.auth.getUser()
+      
+        if(userError) throw userError
+
+        const {data: studentData, error: studentError} = await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('id', user.id);
+
+        if(studentError) throw studentError
+
+        setStudent(studentData || [])
+        setStudentStatus(!null)
+
+        const AGroups = studentData?.[0]?.groups 
+
+        if(!Array.isArray(AGroups) || AGroups.length === 0){
+          setGroups([])
+          setGroupStatus(!null)
+          return;
+        }
+
+        try {
+          const {data: groups, error: groupsError} = await supabase
+            .from('group_table')
+            .select('*')
+            .in('group_id', AGroups);
+
+          if(groupsError) throw groupsError
+
+          setGroupData(groups)
+          setGroupError(!null)
+        }
+        catch(err){
+          console.error(`Error Fetching Student Groups, ${err.message}`)
+        }
+      }
+      catch(err){
+        console.error(`Error Getting User, ${err.message}`)
+        setAttendError(null)
+      }
+      finally{
+        setLoading(false)
+      }
+    }
+
+    fetchStudentGroup();
+  }, [])
+
+  
+
   return (
     <Layout role="student" title="Attendance">
       <section className="page-heading">
@@ -111,34 +179,56 @@ export default function MyAttendance() {
         </div>
       </section>
 
-      <section className='content-card' style={{marginBottom:'15px'}}>
-        <article className='stat-card'>
-          <p>Select Class</p>
-          <select className='full-field'>
-            
-          </select>
-        </article>
-      </section>
+      {loading ? (
+        <>
+          <section className='content-card'>
+            <h3>Loading...</h3>
+          </section>
+        </>
+      ) : (
+        <>
+          <section className='content-card' style={{marginBottom:'15px'}}>
+            <article className='stat-card'>
+              <p>Select Group</p>
+              <select className='full-field'>
+                <option value='' disable>--Select Group To View Attendance--</option>
+                {groupError === null ? (
+                  <option disabled>--Error With Groups--</option>
+                ) : (
+                  <>
+                    {groupData.map((group) => (
+                      <option key={group.id} value={group.group_id}>
+                        {group.group_description} -- {group.group_year}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
+            </article>
+          </section>
 
-      <section className="stats-grid">
-        <article className="stat-card">
-          <p>Sessions</p>
-          <strong>{sessions}</strong>
-        </article>
-        <article className="stat-card">
-          <p>Present</p>
-          <strong>{present}</strong>
-        </article>
-        <article className='stat-card'>
-          <p>Absent</p>
-          <strong>{absent}</strong>
-        </article>
-        <article className="stat-card">
-          <p>Attendance Rate</p>
-          <strong>{attendRate}</strong>
-        </article>
-        
-      </section>
+          <section className="stats-grid">
+            <article className="stat-card">
+              <p>Sessions</p>
+              <strong>{sessions}</strong>
+            </article>
+            <article className="stat-card">
+              <p>Present</p>
+              <strong>{present}</strong>
+            </article>
+            <article className='stat-card'>
+              <p>Absent</p>
+              <strong>{absent}</strong>
+            </article>
+            <article className="stat-card">
+              <p>Attendance Rate</p>
+              <strong>{attendRate}</strong>
+            </article>
+          </section>
+        </>
+      )}
+
+      
 
       {/*
       <section className="content-card">
