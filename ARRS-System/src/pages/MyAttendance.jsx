@@ -93,15 +93,18 @@ export default function MyAttendance() {
   }
   */}
 
-  const [sessions, setSessions] = useState('--')
-  const [present, setPresent] = useState('--')
-  const [absent, setAbsent] = useState('--')
-  const [attendRate, setAttendRate] = useState('--')
+  const [displayData, setDisplayData] = useState({
+    sessions: null,
+    present: null,
+    absent: null,
+    attendRate: null,
+  })
 
   const [loading, setLoading] = useState(true)
-  const [attendError, setAttendError] = useState(null)
+  const [fetchError, setFetchError] = useState(null)
 
   const [studentGroups, setGroups] = useState([])
+  const [studnetNr, setStudentNr] = useState(null)
 
   const [student, setStudent] = useState([])
   const [studentStatus, setStudentStatus] = useState(null)
@@ -111,11 +114,17 @@ export default function MyAttendance() {
 
   const [selectedGroup, setSelectedGroup] = useState('')
 
+  const [schedule, setSchedule] = useState([])
+  const [scheduleStatus, setScheduleStatus] = useState(null)
+
+  const [attendanceLoad, setAttendanceLoad] = useState(false)
+  const [attendError, setAttendError] = useState(null)
+
 
   useEffect(() => {
     async function fetchStudentGroup(){
       setLoading(true)
-      setAttendError(null)
+      setFetchError(null)
 
       try {
         const {data: {user}, error: userError} = await supabase.auth.getUser()
@@ -133,6 +142,15 @@ export default function MyAttendance() {
         setStudentStatus(!null)
 
         const AGroups = studentData?.[0]?.groups 
+
+        const SNum = studentData?.[0]?.student_nr
+
+        if(SNum === null || SNum === ''){
+          setStudentNr(null)
+          return;
+        }
+
+        setStudentNr(SNum)
 
         if(!Array.isArray(AGroups) || AGroups.length === 0){
           setGroups([])
@@ -157,7 +175,7 @@ export default function MyAttendance() {
       }
       catch(err){
         console.error(`Error Getting User, ${err.message}`)
-        setAttendError(null)
+        setFetchError(null)
       }
       finally{
         setLoading(false)
@@ -167,6 +185,42 @@ export default function MyAttendance() {
     fetchStudentGroup();
   }, [])
 
+  useEffect(() => {
+
+    async function fetchAttendanceData(){
+      setAttendanceLoad(true)
+      setAttendError(null)
+      setScheduleStatus(null)
+
+      try {
+        const table = `${selectedGroup}_student`
+
+        const studentNr = student?.[0]?.student_nr
+
+        const {data: attendanceData, error: attendanceError} = await supabase
+          .from(table)
+          .select('*')
+          
+        
+        if(scheduleError) throw scheduleError
+
+        setSchedule(scheduleData || [])
+        setScheduleStatus(!null)
+
+
+      }
+      catch(err){
+        console.error(`Error Fetching Attendance Data, ${err.message}`)
+        setAttendError(null)
+        setScheduleStatus(null)
+      }
+      finally{
+        setAttendanceLoad(false)
+      }
+    }
+
+    fetchAttendanceData();
+  },[selectedGroup])
   
 
   return (
