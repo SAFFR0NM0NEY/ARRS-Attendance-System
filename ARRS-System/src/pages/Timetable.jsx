@@ -194,6 +194,10 @@ export default function Timetable() {
     setScheduleStatus(!null)
     async function fetchTimetableData(){
       try{
+        if(selectedGroup === ''){
+          return;
+        }
+
         const table1 = `${selectedGroup}_schedule`
         const startString = start instanceof Date ? start.toISOString() : start;
         const endString = end instanceof Date ? end.toISOString() : end;
@@ -201,7 +205,7 @@ export default function Timetable() {
         const {data: classData, error: classError} = await supabase
           .from(table1)
           .select('*')
-          .gte('calendar_date',startString)
+          .gte('calendar_date', startString)
           .lte('calendar_date', endString);
         
         if(classError) throw classError
@@ -212,8 +216,7 @@ export default function Timetable() {
         const {data: trainerData, error: trainerError} = await supabase
           .from('faculty_profiles')
           .select('*')
-          .in('assigned_groups', selectedGroup)
-          .single();
+          .in('assigned_groups', selectedGroup);
 
         if(trainerError) throw trainerError
 
@@ -264,7 +267,6 @@ export default function Timetable() {
             <div className='filter_block'>
               <label>
                 Select Group:
-
                 <select
                   value={selectedGroup}
                   onChange={(e) => setSelectedGroup(e.target.value)}

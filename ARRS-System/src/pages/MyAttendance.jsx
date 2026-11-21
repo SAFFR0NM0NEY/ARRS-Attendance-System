@@ -114,8 +114,10 @@ export default function MyAttendance() {
 
   const [selectedGroup, setSelectedGroup] = useState('')
 
-  const [schedule, setSchedule] = useState([])
-  const [scheduleStatus, setScheduleStatus] = useState(null)
+  const [attendance, setAttendance] = useState([])
+
+  const [AttendClass, setAttendClass] = useState([])
+  const [AttendClassStatus, setAttendClassStatus] = useState(null)
 
   const [attendanceLoad, setAttendanceLoad] = useState(false)
   const [attendError, setAttendError] = useState(null)
@@ -125,11 +127,15 @@ export default function MyAttendance() {
     async function fetchStudentGroup(){
       setLoading(true)
       setFetchError(null)
+      setStudentStatus(null)
+      setGroupError(null)
 
       try {
         const {data: {user}, error: userError} = await supabase.auth.getUser()
       
         if(userError) throw userError
+
+        if(!user) throw new Error('Log In To View Your Attendance')
 
         const {data: studentData, error: studentError} = await supabase
           .from('student_profiles')
@@ -153,10 +159,11 @@ export default function MyAttendance() {
         setStudentNr(SNum)
 
         if(!Array.isArray(AGroups) || AGroups.length === 0){
-          setGroups([])
-          setGroupStatus(!null)
+          setGroupData([])
+          setGroupError(!null)
           return;
         }
+        setFetchError(!null)
 
         try {
           const {data: groups, error: groupsError} = await supabase
@@ -168,9 +175,11 @@ export default function MyAttendance() {
 
           setGroupData(groups)
           setGroupError(!null)
+          setFetchError(!null)
         }
         catch(err){
           console.error(`Error Fetching Student Groups, ${err.message}`)
+          setGroupError(null)
         }
       }
       catch(err){
@@ -186,33 +195,52 @@ export default function MyAttendance() {
   }, [])
 
   useEffect(() => {
-
     async function fetchAttendanceData(){
       setAttendanceLoad(true)
       setAttendError(null)
-      setScheduleStatus(null)
+      setAttendClassStatus(null)
+
+      if(studnetNr === null || selectedGroup === ''){
+        return;
+      }
 
       try {
         const table = `${selectedGroup}_student`
 
-        const studentNr = student?.[0]?.student_nr
+        if(studnetNr === null){
+          throw new Error(`Error With Student Number`)
+        }
 
         const {data: attendanceData, error: attendanceError} = await supabase
           .from(table)
           .select('*')
+          .eq('student_nr', studnetNr);
           
-        
-        if(scheduleError) throw scheduleError
+        if(attendanceError) throw attendanceError
 
-        setSchedule(scheduleData || [])
-        setScheduleStatus(!null)
+        setAttendance(attendanceData || [])
+        setAttendError(!null)
 
+        const newTable = `${selectedGroup}_attendence`
 
+        const {data: AClasses, error: AClassesError} = await supabase
+          .from(newTable)
+          .select('*')
+          .eq('student_nr', studnetNr);
+
+        if(AClassesError) throw AClassesError
+
+        setAttendClass(AClasses || [])
+        setAttendClassStatus(!null)
+        setDisplayData({
+          ...displayData,
+          sessions: AClasses?.length
+        })
       }
       catch(err){
         console.error(`Error Fetching Attendance Data, ${err.message}`)
         setAttendError(null)
-        setScheduleStatus(null)
+        setAttendClassStatus(null)
       }
       finally{
         setAttendanceLoad(false)
@@ -220,7 +248,7 @@ export default function MyAttendance() {
     }
 
     fetchAttendanceData();
-  },[selectedGroup])
+  },[selectedGroup, studnetNr])
   
 
   return (
@@ -239,13 +267,21 @@ export default function MyAttendance() {
             <h3>Loading...</h3>
           </section>
         </>
+      ) : fetchError === null || studentStatus === null || groupError === null ? (
+        <section className='content-card'>
+          <h3>Something Went Wrong With Retrieving Your Data. Please Try Again</h3>
+        </section>
       ) : (
         <>
           <section className='content-card' style={{marginBottom:'15px'}}>
             <article className='stat-card'>
               <p>Select Group</p>
-              <select className='full-field'>
-                <option value='' disable>--Select Group To View Attendance--</option>
+              <select 
+                className='full-field'
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+              >
+                <option value='' disabled>--Select Group To View Attendance--</option>
                 {groupError === null ? (
                   <option disabled>--Error With Groups--</option>
                 ) : (
@@ -261,6 +297,49 @@ export default function MyAttendance() {
             </article>
           </section>
 
+          {selectedGroup === '' ? (
+            <section className='content-card'>
+              <h3>Select A Group To View Attendance</h3>
+            </section>
+          ) : attendanceLoad ? (
+            <section className='content-card'>
+              <h3>Loading...</h3>
+            </section>
+          ) : attendError === null || AttendClassStatus === null ? (
+           <section className='content-card'>
+            <h3>Something Went Wrong With The Display Data. Please Try Again</h3>
+           </section> 
+          ) : (
+            <>
+              <section className='stats-grid'>
+                <article className='stat-card'>
+                  <p>Sessions</p>
+                  <strong>{displayData.sessions}</strong>
+                </article>
+
+                {attendance.map((record) => (
+                  <>
+                    <article className='stat-card'>
+                      <p>Present</p>
+                      <strong>{record.days_present}</strong>
+                    </article>
+
+                    <article className='stat-card'>
+                      <p>Absent</p>
+                      <strong>{record.days_absent}</strong>
+                    </article>
+
+                    <article className='stat-card'>
+                      <p>Attendance Rate</p>
+                      <strong>{record.average_attendence}</strong>
+                    </article>
+                  </>
+                ))}
+              </section>
+            </>
+          )}
+
+          {/*
           <section className="stats-grid">
             <article className="stat-card">
               <p>Sessions</p>
@@ -279,6 +358,7 @@ export default function MyAttendance() {
               <strong>{attendRate}</strong>
             </article>
           </section>
+          */}
         </>
       )}
 
