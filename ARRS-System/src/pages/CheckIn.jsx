@@ -38,40 +38,8 @@ export default function CheckIn() {
     setMessage("");
 
     try {
-      /*
-       * BACKEND INTEGRATION:
-       * Replace the placeholder URL with the API endpoint
-       * provided by your backend teammate.
-       *
-       * The backend must validate the student number and
-       * passcode before recording attendance.
-       */
-      const response = await fetch(
-        "/api/attendance/check-in",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            studentNumber: form.studentNumber.trim(),
-            passcode: form.passcode.trim(),
-          }),
-        }
-      );
-
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(
-          result.message ||
-            "Attendance could not be verified. Check your details and try again."
-        );
-      }
-
-      setMessage(
-        result.message || "Your attendance has been recorded successfully."
-      );
+      
+      
       setMessageType("success");
 
       // Clear the inputs after a successful response.
