@@ -121,12 +121,8 @@ export default function Timetable() {
   const [scheduleStatus, setScheduleStatus] = useState(null)
   const [scheduleLoad, setScheduleLoad] = useState(false)
 
-  const [displayData, setDisplayData] = useState({
-    trainer: null,
-    classes: null,
-    classTime: null,
-    description: null
-  })
+  const [trainer, setTrainer] = useState([])
+  const [trainerStatus, setTrainerStatus] = useState(null)
 
   useEffect(() => {
     async function fetchStudentData(){
@@ -187,20 +183,18 @@ export default function Timetable() {
   }, [])
 
   useEffect(() => {
-    setDisplayData({
-      trainer: null
-    })
+    setTrainerStatus(null)
     setScheduleLoad(true)
-    setScheduleStatus(!null)
+    setScheduleStatus(null)
     async function fetchTimetableData(){
       try{
-        if(selectedGroup === ''){
+        if(selectedGroup === '' || !selectedGroup){
           return;
         }
 
         const table1 = `${selectedGroup}_schedule`
-        const startString = start instanceof Date ? start.toISOString() : start;
-        const endString = end instanceof Date ? end.toISOString() : end;
+        const startString = start instanceof Date ? toDateOnly(start) : start;
+        const endString = end instanceof Date ? toDateOnly(end) : end;
 
         const {data: classData, error: classError} = await supabase
           .from(table1)
@@ -213,17 +207,17 @@ export default function Timetable() {
         setSchedule(classData || [])
         setScheduleStatus(!null)
 
+        console.log('selectedGroup:', JSON.stringify(selectedGroup));
+
         const {data: trainerData, error: trainerError} = await supabase
           .from('faculty_profiles')
           .select('*')
-          .in('assigned_groups', selectedGroup);
+          .contains('assigned_groups', [selectedGroup]);
 
-        if(trainerError) throw trainerError
+        if(trainerError) throw new Error('Error Fetching Trainer')
 
-        setDisplayData({
-          ...displayData,
-          trainer: trainerData || []
-        })
+        setTrainer(trainerData || [])
+        setTrainerStatus(!null)
         
       }
       catch(err){
@@ -301,10 +295,6 @@ export default function Timetable() {
                 </select>
               </label>
             </div>
-            {start.toDateString()} <br/>
-            {end.toDateString()} <br/>
-            {toDateOnly(start)} <br/>
-            {toDateOnly(end)}
           </section>
 
           <br/>
@@ -326,43 +316,46 @@ export default function Timetable() {
               <section className="stats-grid">
                 <article className="stat-card">
                   <p>
-                    Scheduled Classes for Week <br/>
-                    From: {dateRangeLabel}
+                    Scheduled Classes for Week
                   </p>
+                  <strong>{dateRangeLabel}</strong>
                 </article>
 
                 <article className='stat-card'>
                   <p>Trainer</p>
-                  <strong>
-                    {displayData.trainer === null ? (
-                      '--'
-                    ) : (
-                      displayData.trainer
-                    )}
-                  </strong>
+                  {trainerStatus === null || trainerStatus.length === 0 ? (
+                    <strong>--</strong>
+                  ) : (
+                    <>
+                      {trainer.map((t) => (
+                        <strong key={t.id}>{t.name} {t.surname}</strong>
+                      ))}
+                    </>
+                  )}
                 </article>
 
-                <article className='stat-card'>
-                  <p>Class Time</p>
-                  <strong>
-                    {displayData.classTime === null ? (
-                      '--'
-                    ) : (
-                      displayData.classTime
-                    )}
-                  </strong>
-                </article>
+                {schedule.map((record) => (
+                  <>
+                    <section className='content-card'>
+                      <article className='stat-card'>
+                        <p>Date</p>
+                        <strong>{record.calendar_date}</strong>
+                      </article>
 
-                <article className='stat-card'>
-                  <p>Description</p>
-                  <strong>
-                    {displayData.description === null ? (
-                      '--'
-                    ) : (
-                      displayData.description
-                    )}
-                  </strong>
-                </article>
+                      <article className='stat-card'>
+                        <p>Class Time</p>
+                        <strong>{record.clock_time}</strong>
+                      </article>
+
+                      <article className='stat-card'>
+                        <p>Description</p>
+                        <strong>
+                          {record.summary}
+                        </strong>
+                      </article>
+                    </section>
+                  </>
+                ))}
               </section>
             </>
           )}
