@@ -87,7 +87,7 @@ export default function CheckIn() {
         </Link>
 
         <Link to="/login" className="button button-quiet">
-          Staff login
+          Login Page
         </Link>
       </header>
 
@@ -138,7 +138,7 @@ export default function CheckIn() {
             <label className="full-field">
               Attendance passcode *
               <input
-                type="password"
+                type="text"
                 name="passcode"
                 value={form.passcode}
                 onChange={handleChange}
