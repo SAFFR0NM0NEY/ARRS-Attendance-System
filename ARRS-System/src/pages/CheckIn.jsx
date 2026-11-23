@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import itcaLogo from "../assets/itca-logo.png";
+import {supabase} from '../supabase'
 
 export default function CheckIn() {
   // Store only the two values required to log attendance.
@@ -11,7 +12,7 @@ export default function CheckIn() {
   });
 
   // Store feedback returned by the attendance process.
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("info");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,21 +33,37 @@ export default function CheckIn() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (isSubmitting) return;
-
     setIsSubmitting(true);
     setMessage("");
 
     try {
-      
-      
-      setMessageType("success");
-
-      // Clear the inputs after a successful response.
-      setForm({
-        studentNumber: "",
-        passcode: "",
+      const {data, error} = await supabase.rpc('verify_mark_student',{
+        p_student_nr: form.studentNumber.trim(),
+        p_passcode: form.passcode.trim(),
       });
+
+      if(error) throw error
+
+      const result = Array.isArray(data) ? data[0] : data;
+
+      if(!result) throw new Error('No response returned from function')
+      
+      if(result.marked){
+        setMessageType('success')
+        setMessage(result.status_message)
+        setForm({
+          studentNumber: "",
+          passcode: "",
+        });
+      }
+      else if(result.already_marked){
+        setMessageType('warning')
+        setMessage(result.status_message)
+      }
+      else {
+        setMessageType('error')
+        setMessage(result.status_message)
+      }
     } catch (error) {
       setMessage(
         error.message ||
