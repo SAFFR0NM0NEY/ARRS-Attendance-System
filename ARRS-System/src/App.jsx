@@ -30,6 +30,7 @@ import MyAttendance from "./pages/MyAttendance.jsx";
 import Timetable from "./pages/Timetable.jsx";
 import MyEnrolment from "./pages/MyEnrolment.jsx";
 import MyProfile from "./pages/MyProfile.jsx";
+import DashCheckIn from "./pages/checkIn_student.jsx";
 import Reports from "./pages/Reports.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import Settings from "./pages/Settings.jsx";
@@ -87,6 +88,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={["student"]}>
             <MyEnrolment />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path='/student/check-in'
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <DashCheckIn />
           </ProtectedRoute>
         }
       />

@@ -10,6 +10,7 @@ const navigation = {
     { label: "My Attendance", path: "attendance", icon: "✓" },
     { label: "Timetable", path: "timetable", icon: "▦" },
     { label: "My Enrolment", path: "enrolment", icon: "▤" },
+    { label: 'Check In', path:'check-in', icon: '▨'},
     { label: "My Profile", path: "profile", icon: "◉" },
     //{ label: "Reports", path: "reports", icon: "▥" },
     //{ label: "Notifications", path: "notifications", icon: "♧" },

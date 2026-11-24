@@ -19,6 +19,7 @@ const dashboardData = {
        ["My Attendance", "/student/attendance"],
        ["View Timetable", "/student/timetable"],
        ["My Enrolment", "/student/enrolment"],
+       ['Check-In','/student/check-in'],
        //["View Reports", "/student/reports"],
        //["Notifications", "/student/notifications"],
        ["My Profile", "/student/profile"],
