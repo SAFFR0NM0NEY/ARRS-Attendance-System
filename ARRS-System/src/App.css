@@ -1,0 +1,98 @@
+
+/* =====================================================
+   ITCA APPLICATION COMPONENT STYLES
+   Layout refinements and reusable UI elements
+   ===================================================== */
+
+/* Keep the React application at full width. */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Shared panel styling for dashboard content. */
+.content-card,
+.stat-card,
+.form-card {
+  backdrop-filter: blur(10px);
+}
+
+/* Consistent hover feedback for navigation links. */
+.sidebar-nav .nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav .nav-link.active::before {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: #a7f3c7;
+  content: "";
+}
+
+/* Keep dashboard tables usable on smaller screens. */
+.table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Keep long labels from breaking card layouts. */
+.stat-card,
+.content-card,
+.quick-action {
+  overflow-wrap: anywhere;
+}
+
+/* Make buttons and links visually consistent. */
+button,
+.button,
+.quick-action,
+.nav-link {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Improve keyboard navigation visibility. */
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #79b8ff;
+  outline-offset: 3px;
+}
+
+/* Keep the main heading bar dark and readable. */
+.topbar {
+  background: linear-gradient(135deg, #032b32, #06464a);
+  color: #ffffff;
+}
+
+.topbar h1,
+.topbar h2,
+.topbar h3 {
+  color: #ffffff;
+}
+
+/* Use the brand gradient for important page accents. */
+.checkin-icon,
+.message-icon {
+  background: linear-gradient(135deg, #087d58, #1769aa);
+}
+
+/* Stack dashboard elements on narrow screens. */
+@media (max-width: 760px) {
+  .dashboard-lower-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .content-card {
+    min-width: 0;
+  }
+}

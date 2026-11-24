@@ -1,0 +1,151 @@
+import {useState, useEffect} from 'react'
+import Layout from '../components/Layout.jsx'
+import itcaLogo from '../assets/itca-logo.png'
+import {supabase} from '../supabase.js'
+
+export default function DashCheckIn() {
+  const [form, setForm] = useState({
+    studentNumber: '',
+    passcode: '',
+  });
+
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState('info')
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleChange(e) {
+    const {name, value} = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setMessage('');
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+
+    setIsSubmitting(true)
+    setMessage('')
+
+    try {
+      const {data, error} = await supabase.rpc('verify_mark_student',{
+        p_student_nr: form.studentNumber.trim(),
+        p_passcode: form.passcode.trim(),
+      });
+
+      if(error) throw error
+
+      const result = Array.isArray(data) ? data[0] : data;
+
+      if(!result) throw new Error('No response returned from function')
+      
+      if(result.marked){
+        setMessageType('success')
+        setMessage(result.status_message)
+        setForm({
+          studentNumber: "",
+          passcode: "",
+        });
+      }
+      else if(result.already_marked){
+        setMessageType('warning')
+        setMessage(result.status_message)
+      }
+      else {
+        setMessageType('error')
+        setMessage(result.status_message)
+      }
+    } catch (error) {
+      setMessage(
+        error.message ||
+          "Unable to connect to the attendance service. Please try again."
+      );
+      setMessageType("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <Layout role='student' title='Mark Attendance'>
+      <section className='page-heading'>
+        <div>
+          <span className='eyebrow'>Attendance Logger</span>
+          <h2>Attendance Log</h2>
+          <p>Log your attendance</p>
+        </div>
+      </section>
+
+      <section className="form-card">
+        <div className="form-card-heading">
+          <div>
+            <h2>Attendance verification</h2>
+            <p>Enter both required details.</p>
+          </div>
+
+          <img src={itcaLogo} alt="ITCA logo" />
+        </div>
+
+        <form className="input-grid" onSubmit={handleSubmit}>
+          <label className="full-field">
+            Student number *
+            <input
+              type="text"
+              name="studentNumber"
+              value={form.studentNumber}
+              onChange={handleChange}
+              required
+              autoComplete="username"
+              placeholder="Enter your student number"
+            />
+          </label>
+
+          <label className="full-field">
+            Attendance passcode *
+            <input
+              type="text"
+              name="passcode"
+              value={form.passcode}
+              onChange={handleChange}
+              required
+              autoComplete="off"
+              placeholder="Enter your attendance passcode"
+            />
+          </label>
+
+          <button
+            className="button button-primary button-full full-field"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? "Verifying attendance..."
+              : "Log attendance →"}
+          </button>
+
+          {message && (
+            <p
+              className={`full-field ${
+                messageType === "success"
+                  ? "success-message"
+                  : "error-message"
+              }`}
+              role="status"
+              aria-live="polite"
+            >
+              {message}
+            </p>
+          )}
+        </form>
+
+        <p className="welcome-note">
+          Your attendance details will be verified by the
+          attendance service.
+        </p>
+      </section>
+    </Layout>
+  )
+}
